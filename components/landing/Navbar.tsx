@@ -1,6 +1,6 @@
 'use client';
 
-import { ChameiLogo } from '@/frontend/components/Logo';
+import { ChameiLogo } from '@/components/Logo';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';

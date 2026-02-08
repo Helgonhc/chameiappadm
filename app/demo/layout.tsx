@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import DemoSidebar from '@/frontend/components/demo/DemoSidebar';
+import DemoSidebar from '@/components/demo/DemoSidebar';
 import { Bell } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { Toaster } from 'react-hot-toast';

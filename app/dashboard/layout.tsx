@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useAuthStore } from '@/frontend/store/authStore';
+import { useAuthStore } from '@/store/authStore';
 import { supabase } from '@/lib/supabase';
 import Sidebar from '@/components/Sidebar';
 import { Shield, Search, Bell } from 'lucide-react';

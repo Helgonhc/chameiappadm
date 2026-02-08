@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { X, Zap, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { supabase } from '@/frontend/lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 interface DemoModalProps {
     selectedPlan: string;

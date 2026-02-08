@@ -1,6 +1,6 @@
 'use client';
 
-import { ChameiLogo } from '@/frontend/components/Logo';
+import { ChameiLogo } from '@/components/Logo';
 
 export function Footer() {
     return (
