@@ -27,25 +27,22 @@
         "./*"
       ],
       "@/components/*": [
-        "frontend/components/*",
         "components/*"
       ],
       "@/hooks/*": [
-        "frontend/hooks/*",
         "hooks/*"
       ],
       "@/utils/*": [
-        "frontend/utils/*",
         "utils/*"
       ],
       "@/lib/*": [
-        "frontend/lib/*"
+        "lib/*"
       ],
       "@/store/*": [
-        "frontend/store/*"
+        "store/*"
       ],
       "@/types/*": [
-        "frontend/types/*"
+        "types/*"
       ],
       "@/backend/*": [
         "backend/*"
