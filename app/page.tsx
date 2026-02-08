@@ -1,4 +1,6 @@
 'use client';
+// Force Vercel cache refresh - 00:05
+
 
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
