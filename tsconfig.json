@@ -27,13 +27,16 @@
         "./*"
       ],
       "@/components/*": [
-        "frontend/components/*"
+        "frontend/components/*",
+        "components/*"
       ],
       "@/hooks/*": [
-        "frontend/hooks/*"
+        "frontend/hooks/*",
+        "hooks/*"
       ],
       "@/utils/*": [
-        "frontend/utils/*"
+        "frontend/utils/*",
+        "utils/*"
       ],
       "@/lib/*": [
         "frontend/lib/*"
