@@ -1,3 +1,4 @@
+
 # 🔧 Portal Admin - Sistema de Gestão
 
 Portal web completo para administradores e técnicos com todas as funcionalidades do aplicativo mobile.
@@ -30,8 +31,6 @@ Portal web completo para administradores e técnicos com todas as funcionalidade
 ```bash
 # Windows (PowerShell)
 Copy-Item .env.example .env.local
-
-# Ou crie manualmente com o conteúdo:
 ```
 
 3. Edite `.env.local` com suas credenciais do Supabase:
@@ -79,12 +78,11 @@ Faça login com um usuário **admin** ou **técnico** do seu sistema.
 5. No terminal, execute:
 
 ```bash
-cd admin-portal
 git init
 git add .
 git commit -m "Portal Admin completo"
 git branch -M main
-git remote add origin https://github.com/SEU_USUARIO/admin-portal.git
+git remote add origin https://github.com/Helgonhc/chameiappadm.git
 git push -u origin main
 ```
 
@@ -94,7 +92,7 @@ git push -u origin main
 
 1. Acesse [vercel.com](https://vercel.com) e faça login com GitHub
 2. Clique em **"Add New Project"**
-3. Selecione o repositório `admin-portal`
+3. Selecione o repositório `chameiappadm`
 4. Em **Environment Variables**, adicione:
 
 | Nome | Valor |
@@ -220,7 +218,3 @@ Se tiver problemas:
 2. Teste localmente primeiro (`npm run dev`)
 3. Verifique os logs na Vercel
 4. Confirme as permissões no Supabase
-
----
-
-© 2024 Sistema de Gestão
