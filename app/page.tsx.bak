@@ -1,0 +1,8 @@
+export default function DebugPage() {
+  return (
+    <div style={{ padding: '50px', background: 'blue', color: 'white', fontSize: '30px' }}>
+      <h1>SERVER IS ALIVE</h1>
+      <p>Se você vê isso, o problema está nos componentes originais.</p>
+    </div>
+  );
+}
