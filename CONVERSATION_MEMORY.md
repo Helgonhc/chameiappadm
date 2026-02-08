@@ -1,4 +1,7 @@
 # Conversation Memory - Landing Page Simplification
+> **PREFERÊNCIA DO USUÁRIO:** Sempre conversar em Português do Brasil (pt-BR).
+
+
 
 ## Session Date: 2026-02-06
 
