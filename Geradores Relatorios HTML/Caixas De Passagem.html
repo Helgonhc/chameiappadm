@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Relatório Corporativo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Bibliotecas para geração de PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .form-section {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e5e7eb;
+        }
+
+        .form-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #111827;
+            border-bottom: 1px solid #d1d5db;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            color: #4b5563;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background-color: #f9fafb;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+        }
+
+        /* Estilos do Relatório Gerado */
+        .report-page-container {
+            width: 100%;
+            max-width: 210mm;
+            margin: 1rem auto;
+        }
+
+        .report-page {
+            background: white;
+            width: 100%;
+            aspect-ratio: 210 / 297;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border: 1px solid #e5e7eb;
+        }
+
+        .report-header {
+            padding: 4%;
+            border-bottom: 2px solid #111827;
+        }
+
+        .report-footer {
+            padding: 3% 4%;
+            border-top: 1px solid #d1d5db;
+            margin-top: auto;
+        }
+
+        .report-content {
+            flex-grow: 1;
+            padding: 4%;
+        }
+
+        .report-section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 1rem;
+            padding-bottom: 0.25rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        #notification {
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        }
+
+        @media print {
+            body {
+                background-color: #fff;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            #reportOutputContainer {
+                padding: 0;
+            }
+
+            .report-page-container {
+                margin: 0;
+                box-shadow: none;
+                border: none;
+                page-break-after: always;
+            }
+
+            .report-page-container:last-of-type {
+                page-break-after: auto;
+            }
+
+            .report-page {
+                width: 210mm;
+                height: 297mm;
+                aspect-ratio: unset;
+            }
+        }
+    </style>
+</head>
+
+<body class="text-gray-800">
+
+    <!-- Notificação Global -->
+    <div id="notification"
+        class="fixed top-5 right-5 bg-green-500 text-white py-2 px-4 rounded-lg shadow-lg opacity-0 transform translate-y-2 z-50">
+        <p id="notificationMessage">Mensagem</p>
+    </div>
+
+    <!-- Modal de Confirmação -->
+    <div id="confirmModal"
+        class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full">
+            <h3 id="confirmTitle" class="text-lg font-bold mb-4">Confirmar Ação</h3>
+            <p id="confirmMessage" class="text-gray-600 mb-6">Você tem certeza?</p>
+            <div class="flex justify-end gap-4">
+                <button id="confirmCancelBtn"
+                    class="bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-gray-300">Cancelar</button>
+                <button id="confirmOkBtn"
+                    class="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="appContainer" class="container mx-auto p-4 md:p-8">
+
+        <div id="formContainer">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-10">
+                    <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Gerador de Relatórios Corporativo</h1>
+                    <p class="text-gray-600 mt-2">Preencha os campos para criar um laudo técnico profissional.</p>
+                </div>
+
+                <form id="reportForm" onsubmit="return false;">
+                    <div class="form-section">
+                        <h2 class="section-title">Dados da Empresa (Sua Empresa)</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div><label for="companyLogo" class="form-label">Logo da Sua Empresa</label><input
+                                    type="file" id="companyLogo" accept="image/*" class="form-input"></div>
+                            <div><label for="companyAddress" class="form-label">Endereço Completo</label><input
+                                    type="text" id="companyAddress" class="form-input"
+                                    placeholder="Digite o endereço completo da sua empresa..." required>
+                            </div>
+                            <div><label for="companyPhone" class="form-label">Telefone</label><input type="tel"
+                                    id="companyPhone" class="form-input" placeholder="Digite o telefone (xx) xxxxx-xxxx"
+                                    required></div>
+                            <div><label for="companyEmail" class="form-label">E-mail</label><input type="email"
+                                    id="companyEmail" class="form-input" placeholder="Digite o e-mail comercial..."
+                                    required></div>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <h2 class="section-title">Dados do Cliente</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div><label for="clientLogo" class="form-label">Logo do Cliente</label><input type="file"
+                                    id="clientLogo" accept="image/*" class="form-input"></div>
+                            <div><label for="clientName" class="form-label">Nome do Cliente</label><input type="text"
+                                    id="clientName" class="form-input" placeholder="Ex: Condomínio Praça Maior"
+                                    required></div>
+                            <div class="col-span-1 md:col-span-2"><label for="clientAddress" class="form-label">Endereço
+                                    do Cliente</label><input type="text" id="clientAddress" class="form-input"
+                                    placeholder="Ex: Av. Principal, 1000, Bairro, Cidade - UF" required></div>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <h2 class="section-title">Dados do Relatório</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div><label for="reportDate" class="form-label">Data do Relatório</label><input type="date"
+                                    id="reportDate" class="form-input" required></div>
+                            <div><label for="reportNumber" class="form-label">Nº Relatório</label><input type="text"
+                                    id="reportNumber" class="form-input" placeholder="Ex: ELE_CX_0013" required></div>
+                            <div class="col-span-1 md:col-span-2"><label for="processNumber" class="form-label">Nº de
+                                    Ref. do Processo</label><input type="text" id="processNumber" class="form-input"
+                                    placeholder="Ex: VIST_13" required></div>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <h2 class="section-title">Análise Técnica</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div><label for="boxCount" class="form-label">Nº de caixas analisadas</label><input
+                                    type="number" id="boxCount" class="form-input" value="47" min="1" required></div>
+                            <div class="space-y-3 pt-2 md:pt-8">
+                                <label class="flex items-center"><input type="checkbox" id="checkHumidity"
+                                        class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-2"><span>Sinais
+                                        de umidade.</span></label>
+                                <label class="flex items-center"><input type="checkbox" id="checkGravel"
+                                        class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-2"><span>Sem
+                                        lastro de brita.</span></label>
+                            </div>
+                        </div>
+                        <div class="mt-6"><label for="observations" class="form-label">Outras
+                                Observações</label><textarea id="observations" rows="4" class="form-textarea"
+                                placeholder="Descreva outras constatações..."></textarea></div>
+                        <div class="mt-6"><label for="conclusion" class="form-label">Conclusão e
+                                Recomendações</label><textarea id="conclusion" rows="4" class="form-textarea"
+                                placeholder="Descreva a conclusão geral e recomendações."></textarea></div>
+                    </div>
+                    <div class="form-section">
+                        <h2 class="section-title">Anexos e Responsável</h2>
+                        <div>
+                            <label class="form-label">Fotos da Vistoria</label>
+                            <div class="flex items-center gap-2">
+                                <label for="photos"
+                                    class="flex-grow bg-white text-gray-700 border border-gray-300 rounded-lg px-4 py-2 text-center cursor-pointer hover:bg-gray-50">
+                                    <span class="text-sm">Selecionar da Galeria</span>
+                                    <input type="file" id="photos" multiple accept="image/*" class="hidden">
+                                </label>
+                                <button type="button" id="cameraBtn"
+                                    class="p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                        fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="photo-previews" class="mt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                            <div><label for="engineerSignature" class="form-label">Upload da Assinatura</label><input
+                                    type="file" id="engineerSignature" accept="image/*" class="form-input"></div>
+                            <div><label for="engineerName" class="form-label">Nome do Engenheiro</label><input
+                                    type="text" id="engineerName" class="form-input" value="Anderson Diniz" required>
+                            </div>
+                            <div><label for="signatureCity" class="form-label">Cidade da Assinatura</label><input
+                                    type="text" id="signatureCity" class="form-input" value="Contagem" required></div>
+                            <div><label for="signatureDate" class="form-label">Data da Assinatura</label><input
+                                    type="date" id="signatureDate" class="form-input" required></div>
+                            <div class="md:col-span-2"><label for="creaNumber" class="form-label">CREA</label><input
+                                    type="text" id="creaNumber" class="form-input" value="254516/D" required></div>
+                        </div>
+                    </div>
+                    <div class="mt-10 flex flex-wrap justify-center items-center gap-4">
+                        <button type="button" id="loadBtn"
+                            class="bg-gray-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-gray-600 transition-all">Carregar</button>
+                        <button type="button" id="saveBtn"
+                            class="bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition-all">Salvar
+                            Progresso</button>
+                        <button type="button" id="generateBtn"
+                            class="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 transition-all transform hover:scale-105 shadow-lg text-base flex items-center gap-2">
+                            Pré-visualizar Relatório
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Saída do Relatório -->
+        <div id="reportOutputContainer" class="hidden">
+            <div
+                class="no-print bg-gray-800 text-white p-4 flex justify-between items-center sticky top-0 z-50 shadow-lg">
+                <h3 class="font-bold text-lg">Pré-visualização</h3>
+                <div class="flex flex-wrap gap-2">
+                    <button id="editReportBtn"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">Editar</button>
+                    <button id="newReportBtn"
+                        class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">Limpar
+                        Formulário</button>
+                    <button id="downloadPdfBtn"
+                        class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2">
+                        Baixar PDF
+                    </button>
+                </div>
+            </div>
+            <div id="reportOutput"></div>
+        </div>
+
+        <!-- Modal da Câmera -->
+        <div id="cameraModal"
+            class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex flex-col items-center justify-center p-4">
+            <video id="cameraFeed" class="w-full h-auto max-w-full max-h-[80vh] rounded-lg" autoplay
+                playsinline></video>
+            <div class="flex gap-4 mt-4">
+                <button id="captureBtn"
+                    class="p-4 bg-blue-600 text-white rounded-full hover:bg-blue-700 shadow-lg">Capturar</button>
+                <button id="closeCameraBtn"
+                    class="p-4 bg-red-600 text-white rounded-full hover:bg-red-700 shadow-lg">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- Constantes e Elementos do DOM ---
+            const { jsPDF } = window.jspdf;
+            const STORAGE_KEY = 'reportFormData';
+            const formElements = {
+                reportForm: document.getElementById('reportForm'),
+                formContainer: document.getElementById('formContainer'),
+                reportOutputContainer: document.getElementById('reportOutputContainer'),
+                reportOutput: document.getElementById('reportOutput'),
+                newReportBtn: document.getElementById('newReportBtn'),
+                editReportBtn: document.getElementById('editReportBtn'),
+                downloadPdfBtn: document.getElementById('downloadPdfBtn'),
+                generateBtn: document.getElementById('generateBtn'),
+                saveBtn: document.getElementById('saveBtn'),
+                loadBtn: document.getElementById('loadBtn'),
+                photosInput: document.getElementById('photos'),
+                cameraBtn: document.getElementById('cameraBtn'),
+                photoPreviews: document.getElementById('photo-previews'),
+                cameraModal: document.getElementById('cameraModal'),
+                cameraFeed: document.getElementById('cameraFeed'),
+                captureBtn: document.getElementById('captureBtn'),
+                closeCameraBtn: document.getElementById('closeCameraBtn'),
+                notification: document.getElementById('notification'),
+                notificationMessage: document.getElementById('notificationMessage'),
+                confirmModal: document.getElementById('confirmModal'),
+                confirmMessage: document.getElementById('confirmMessage'),
+                confirmOkBtn: document.getElementById('confirmOkBtn'),
+                confirmCancelBtn: document.getElementById('confirmCancelBtn'),
+            };
+            const inputIds = ['clientName', 'reportDate', 'reportNumber', 'processNumber', 'companyAddress', 'companyPhone', 'companyEmail', 'boxCount', 'observations', 'conclusion', 'engineerName', 'creaNumber', 'clientAddress', 'signatureCity', 'signatureDate'];
+            const checkboxIds = ['checkHumidity', 'checkGravel'];
+            const fileInputIds = ['companyLogo', 'clientLogo', 'engineerSignature'];
+
+            let fileList = [];
+            let stream = null;
+            let saveTimeout;
+
+            // --- Inicialização ---
+            function initialize() {
+                document.getElementById('reportDate').valueAsDate = new Date();
+                document.getElementById('signatureDate').valueAsDate = new Date();
+                setupEventListeners();
+                loadProgress(true); // Tenta carregar silenciosamente ao iniciar
+            }
+
+            // --- Event Listeners ---
+            function setupEventListeners() {
+                formElements.generateBtn.addEventListener('click', handleFormSubmit);
+                formElements.downloadPdfBtn.addEventListener('click', downloadPDF);
+                formElements.newReportBtn.addEventListener('click', handleNewReport);
+                formElements.editReportBtn.addEventListener('click', handleEditReport);
+                formElements.photosInput.addEventListener('change', handleFileSelect);
+                formElements.cameraBtn.addEventListener('click', openCamera);
+                formElements.closeCameraBtn.addEventListener('click', closeCamera);
+                formElements.captureBtn.addEventListener('click', capturePhoto);
+                formElements.saveBtn.addEventListener('click', () => saveProgress(true));
+                formElements.loadBtn.addEventListener('click', () => loadProgress(false));
+                formElements.reportForm.addEventListener('input', () => {
+                    clearTimeout(saveTimeout);
+                    saveTimeout = setTimeout(() => saveProgress(false), 1000);
+                });
+            }
+
+            // --- Funções de Notificação e Confirmação ---
+            function showNotification(message, isError = false) {
+                const { notification, notificationMessage } = formElements;
+                notificationMessage.textContent = message;
+                notification.classList.remove('opacity-0', 'transform', 'translate-y-2');
+
+                if (isError) {
+                    notification.classList.remove('bg-green-500');
+                    notification.classList.add('bg-red-500');
+                } else {
+                    notification.classList.remove('bg-red-500');
+                    notification.classList.add('bg-green-500');
+                }
+
+                clearTimeout(window.notificationTimeout);
+                window.notificationTimeout = setTimeout(() => {
+                    notification.classList.add('opacity-0', 'transform', 'translate-y-2');
+                }, 3000);
+            }
+
+            function customConfirm(message, onConfirm) {
+                formElements.confirmMessage.textContent = message;
+                formElements.confirmModal.classList.remove('hidden');
+
+                const newOkBtn = formElements.confirmOkBtn.cloneNode(true);
+                formElements.confirmOkBtn.parentNode.replaceChild(newOkBtn, formElements.confirmOkBtn);
+                formElements.confirmOkBtn = newOkBtn;
+
+                const newCancelBtn = formElements.confirmCancelBtn.cloneNode(true);
+                formElements.confirmCancelBtn.parentNode.replaceChild(newCancelBtn, formElements.confirmCancelBtn);
+                formElements.confirmCancelBtn = newCancelBtn;
+
+                formElements.confirmOkBtn.addEventListener('click', () => {
+                    formElements.confirmModal.classList.add('hidden');
+                    onConfirm();
+                });
+                formElements.confirmCancelBtn.addEventListener('click', () => {
+                    formElements.confirmModal.classList.add('hidden');
+                });
+            }
+
+            // --- Lógica de Salvamento e Carregamento ---
+            async function saveProgress(isManual) {
+                try {
+                    const data = await getFormDataForSave();
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                    if (isManual) {
+                        showNotification('Progresso salvo com sucesso!');
+                    }
+                } catch (error) {
+                    console.error("Erro ao salvar progresso:", error);
+                    showNotification('Erro ao salvar o progresso.', true);
+                }
+            }
+
+            async function loadProgress(isSilent = false) {
+                const savedData = localStorage.getItem(STORAGE_KEY);
+                if (!savedData) {
+                    if (!isSilent) showNotification('Nenhum progresso salvo encontrado.', true);
+                    return;
+                }
+                const data = JSON.parse(savedData);
+
+                inputIds.forEach(id => { if (data[id]) document.getElementById(id).value = data[id]; });
+                checkboxIds.forEach(id => { if (data[id]) document.getElementById(id).checked = data[id]; });
+
+                for (const id of fileInputIds) {
+                    if (data[id]) {
+                        const file = base64ToFile(data[id].base64, data[id].name, data[id].type);
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(file);
+                        document.getElementById(id).files = dataTransfer.files;
+                    }
+                }
+
+                if (data.photoFiles && data.photoFiles.length > 0) {
+                    fileList = data.photoFiles.map(item => ({
+                        file: base64ToFile(item.base64, `foto-salva-${Date.now()}.jpg`, 'image/jpeg'),
+                        caption: item.caption
+                    }));
+                    updatePhotoPreviews();
+                }
+                if (!isSilent) showNotification('Progresso carregado com sucesso!');
+            }
+
+            async function getFormDataForSave() {
+                const data = {};
+                inputIds.forEach(id => data[id] = document.getElementById(id).value);
+                checkboxIds.forEach(id => data[id] = document.getElementById(id).checked);
+
+                const fileInputPromises = fileInputIds.map(async id => {
+                    const file = document.getElementById(id).files[0];
+                    if (file) {
+                        data[id] = { name: file.name, type: file.type, base64: await fileToBase64(file) };
+                    }
+                });
+
+                const photoFilesPromise = Promise.all(fileList.map(async (item) => ({
+                    caption: item.caption,
+                    base64: await fileToBase64(item.file)
+                })));
+
+                const [_, photoFiles] = await Promise.all([Promise.all(fileInputPromises), photoFilesPromise]);
+                data.photoFiles = photoFiles;
+
+                return data;
+            }
+
+            function handleNewReport() {
+                customConfirm('Isso limpará o formulário e o progresso salvo. Deseja continuar?', () => {
+                    formElements.reportOutputContainer.classList.add('hidden');
+                    formElements.formContainer.classList.remove('hidden');
+                    formElements.reportForm.reset();
+                    fileList = [];
+                    updatePhotoPreviews();
+                    localStorage.removeItem(STORAGE_KEY);
+                    document.getElementById('reportDate').valueAsDate = new Date();
+                    document.getElementById('signatureDate').valueAsDate = new Date();
+                    showNotification('Novo relatório iniciado.');
+                });
+            }
+
+            function handleEditReport() {
+                formElements.reportOutputContainer.classList.add('hidden');
+                formElements.formContainer.classList.remove('hidden');
+                window.scrollTo(0, 0);
+            }
+
+            // --- Lógica da Câmera e Fotos ---
+            async function handleFileSelect(event) {
+                for (const file of event.target.files) {
+                    try {
+                        const resizedFile = await resizeImage(file, 1024, 1024, 0.8);
+                        fileList.push({ file: resizedFile, caption: '' });
+                    } catch (err) {
+                        console.error("Erro ao redimensionar a imagem: ", err);
+                        fileList.push({ file: file, caption: '' });
+                    }
+                }
+                updatePhotoPreviews();
+                saveProgress(false);
+            }
+
+            async function openCamera() {
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                    formElements.cameraFeed.srcObject = stream;
+                    formElements.cameraModal.classList.remove('hidden');
+                } catch (err) {
+                    console.error("Erro ao acessar a câmera: ", err);
+                    showNotification("Não foi possível acessar a câmera.", true);
+                }
+            }
+
+            function closeCamera() {
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+                formElements.cameraModal.classList.add('hidden');
+            }
+
+            function capturePhoto() {
+                const canvas = document.createElement('canvas');
+                canvas.width = formElements.cameraFeed.videoWidth;
+                canvas.height = formElements.cameraFeed.videoHeight;
+                const context = canvas.getContext('2d');
+                context.drawImage(formElements.cameraFeed, 0, 0, canvas.width, canvas.height);
+
+                canvas.toBlob(blob => {
+                    const fileName = `captura-${Date.now()}.jpg`;
+                    const file = new File([blob], fileName, { type: 'image/jpeg', lastModified: Date.now() });
+                    fileList.push({ file: file, caption: '' });
+                    updatePhotoPreviews();
+                    closeCamera();
+                    saveProgress(false);
+                }, 'image/jpeg', 0.8);
+            }
+
+            function updatePhotoPreviews() {
+                formElements.photoPreviews.innerHTML = '';
+                fileList.forEach((item, index) => {
+                    const previewWrapper = document.createElement('div');
+                    previewWrapper.className = 'relative border p-2 rounded-lg bg-gray-50 shadow-sm';
+
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(item.file);
+                    img.className = 'w-full h-auto object-cover rounded-md mb-2 aspect-[4/3]';
+                    img.onload = () => URL.revokeObjectURL(img.src);
+
+                    const captionInput = document.createElement('input');
+                    captionInput.type = 'text';
+                    captionInput.placeholder = 'Adicionar legenda...';
+                    captionInput.className = 'form-input text-sm';
+                    captionInput.value = item.caption;
+                    captionInput.oninput = (e) => { fileList[index].caption = e.target.value; };
+
+                    const removeBtn = document.createElement('button');
+                    removeBtn.type = 'button';
+                    removeBtn.className = 'absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold shadow-md';
+                    removeBtn.innerHTML = '&times;';
+                    removeBtn.onclick = () => {
+                        fileList.splice(index, 1);
+                        updatePhotoPreviews();
+                        saveProgress(false);
+                    };
+
+                    previewWrapper.appendChild(img);
+                    previewWrapper.appendChild(captionInput);
+                    previewWrapper.appendChild(removeBtn);
+                    formElements.photoPreviews.appendChild(previewWrapper);
+                });
+            }
+
+            // --- Lógica de Geração de PDF e Relatório ---
+            async function handleFormSubmit(e) {
+                if (e) e.preventDefault();
+                formElements.generateBtn.disabled = true;
+                formElements.generateBtn.innerHTML = '<span>Gerando pré-visualização...</span>';
+                try {
+                    const formData = getFormDataForReport();
+                    const imageUrls = await loadAllImages(formData);
+                    const pages = createReportPages(formData, imageUrls);
+                    formElements.reportOutput.innerHTML = '';
+                    pages.forEach(page => formElements.reportOutput.appendChild(page));
+                    formElements.formContainer.classList.add('hidden');
+                    formElements.reportOutputContainer.classList.remove('hidden');
+                    window.scrollTo(0, 0);
+                } catch (error) {
+                    console.error("Erro ao gerar relatório:", error);
+                    showNotification("Ocorreu um erro ao carregar as imagens.", true);
+                } finally {
+                    formElements.generateBtn.disabled = false;
+                    formElements.generateBtn.innerHTML = 'Pré-visualizar Relatório';
+                }
+            }
+
+            async function downloadPDF() {
+                const originalText = formElements.downloadPdfBtn.innerHTML;
+                formElements.downloadPdfBtn.disabled = true;
+                formElements.downloadPdfBtn.innerHTML = '<span>A processar...</span>';
+
+                const pages = formElements.reportOutput.querySelectorAll('.report-page-container');
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pdfWidth = 210;
+                const pdfHeight = 297;
+
+                for (let i = 0; i < pages.length; i++) {
+                    const page = pages[i].querySelector('.report-page');
+                    const canvas = await html2canvas(page, { scale: 2, useCORS: true });
+                    if (i > 0) pdf.addPage();
+                    const imgData = canvas.toDataURL('image/jpeg', 0.8);
+                    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+                }
+
+                pdf.save('relatorio.pdf');
+                formElements.downloadPdfBtn.disabled = false;
+                formElements.downloadPdfBtn.innerHTML = originalText;
+            }
+
+            // --- Funções Auxiliares ---
+            function fileToBase64(file) {
+                return new Promise((resolve, reject) => {
+                    if (!file) resolve(null);
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = error => reject(error);
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            function base64ToFile(dataurl, filename, type) {
+                const arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+                    bstr = atob(arr[1]);
+                let n = bstr.length;
+                const u8arr = new Uint8Array(n);
+                while (n--) { u8arr[n] = bstr.charCodeAt(n); }
+                return new File([u8arr], filename, { type: mime || type });
+            }
+
+            function resizeImage(file, maxWidth, maxHeight, quality) {
+                return new Promise((resolve, reject) => {
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(file);
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let { width, height } = img;
+                        if (width > height) {
+                            if (width > maxWidth) { height *= maxWidth / width; width = maxWidth; }
+                        } else {
+                            if (height > maxHeight) { width *= maxHeight / height; height = maxHeight; }
+                        }
+                        canvas.width = width;
+                        canvas.height = height;
+                        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                        canvas.toBlob(blob => {
+                            resolve(new File([blob], file.name, { type: 'image/jpeg', lastModified: Date.now() }));
+                        }, 'image/jpeg', quality);
+                    };
+                    img.onerror = (err) => reject(err);
+                });
+            }
+
+            async function loadAllImages(data) {
+                const imagePromises = [
+                    fileToBase64(data.companyLogo[0]),
+                    fileToBase64(data.clientLogo[0]),
+                    fileToBase64(data.engineerSignature[0]),
+                    ...fileList.map(item => fileToBase64(item.file))
+                ];
+                const [companyLogoUrl, clientLogoUrl, signatureUrl, ...photoUrls] = await Promise.all(imagePromises);
+                return { companyLogoUrl, clientLogoUrl, signatureUrl, photoUrls };
+            }
+
+            function getFormDataForReport() {
+                const data = {};
+                inputIds.forEach(id => data[id] = document.getElementById(id).value);
+                checkboxIds.forEach(id => data[id] = document.getElementById(id).checked);
+                fileInputIds.forEach(id => data[id] = document.getElementById(id).files);
+                return data;
+            }
+
+            // --- Funções de Criação de Conteúdo do Relatório ---
+            function createReportPages(data, imageUrls) {
+                const pages = [];
+                const pageContents = getPageContents(data, imageUrls);
+                const totalPages = pageContents.length;
+                for (let i = 0; i < totalPages; i++) {
+                    const pageData = pageContents[i];
+                    const pageContainer = document.createElement('div');
+                    pageContainer.className = 'report-page-container';
+                    const pageElement = document.createElement('div');
+                    pageElement.className = 'report-page';
+
+                    if (pageData.isCover) {
+                        pageElement.innerHTML = pageData.content;
+                    } else {
+                        const header = createHeader(data, imageUrls, i, totalPages);
+                        const footer = createFooter(data);
+                        const content = document.createElement('div');
+                        content.className = 'report-content';
+                        content.innerHTML = pageData.content;
+                        pageElement.appendChild(header);
+                        pageElement.appendChild(content);
+                        pageElement.appendChild(footer);
+                    }
+                    pageContainer.appendChild(pageElement);
+                    pages.push(pageContainer);
+                }
+                return pages;
+            }
+
+            function getPageContents(data, imageUrls) {
+                const contents = [];
+                const companyLogoUrl = imageUrls.companyLogoUrl || 'https://placehold.co/300x100/111827/FFFFFF?text=Sua+Empresa';
+
+                contents.push({ isCover: true, content: `<div class="report-content flex flex-col justify-center text-center p-4 md:p-10"><img src="${companyLogoUrl}" alt="Logo da Empresa" class="h-24 mx-auto mb-16 object-contain"><h1 class="text-3xl md:text-4xl font-bold tracking-wide text-gray-800">LAUDO TÉCNICO DE VISTORIA</h1><p class="text-lg md:text-xl mt-2 text-gray-500">Redes de Distribuição Subterrâneas</p><div class="mt-auto w-full"><div class="border-t border-gray-300 pt-6"><p class="text-lg font-semibold text-gray-800">${data.clientName}</p><p class="text-sm text-gray-600">${new Date(data.reportDate + 'T00:00:00').toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' })}</p></div></div></div>` });
+                contents.push({ content: `<h3 class="report-section-title text-center mb-6">SUMÁRIO</h3><table class="w-full text-sm mx-auto max-w-2xl"><tbody><tr class="border-b"><td class="py-2 pr-4 font-semibold">1.</td><td>INTRODUÇÃO & OBJETIVO</td></tr><tr class="border-b"><td class="py-2 pr-4 font-semibold">2.</td><td>CAMPO DE APLICAÇÃO & NORMAS</td></tr><tr class="border-b"><td class="py-2 pr-4 font-semibold">3.</td><td>TERMINOLOGIA & CONDIÇÕES GERAIS</td></tr><tr class="border-b"><td class="py-2 pr-4 font-semibold">4.</td><td>INSPEÇÃO E DIAGNÓSTICO</td></tr><tr class="border-b"><td class="py-2 pr-4 font-semibold">5.</td><td>REGISTRO FOTOGRÁFICO</td></tr><tr><td class="py-2 pr-4 font-semibold">6.</td><td>CONCLUSÃO E RECOMENDAÇÕES TÉCNICAS</td></tr></tbody></table>` });
+
+                const reportDateFormatted = new Date(data.reportDate + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+                const introText = `O presente Relatório Técnico documenta os resultados da inspeção visual e técnica realizada em <strong>${reportDateFormatted}</strong> nas caixas de passagem da rede de distribuição subterrânea do condomínio <strong>${data.clientName}</strong>. As diretrizes e avaliações aqui contidas foram elaboradas em estrita conformidade com as normas da ABNT e as melhores práticas de engenharia, visando orientar a manutenção e garantir a integridade da infraestrutura elétrica.`;
+                contents.push({ content: `<div class="mb-10"><h3 class="report-section-title">1. INTRODUÇÃO</h3><p class="text-justify leading-relaxed mt-4">${introText}</p></div><div><h3 class="report-section-title">2. OBJETIVO</h3><p class="text-justify leading-relaxed mt-4">O objetivo deste laudo é estabelecer um diagnóstico técnico preciso das condições atuais das caixas de passagem, identificando e classificando eventuais anomalias, patologias estruturais ou não-conformidades com as normas técnicas vigentes. Os resultados visam subsidiar a tomada de decisão para ações corretivas e preventivas, assegurando a segurança e a confiabilidade do fornecimento de energia.</p></div>` });
+
+                contents.push({ content: `<div class="mb-10"><h3 class="report-section-title">3. CAMPO DE APLICAÇÃO</h3><p class="text-justify leading-relaxed mt-4">As prescrições deste laudo aplicam-se a toda a infraestrutura de distribuição subterrânea em média e baixa tensão do empreendimento, abrangendo caixas de passagem, dutos e componentes associados que servem às edificações de uso individual e coletivo (residenciais, comerciais ou industriais) e à iluminação pública.</p></div><div><h3 class="report-section-title">4. NORMAS E DOCUMENTOS COMPLEMENTARES</h3><p class="text-justify leading-relaxed mt-4">A inspeção e a elaboração deste laudo foram fundamentadas nas edições mais recentes das seguintes normas técnicas e regulamentadoras:</p><ul class="list-disc list-inside mt-4 space-y-2"><li><strong>ABNT NBR 5410:</strong> Instalações elétricas de baixa tensão.</li><li><strong>ABNT NBR 14039:</strong> Instalações elétricas de média tensão de 1,0 kV a 36,2 kV.</li><li><strong>ABNT NBR 5419:</strong> Proteção de estruturas contra descargas atmosféricas.</li><li><strong>NR 10:</strong> Segurança em Instalações e Serviços em Eletricidade.</li></ul></div>` });
+                contents.push({ content: `<div class="mb-10"><h3 class="report-section-title">5. TERMINOLOGIA E DEFINIÇÕES</h3><p class="text-justify leading-relaxed mt-4"><strong>Caixa de Passagem:</strong> Componente da infraestrutura de eletrodutos subterrâneos, construída em alvenaria ou concreto, destinada a permitir a instalação, o tracionamento e a emenda de condutores elétricos, bem como facilitar a inspeção e manutenção da rede.</p></div><div><h3 class="report-section-title">6. CONDIÇÕES GERAIS DE FORNECIMENTO</h3><ul class="list-decimal list-inside space-y-4 text-justify leading-relaxed mt-4"><li>A vistoria realizada pela empresa contratada foca nas condições aparentes e acessíveis da infraestrutura no momento da inspeção, não implicando em responsabilidade por vícios ocultos ou danos futuros decorrentes do uso.</li><li>Todas as instalações elétricas da unidade consumidora, existentes ou futuras, devem obedecer rigorosamente às prescrições das normas técnicas da ABNT e às regulamentações da concessionária local.</li></ul></div>` });
+
+                let obsItems = ['Verificou-se que o dimensionamento das caixas é compatível com o tráfego de veículos pesados nas áreas de arruamento e estacionamento.', 'A infraestrutura de dutos é dedicada exclusivamente para circuitos de Média e Baixa Tensão.', 'Os condutores elétricos acessíveis para inspeção visual apresentam integridade em seu isolamento.', 'Os eletrodutos nas entradas das caixas encontram-se desobstruídos e aptos para a passagem de novos circuitos.'];
+                if (data.checkHumidity) obsItems.push('Verificou-se a presença de umidade por infiltração nas paredes das caixas de concreto da rede de MT, permanecendo, no entanto, dentro dos parâmetros normativos');
+                if (data.checkGravel) obsItems.push('Verificou-se a ausência de lastro de brita para drenagem no fundo das caixas, um ponto de não conformidade com as melhores práticas.');
+                if (data.observations.trim() !== '') obsItems.push(data.observations.trim());
+                const obsList = obsItems.map(item => `<li class="mb-2">${item}</li>`).join('');
+                contents.push({ content: `<h3 class="report-section-title">4. INSPEÇÃO E DIAGNÓSTICO</h3><ul class="list-disc list-inside space-y-2 text-justify leading-relaxed mt-4">${obsList}</ul>` });
+
+                if (imageUrls.photoUrls.length > 0) {
+                    for (let i = 0; i < imageUrls.photoUrls.length; i += 4) {
+                        const chunk = imageUrls.photoUrls.slice(i, i + 4);
+                        const photoItems = chunk.map((url, index) => `
+                        <div class="w-1/2 p-1">
+                            <div class="border p-1 rounded-md shadow-sm bg-slate-50 flex flex-col h-full">
+                                <img src="${url}" class="w-full object-cover rounded-sm aspect-[4/3]">
+                                <p class="text-center text-xs italic mt-1 text-gray-600">${fileList[i + index].caption || `Figura ${i + index + 1}`}</p>
+                            </div>
+                        </div>`).join('');
+                        contents.push({ content: `<h3 class="report-section-title">5. REGISTRO FOTOGRÁFICO</h3><div class="flex flex-wrap -m-1">${photoItems}</div>` });
+                    }
+                }
+
+                let conclusionText = data.conclusion;
+                if (!conclusionText) { conclusionText = `Foram inspecionadas ${data.boxCount} caixas de passagem. A análise de criticidade indicou que o impacto geral das anomalias encontradas é mínimo. Recomenda-se, no entanto, a implementação de um plano de manutenção corretiva para os pontos levantados, visando garantir a longevidade e a segurança da infraestrutura.`; }
+                const signatureImg = imageUrls.signatureUrl ? `<img src="${imageUrls.signatureUrl}" alt="Assinatura" class="h-24 mx-auto mb-2 object-contain">` : '';
+                const signatureDate = new Date(data.signatureDate + 'T00:00:00').toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' });
+                contents.push({ content: `<h3 class="report-section-title">6. CONCLUSÃO E RECOMENDAÇÕES TÉCNICAS</h3><p class="text-justify leading-relaxed mt-4">${conclusionText}</p><div class="mt-24 text-center">${signatureImg}<p class="inline-block border-t border-slate-400 px-12 pt-2">${data.engineerName}</p><p class="text-sm">Engenheiro Eletricista</p><p class="text-sm font-bold">CREA ${data.creaNumber}</p></div><p class="text-center mt-8 text-sm">${data.signatureCity}, ${signatureDate}.</p>` });
+
+                return contents;
+            }
+
+            function createHeader(data, imageUrls, currentPage, totalPages) {
+                const header = document.createElement('header');
+                header.className = 'report-header flex gap-2 md:gap-4 text-[8px] md:text-xs';
+                const companyLogoUrl = imageUrls.companyLogoUrl || 'https://placehold.co/200x80/111827/FFFFFF?text=Sua+Logo';
+                const clientLogoUrl = imageUrls.clientLogoUrl || '';
+                const reportDate = new Date(data.reportDate + 'T00:00:00').toLocaleDateString('pt-BR');
+
+                header.innerHTML = `
+                <div class="flex-shrink-0"><img src="${companyLogoUrl}" alt="Logo da Empresa" class="h-16 md:h-20 object-contain"></div>
+                <div class="flex-grow border-2 border-gray-800 grid grid-cols-3">
+                    <div class="col-span-2 border-r-2 border-gray-800 p-1 md:p-2">
+                        <p class="font-semibold">CLIENTE</p>
+                        <p class="text-[10px] md:text-sm">${data.clientName}</p>
+                        <p>${data.clientAddress}</p>
+                    </div>
+                    <div class="p-1 md:p-2 text-center">
+                        <p class="font-semibold">TÍTULO</p>
+                        <p class="text-[10px] md:text-sm font-bold">LAUDO DE VISTORIA</p>
+                    </div>
+                    <div class="col-span-3 border-t-2 border-gray-800 p-1 md:p-2 grid grid-cols-4 text-center">
+                        <div><p class="font-semibold">Nº RELATÓRIO</p><p class="text-[10px] md:text-sm">${data.reportNumber}</p></div>
+                        <div class="border-l border-gray-400"><p class="font-semibold">Nº PROCESSO</p><p class="text-[10px] md:text-sm">${data.processNumber}</p></div>
+                        <div class="border-l border-gray-400"><p class="font-semibold">REVISÃO</p><p class="text-[10px] md:text-sm">A</p></div>
+                        <div class="border-l border-gray-400"><p class="font-semibold">DATA</p><p class="text-[10px] md:text-sm">${reportDate}</p></div>
+                    </div>
+                </div>
+                <div class="flex-shrink-0">
+                    <img src="${clientLogoUrl}" alt="Logo do Cliente" class="h-16 md:h-20 object-contain ${!clientLogoUrl ? 'hidden' : ''}">
+                    <div class="text-center mt-2">
+                        <p class="font-semibold">FOLHA</p>
+                        <p class="text-[10px] md:text-sm">${currentPage} de ${totalPages - 1}</p>
+                    </div>
+                </div>
+            `;
+                return header;
+            }
+
+            function createFooter(data) {
+                const footer = document.createElement('footer');
+                footer.className = 'report-footer text-center text-[10px] md:text-xs';
+                footer.innerHTML = `<p class="font-semibold">${data.companyAddress}</p><p class="text-gray-600">TEL: ${data.companyPhone} | E-MAIL: ${data.companyEmail}</p>`;
+                return footer;
+            }
+
+            // --- Iniciar a aplicação ---
+            initialize();
+        });
+    </script>
+</body>
+
+</html>

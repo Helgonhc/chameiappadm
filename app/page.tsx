@@ -10,7 +10,7 @@ import { MessageSquare } from 'lucide-react';
 import { Navbar } from '@/components/landing/Navbar';
 import { Hero } from '@/components/landing/Hero';
 import { Features } from '@/components/landing/Features';
-
+import { ReportsFeature } from '@/components/landing/ReportsFeature';
 import { Segments } from '@/components/landing/Segments';
 import { HowItWorks } from '@/components/landing/HowItWorks';
 import { Pricing } from '@/components/landing/Pricing';
@@ -92,6 +92,7 @@ function LandingContent() {
         <SystemPreview />
 
         <Features />
+        <ReportsFeature />
 
 
 

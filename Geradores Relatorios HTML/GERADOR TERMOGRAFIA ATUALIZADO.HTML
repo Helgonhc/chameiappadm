@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Laudo de Termografia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Bibliotecas para geração de PDF e renderização de PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .form-section {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        .form-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #111827;
+            border-bottom: 1px solid #d1d5db;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            color: #4b5563;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background-color: #f9fafb;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+        }
+
+        .correction-suggestion-container {
+            position: relative;
+        }
+
+        /* *** NOVO CSS: Para esconder visualmente sem usar display:none *** */
+        .visually-hidden {
+            position: absolute !important;
+            height: 1px;
+            width: 1px;
+            overflow: hidden;
+            clip: rect(1px, 1px, 1px, 1px);
+            white-space: nowrap;
+            /* Ajuda a evitar problemas de layout */
+            opacity: 0;
+            border: 0;
+            margin: -1px;
+            padding: 0;
+        }
+
+        /* Estilos do Relatório Gerado */
+        .report-page-container {
+            width: 100%;
+            max-width: 210mm;
+            /* A4 width */
+            margin: 1rem auto;
+            page-break-after: always;
+        }
+
+        .report-page-container:last-of-type {
+            page-break-after: auto;
+        }
+
+        .report-page {
+            background: white;
+            width: 100%;
+            aspect-ratio: 210 / 297;
+            /* A4 aspect ratio */
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border: 1px solid #e5e7eb;
+            font-size: 12pt;
+        }
+
+        .report-header {
+            padding: 8mm 10mm;
+            border-bottom: 1px solid #d1d5db;
+            flex-shrink: 0;
+        }
+
+        .report-footer {
+            padding: 8mm 10mm;
+            border-top: 1px solid #d1d5db;
+            margin-top: auto;
+            flex-shrink: 0;
+        }
+
+        .report-content {
+            flex-grow: 1;
+            padding: 10mm;
+            overflow: hidden;
+            font-size: 0.9em;
+            /* Ajuste para o conteúdo principal ser um pouco menor que a base */
+            display: flex;
+            /* Adicionado para controle de layout interno */
+            flex-direction: column;
+            /* Adicionado para controle de layout interno */
+        }
+
+        .report-section-title {
+            font-size: 1.2em;
+            /* Relative to report content font size */
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 1rem;
+            padding-bottom: 0.25rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .report-content p,
+        .report-content li {
+            text-align: justify;
+            line-height: 1.6;
+        }
+
+        .report-content table {
+            width: 100%;
+            font-size: 0.9em;
+            border-collapse: collapse;
+        }
+
+        .report-content th,
+        .report-content td {
+            border: 1px solid #d1d5db;
+            padding: 6px 8px;
+            text-align: left;
+        }
+
+        .report-content th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+        }
+
+        @media print {
+            body {
+                background-color: #fff;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            #reportOutputContainer {
+                padding: 0;
+            }
+
+            .report-page-container {
+                margin: 0;
+                box-shadow: none;
+                border: none;
+            }
+
+            .report-page {
+                width: 210mm;
+                height: 297mm;
+                aspect-ratio: unset;
+                box-shadow: none;
+                border: none;
+                font-size: 12pt;
+            }
+
+            /* *** NOVO CSS: Garante que o container oculto não apareça na impressão *** */
+            .visually-hidden {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="text-gray-800">
+
+    <div class="grid grid-cols-1 gap-8 p-4 md:p-8">
+
+        <!-- Coluna do Formulário -->
+        <div id="formContainer" class="no-print">
+            <div class="max-w-5xl mx-auto">
+                <div class="text-center mb-10">
+                    <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Gerador de Laudos</h1>
+                    <p class="text-gray-600 mt-2">Preencha os campos e clique em "Preview" para ver o laudo.</p>
+                </div>
+
+
+                <!-- Botões de Salvar/Carregar/Limpar -->
+                <div class="form-section sticky top-4 z-20 flex items-center justify-between flex-wrap gap-4">
+                    <h2 class="text-lg font-semibold mb-0">Ações do Projeto</h2>
+                    <div class="flex gap-2 flex-wrap">
+
+                        <!-- *** ALTERAÇÃO (HTML): Botões de preview e download movidos para cá *** -->
+                        <button id="openPreviewTabBtn" title="Abrir pré-visualização em nova aba"
+                            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                                <polyline points="15 3 21 3 21 9" />
+                                <line x1="10" x2="21" y1="14" y2="3" />
+                            </svg>
+                            <span>Preview</span>
+                        </button>
+                        <button id="downloadPdfBtn"
+                            class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-wait">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="7 10 12 15 17 10" />
+                                <line x1="12" x2="12" y1="15" y2="3" />
+                            </svg>
+                            <span id="downloadBtnText">Baixar PDF</span>
+                        </button>
+                        <!-- *** FIM DA ALTERAÇÃO *** -->
+
+                        <!-- ALTERAÇÃO 1 (HTML): Botão Salvar JSON -->
+                        <button type="button" id="saveJsonBtn"
+                            class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Baixar
+                            JSON</button>
+
+
+                        <!-- ALTERAÇÃO 1 (HTML): Botão Carregar JSON -->
+                        <label for="loadJsonInput"
+                            class="bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer">Carregar
+                            JSON</label>
+                        <input type="file" id="loadJsonInput" class="hidden" accept="application/json, .json">
+
+                        <button type="button" id="clearFormBtn"
+                            class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors">Limpar</button>
+                    </div>
+                </div>
+                <div id="statusMessage" class="text-center mb-4 h-6"></div>
+
+
+                <form id="reportForm">
+                    <div class="form-section">
+                        <h2 class="section-title">Dados Gerais</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div><label for="companyLogo" class="form-label">Logo da Sua Empresa</label><input
+                                    type="file" id="companyLogo" accept="image/*" class="form-input"></div>
+                            <div>
+                                <label for="clientName" class="form-label">Nome do Cliente</label>
+                                <input type="text" id="clientName" class="form-input enable-correction"
+                                    value="CONDOMÍNIO LOG VIA EXPRESSA" required>
+                                <div class="correction-suggestion-container mt-2 text-sm" style="display: none;">
+                                    <p class="font-semibold text-gray-600">Sugestão:</p>
+                                    <div
+                                        class="suggestion-text p-2 bg-blue-50 border border-blue-200 rounded-md my-1 text-gray-700">
+                                    </div><button type="button"
+                                        class="apply-correction-btn bg-blue-500 text-white text-xs font-semibold py-1 px-2 rounded-md hover:bg-blue-600">Aplicar</button><button
+                                        type="button"
+                                        class="dismiss-correction-btn text-gray-500 text-xs font-semibold py-1 px-2 hover:text-gray-700">Descartar</button>
+                                </div>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label for="clientAddress" class="form-label">Endereço do Cliente</label>
+                                <input type="text" id="clientAddress" class="form-input enable-correction"
+                                    value="AV. IMBIRUÇU, 3201, VILA CRISTINA, BETIM, CEP 32675-515 – MG" required>
+                                <div class="correction-suggestion-container mt-2 text-sm" style="display: none;">
+                                    <p class="font-semibold text-gray-600">Sugestão:</p>
+                                    <div
+                                        class="suggestion-text p-2 bg-blue-50 border border-blue-200 rounded-md my-1 text-gray-700">
+                                    </div><button type="button"
+                                        class="apply-correction-btn bg-blue-500 text-white text-xs font-semibold py-1 px-2 rounded-md hover:bg-blue-600">Aplicar</button><button
+                                        type="button"
+                                        class="dismiss-correction-btn text-gray-500 text-xs font-semibold py-1 px-2 hover:text-gray-700">Descartar</button>
+                                </div>
+                            </div>
+                            <div><label for="reportNumber" class="form-label">Nº do Laudo</label><input type="text"
+                                    id="reportNumber" class="form-input" placeholder="Ex: TERM_LOGVE_2024" required>
+                            </div>
+                            <div><label for="reportRevision" class="form-label">Revisão</label><input type="text"
+                                    id="reportRevision" class="form-input" value="00"></div>
+                            <div class="md:col-span-2"><label for="artPdf" class="form-label">Anexo da ART (PDF ou
+                                    Imagem)</label><input type="file" id="artPdf" accept="image/*,application/pdf"
+                                    class="form-input"></div>
+                            <div><label for="reportDate" class="form-label">Data da Inspeção</label><input type="date"
+                                    id="reportDate" class="form-input" required></div>
+                            <div>
+                                <label for="companyAddress" class="form-label">Endereço da Sua Empresa</label>
+                                <input type="text" id="companyAddress" class="form-input enable-correction"
+                                    placeholder="Digite o endereço completo da sua empresa..." required>
+                                <div class="correction-suggestion-container mt-2 text-sm" style="display: none;">
+                                    <p class="font-semibold text-gray-600">Sugestão:</p>
+                                    <div
+                                        class="suggestion-text p-2 bg-blue-50 border border-blue-200 rounded-md my-1 text-gray-700">
+                                    </div><button type="button"
+                                        class="apply-correction-btn bg-blue-500 text-white text-xs font-semibold py-1 px-2 rounded-md hover:bg-blue-600">Aplicar</button><button
+                                        type="button"
+                                        class="dismiss-correction-btn text-gray-500 text-xs font-semibold py-1 px-2 hover:text-gray-700">Descartar</button>
+                                </div>
+                            </div>
+                            <div><label for="companyPhone" class="form-label">Telefone da Sua Empresa</label><input
+                                    type="tel" id="companyPhone" class="form-input"
+                                    placeholder="Digite o telefone (xx) xxxxx-xxxx" required>
+                            </div>
+                            <div class="md:col-span-2"><label for="companyEmail" class="form-label">E-mail da Sua
+                                    Empresa</label><input type="email" id="companyEmail" class="form-input"
+                                    placeholder="Digite o e-mail comercial..." required></div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2 class="section-title">Equipamento e Calibração</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="equipmentUsed" class="form-label">Equipamento Utilizado</label>
+                                <input type="text" id="equipmentUsed" class="form-input enable-correction"
+                                    placeholder="Digite o modelo e serial do equipamento..." required>
+                                <div class="correction-suggestion-container mt-2 text-sm" style="display: none;">
+                                    <p class="font-semibold text-gray-600">Sugestão:</p>
+                                    <div
+                                        class="suggestion-text p-2 bg-blue-50 border border-blue-200 rounded-md my-1 text-gray-700">
+                                    </div><button type="button"
+                                        class="apply-correction-btn bg-blue-500 text-white text-xs font-semibold py-1 px-2 rounded-md hover:bg-blue-600">Aplicar</button><button
+                                        type="button"
+                                        class="dismiss-correction-btn text-gray-500 text-xs font-semibold py-1 px-2 hover:text-gray-700">Descartar</button>
+                                </div>
+                            </div>
+                            <div><label for="calibrationCertificate" class="form-label">Certificado (PDF ou
+                                    Imagem)</label><input type="file" id="calibrationCertificate"
+                                    accept="image/*,application/pdf" class="form-input"></div>
+                        </div>
+                    </div>
+
+                    <!-- Seção de Pontos de Inspeção -->
+                    <div class="form-section">
+
+                        <!-- ALTERAÇÃO 2 (HTML): Botão Adicionar por Imagens -->
+                        <div class="sticky top-28 z-10 bg-white py-4 border-b mb-6 -mx-6 px-6">
+                            <div class="flex justify-between items-center flex-wrap gap-4">
+                                <h2 class="section-title mb-0 pb-0 border-b-0">Pontos de Inspeção</h2>
+                                <div class="flex gap-2 flex-wrap">
+
+                                    <!-- Botão para carregar múltiplas imagens -->
+                                    <label for="batchAddImagesInput"
+                                        class="bg-green-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-700 transition-colors cursor-pointer">Adicionar
+                                        por Imagens</label>
+                                    <input type="file" id="batchAddImagesInput" class="hidden" accept="image/*"
+                                        multiple>
+
+
+                                    <!-- Botão original renomeado -->
+                                    <button type="button" id="addInspectionPointBtn"
+                                        class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">Adicionar
+                                        Ponto Manual</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="inspectionPointsContainer" class="mt-6 space-y-6"></div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2 class="section-title">Conclusão e Responsável</h2>
+                        <div class="mt-6">
+                            <label for="finalConclusion" class="form-label">Texto da Conclusão Geral</label>
+                            <textarea id="finalConclusion" rows="6" class="form-textarea enable-correction"
+                                placeholder="Descreva a conclusão geral do laudo..."></textarea>
+                            <div class="correction-suggestion-container mt-2 text-sm" style="display: none;">
+                                <p class="font-semibold text-gray-600">Sugestão de correção:</p>
+                                <div
+                                    class="suggestion-text p-2 bg-blue-50 border border-blue-200 rounded-md my-1 text-gray-700">
+                                </div>
+                                <button type="button"
+                                    class="apply-correction-btn bg-blue-500 text-white text-xs font-semibold py-1 px-2 rounded-md hover:bg-blue-600">Aplicar</button>
+                                <button type="button"
+                                    class="dismiss-correction-btn text-gray-500 text-xs font-semibold py-1 px-2 hover:text-gray-700">Descartar</button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                            <div><label for="engineerSignature" class="form-label">Upload da Assinatura</label><input
+                                    type="file" id="engineerSignature" accept="image/*" class="form-input"></div>
+                            <div>
+                                <label for="engineerName" class="form-label">Nome do Engenheiro</label>
+                                <input type="text" id="engineerName" class="form-input enable-correction"
+                                    placeholder="Digite o nome do responsável técnico..." required>
+                                <div class="correction-suggestion-container mt-2 text-sm" style="display: none;">
+                                    <p class="font-semibold text-gray-600">Sugestão:</p>
+                                    <div
+                                        class="suggestion-text p-2 bg-blue-50 border border-blue-200 rounded-md my-1 text-gray-700">
+                                    </div><button type="button"
+                                        class="apply-correction-btn bg-blue-500 text-white text-xs font-semibold py-1 px-2 rounded-md hover:bg-blue-600">Aplicar</button><button
+                                        type="button"
+                                        class="dismiss-correction-btn text-gray-500 text-xs font-semibold py-1 px-2 hover:text-gray-700">Descartar</button>
+                                </div>
+                            </div>
+                            <div><label for="creaNumber" class="form-label">CREA</label><input type="text"
+                                    id="creaNumber" class="form-input" placeholder="Digite o número do CREA/CFT..."
+                                    required></div>
+                            <div>
+                                <label for="signatureCity" class="form-label">Cidade da Assinatura</label>
+                                <input type="text" id="signatureCity" class="form-input enable-correction"
+                                    placeholder="Cidade/UF" required>
+                                <div class="correction-suggestion-container mt-2 text-sm" style="display: none;">
+                                    <p class="font-semibold text-gray-600">Sugestão:</p>
+                                    <div
+                                        class="suggestion-text p-2 bg-blue-50 border border-blue-200 rounded-md my-1 text-gray-700">
+                                    </div><button type="button"
+                                        class="apply-correction-btn bg-blue-500 text-white text-xs font-semibold py-1 px-2 rounded-md hover:bg-blue-600">Aplicar</button><button
+                                        type="button"
+                                        class="dismiss-correction-btn text-gray-500 text-xs font-semibold py-1 px-2 hover:text-gray-700">Descartar</button>
+                                </div>
+                            </div>
+                            <div class="md:col-span-2"><label for="signatureDate" class="form-label">Data da
+                                    Assinatura</label><input type="date" id="signatureDate" class="form-input" required>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+        <!-- Coluna da Pré-visualização -->
+        <!-- *** CORREÇÃO (HTML): Usa 'visually-hidden' em vez de 'hidden' *** -->
+        <div id="reportOutputContainer" class="visually-hidden">
+            <div
+                class="no-print bg-gray-800 text-white p-4 flex justify-between items-center sticky top-0 z-50 shadow-lg rounded-t-lg">
+                <h3 class="font-bold text-lg">Pré-visualização ao Vivo</h3>
+                <!-- Botões movidos para a seção 'Ações do Projeto' -->
+            </div>
+            <div id="reportOutput" class="bg-gray-400 p-4 md:p-8 rounded-b-lg overflow-y-auto max-h-[90vh]"></div>
+        </div>
+    </div>
+
+    <!-- Template para Ponto de Inspeção -->
+    <template id="inspectionPointTemplate">
+        <div class="inspection-point border border-gray-300 p-4 rounded-lg bg-white shadow-sm">
+            <h3 class="font-semibold text-lg mb-4 border-b pb-2 flex justify-between items-center">
+                <span class="point-title">Novo Ponto de Inspeção</span>
+                <button type="button"
+                    class="remove-point-btn text-red-600 hover:text-red-800 text-sm font-semibold">Remover</button>
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="form-label">Local / Área</label>
+                    <input type="text" class="form-input point-location enable-correction"
+                        placeholder="Ex: Subestação Primária">
+                    <div class="correction-suggestion-container mt-2 text-sm" style="display: none;">
+                        <p class="font-semibold text-gray-600">Sugestão:</p>
+                        <div
+                            class="suggestion-text p-2 bg-blue-50 border border-blue-200 rounded-md my-1 text-gray-700">
+                        </div><button type="button"
+                            class="apply-correction-btn bg-blue-500 text-white text-xs font-semibold py-1 px-2 rounded-md hover:bg-blue-600">Aplicar</button><button
+                            type="button"
+                            class="dismiss-correction-btn text-gray-500 text-xs font-semibold py-1 px-2 hover:text-gray-700">Descartar</button>
+                    </div>
+                </div>
+                <div>
+                    <label class="form-label">Componente</label>
+                    <input type="text" class="form-input point-component enable-correction"
+                        placeholder="Ex: Mufla de Entrada">
+                    <div class="correction-suggestion-container mt-2 text-sm" style="display: none;">
+                        <p class="font-semibold text-gray-600">Sugestão:</p>
+                        <div
+                            class="suggestion-text p-2 bg-blue-50 border border-blue-200 rounded-md my-1 text-gray-700">
+                        </div><button type="button"
+                            class="apply-correction-btn bg-blue-500 text-white text-xs font-semibold py-1 px-2 rounded-md hover:bg-blue-600">Aplicar</button><button
+                            type="button"
+                            class="dismiss-correction-btn text-gray-500 text-xs font-semibold py-1 px-2 hover:text-gray-700">Descartar</button>
+                    </div>
+                </div>
+
+                <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    <!-- *** ALTERAÇÃO (HTML): Ordem das fotos invertida *** -->
+                    <div>
+                        <label class="form-label">Foto Termográfica</label>
+                        <input type="file" class="form-input point-photo-thermal" accept="image/*">
+                        <img class="mt-2 h-40 w-full object-contain rounded-md hidden bg-gray-100 p-1" src=""
+                            alt="Pré-visualização da foto termográfica">
+                        <div class="thermal-analysis-status text-xs text-center mt-1 h-4"></div>
+                    </div>
+                    <div>
+                        <label class="form-label">Foto Normal (Visível)</label>
+                        <input type="file" class="form-input point-photo-normal" accept="image/*">
+                        <img class="mt-2 h-40 w-full object-contain rounded-md hidden bg-gray-100 p-1" src=""
+                            alt="Pré-visualização da foto normal">
+                    </div>
+                </div>
+
+                <div class="md:col-span-2">
+                    <hr class="my-2">
+                </div>
+                <h4 class="md:col-span-2 font-semibold text-md">Parâmetros de Análise</h4>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:col-span-2">
+                    <div><label class="form-label">Distância (m)</label><input type="number" step="0.1"
+                            class="form-input point-distance" placeholder="1.5"></div>
+                    <div><label class="form-label">Temp. Max (°C)</label><input type="number" step="0.1"
+                            class="form-input point-temp-max" placeholder="45.5"></div>
+                    <div><label class="form-label">Temp. Mín (°C)</label><input type="number" step="0.1"
+                            class="form-input point-temp-min" placeholder="22.3"></div>
+                    <div><label class="form-label">Temp. Corr. (°C)</label><input type="number" step="0.1"
+                            class="form-input point-temp-corrected" placeholder="42.0"></div>
+                    <div><label class="form-label">MTA (°C)</label><input type="number" class="form-input point-mta"
+                            placeholder="70"></div>
+                    <div><label class="form-label">Carga Nom. (%)</label><input type="number"
+                            class="form-input point-load-nominal" value="100"></div>
+                    <div><label class="form-label">Carga Med. (%)</label><input type="number"
+                            class="form-input point-load-measured" placeholder="80"></div>
+                    <div><label class="form-label">FCC</label><input type="number" step="0.01"
+                            class="form-input point-fcc" value="1.00"></div>
+                    <div>
+                        <label class="form-label">Classificação</label>
+                        <select class="form-select point-classification">
+                            <option value="NORMAL">Normal</option>
+                            <option value="OBSERVACAO">Observação</option>
+                            <option value="PROGRAMADO">Programado</option>
+                            <option value="IMEDIATO">Imediato</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="form-label">Diagnóstico e Recomendações</label>
+                    <textarea class="form-textarea point-diagnosis enable-correction" rows="3"
+                        placeholder="Descrever anomalia e ações recomendadas..."></textarea>
+                    <div class="correction-suggestion-container mt-2 text-sm" style="display: none;">
+                        <p class="font-semibold text-gray-600">Sugestão de correção:</p>
+                        <div
+                            class="suggestion-text p-2 bg-blue-50 border border-blue-200 rounded-md my-1 text-gray-700">
+                        </div>
+                        <button type="button"
+                            class="apply-correction-btn bg-blue-500 text-white text-xs font-semibold py-1 px-2 rounded-md hover:bg-blue-600">Aplicar</button>
+                        <button type="button"
+                            class="dismiss-correction-btn text-gray-500 text-xs font-semibold py-1 px-2 hover:text-gray-700">Descartar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        // --- Funções Globais ---
+        const { jsPDF } = window.jspdf;
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js`;
+
+        let uploadedFileNames = new Set();
+        let debounceTimer;
+        let previewTab = null; // *** ALTERAÇÃO (JS): Variável global para a nova aba ***
+
+        function addInspectionPoint(data = null) {
+            const inspectionPointTemplate = document.getElementById('inspectionPointTemplate');
+            const inspectionPointsContainer = document.getElementById('inspectionPointsContainer');
+            const templateContent = inspectionPointTemplate.content.cloneNode(true);
+            const pointDiv = templateContent.querySelector('.inspection-point');
+
+            const setupImagePreview = (inputClass, imgElement, base64Data, fileName, analyzeThermal = false) => { // Adicionado analyzeThermal
+                const input = pointDiv.querySelector(inputClass);
+                if (base64Data) {
+                    imgElement.src = base64Data;
+                    imgElement.classList.remove('hidden');
+                    imgElement.dataset.loadedSrc = base64Data;
+                    if (fileName) {
+                        uploadedFileNames.add(fileName);
+                        input.dataset.fileName = fileName;
+                    }
+                }
+                input.addEventListener('change', (event) => {
+                    const file = event.target.files[0];
+                    if (file) {
+                        if (uploadedFileNames.has(file.name)) {
+                            // *** ALTERAÇÃO: Trocado alert() por showStatus() ***
+                            showStatus('Esta imagem já foi carregada. Escolha outra.', false);
+                            event.target.value = null;
+                            return;
+                        }
+                        if (input.dataset.fileName) {
+                            uploadedFileNames.delete(input.dataset.fileName);
+                        }
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            imgElement.src = e.target.result;
+                            imgElement.dataset.loadedSrc = e.target.result;
+                            imgElement.classList.remove('hidden');
+                            uploadedFileNames.add(file.name);
+                            input.dataset.fileName = file.name;
+                            // *** ALTERAÇÃO (JS): Chamar analyzeThermalImage baseado no parâmetro analyzeThermal ***
+                            if (analyzeThermal) {
+                                // *** NOVO: Tenta analisar apenas se a foto visível já estiver carregada ***
+                                const visivelImg = pointDiv.querySelector('.point-photo-normal + img');
+                                analyzeThermalImage(file, pointDiv);
+                            }
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        imgElement.classList.add('hidden');
+                        delete imgElement.dataset.loadedSrc;
+                        if (input.dataset.fileName) {
+                            uploadedFileNames.delete(input.dataset.fileName);
+                            delete input.dataset.fileName;
+                        }
+                    }
+                });
+            };
+
+            if (data) {
+                pointDiv.querySelector('.point-location').value = data.location || '';
+                pointDiv.querySelector('.point-component').value = data.component || '';
+                pointDiv.querySelector('.point-distance').value = data.distance || '';
+                pointDiv.querySelector('.point-temp-max').value = data.tempMax || '';
+                pointDiv.querySelector('.point-temp-min').value = data.tempMin || '';
+                pointDiv.querySelector('.point-temp-corrected').value = data.tempCorrected || '';
+                pointDiv.querySelector('.point-mta').value = data.mta || '';
+                pointDiv.querySelector('.point-load-nominal').value = data.loadNominal || '100';
+                pointDiv.querySelector('.point-load-measured').value = data.loadMeasured || '';
+                pointDiv.querySelector('.point-fcc').value = data.fcc || '1.00';
+                pointDiv.querySelector('.point-classification').value = data.classification || 'NORMAL';
+                pointDiv.querySelector('.point-diagnosis').value = data.diagnosis || '';
+                // *** ALTERAÇÃO (JS): Invertendo a ordem de setup das fotos, e passando analyzeThermal=true para a termográfica ***
+                setupImagePreview('.point-photo-thermal', pointDiv.querySelector('.point-photo-thermal + img'), data.photoThermalUrl, data.photoThermalName, true);
+                setupImagePreview('.point-photo-normal', pointDiv.querySelector('.point-photo-normal + img'), data.photoNormalUrl, data.photoNormalName, false);
+            } else {
+                // *** ALTERAÇÃO (JS): Invertendo a ordem de setup das fotos, e passando analyzeThermal=true para a termográfica ***
+                setupImagePreview('.point-photo-thermal', pointDiv.querySelector('.point-photo-thermal + img'), null, null, true);
+                setupImagePreview('.point-photo-normal', pointDiv.querySelector('.point-photo-normal + img'), null, null, false);
+            }
+
+            pointDiv.querySelector('.remove-point-btn').onclick = () => {
+                const normalInput = pointDiv.querySelector('.point-photo-normal');
+                const thermalInput = pointDiv.querySelector('.point-photo-thermal');
+                if (normalInput.dataset.fileName) {
+                    uploadedFileNames.delete(normalInput.dataset.fileName);
+                }
+                if (thermalInput.dataset.fileName) {
+                    uploadedFileNames.delete(thermalInput.dataset.fileName);
+                }
+                pointDiv.remove();
+                updatePointTitles();
+                updatePreview();
+            };
+
+            // Setup text correction listener for all correctable fields inside the new point
+            pointDiv.querySelectorAll('.enable-correction').forEach(field => {
+                const suggestionContainer = field.nextElementSibling;
+                if (suggestionContainer && suggestionContainer.classList.contains('correction-suggestion-container')) {
+                    setupCorrectionListener(field, suggestionContainer);
+                }
+            });
+
+            inspectionPointsContainer.appendChild(pointDiv);
+            updatePointTitles();
+        }
+
+        function updatePointTitles() {
+            const points = document.querySelectorAll('.inspection-point');
+            points.forEach((point, index) => {
+                point.querySelector('.point-title').textContent = `Ponto de Inspeção ${index + 1}`;
+            });
+        }
+
+        async function downloadPDF() {
+            // Primeiro, força a atualização do preview oculto
+            await updatePreview();
+
+            const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+            const downloadBtnText = document.getElementById('downloadBtnText');
+            const originalText = downloadBtnText.textContent;
+            downloadPdfBtn.disabled = true;
+            downloadBtnText.textContent = 'Processando...';
+
+            const pages = document.getElementById('reportOutput').querySelectorAll('.report-page');
+            if (pages.length === 0) {
+                showStatus("Nada para baixar. Preencha o laudo primeiro.", false);
+                downloadPdfBtn.disabled = false;
+                downloadBtnText.textContent = originalText;
+                return;
+            }
+
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pdfWidth = 210;
+            const pdfHeight = 297;
+
+            for (let i = 0; i < pages.length; i++) {
+                const page = pages[i];
+                try {
+                    // *** CORREÇÃO: Garante que o elemento pai (reportOutputContainer) não esteja com display:none ***
+                    // A classe visually-hidden já resolve isso, mas adicionamos um failsafe
+                    const container = document.getElementById('reportOutputContainer');
+                    const originalStyle = container.style.display;
+                    container.classList.remove('visually-hidden'); // Remove a classe que esconde
+                    container.style.display = 'block'; // Força a exibição temporária
+
+                    const canvas = await html2canvas(page, { scale: 3, useCORS: true, logging: false });
+
+                    // Restaura o estilo original
+                    container.style.display = originalStyle;
+                    container.classList.add('visually-hidden');
+
+                    if (i > 0) pdf.addPage();
+                    const imgData = canvas.toDataURL('image/jpeg', 0.85);
+                    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+                } catch (error) {
+                    console.error(`Erro ao renderizar a página ${i + 1}:`, error);
+                    // *** ALTERAÇÃO: Trocado alert() por showStatus() ***
+                    showStatus(`Erro ao renderizar a página ${i + 1}.`, false);
+                    downloadPdfBtn.disabled = false;
+                    downloadBtnText.textContent = originalText;
+
+                    // Restaura o estilo original em caso de erro
+                    const container = document.getElementById('reportOutputContainer');
+                    container.classList.add('visually-hidden');
+
+                    return;
+                }
+            }
+
+            const reportNumber = document.getElementById('reportNumber').value || 'laudo-termografico';
+            pdf.save(`${reportNumber}.pdf`);
+            downloadPdfBtn.disabled = false;
+            downloadBtnText.textContent = originalText;
+        }
+
+        async function fileToDataURL(file) {
+            return new Promise((resolve, reject) => {
+                if (!file) { resolve(null); return; }
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = (error) => reject(error);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function pdfToDataURLs(file) {
+            return new Promise(async (resolve) => {
+                if (!file) { resolve([]); return; }
+                const fileReader = new FileReader();
+                fileReader.onload = async function () {
+                    try {
+                        const typedarray = new Uint8Array(this.result);
+                        const pdfDoc = await pdfjsLib.getDocument(typedarray).promise;
+                        const pageDataUrls = [];
+                        for (let i = 1; i <= pdfDoc.numPages; i++) {
+                            const page = await pdfDoc.getPage(i);
+                            const viewport = page.getViewport({ scale: 2.0 });
+                            const canvas = document.createElement('canvas');
+                            const context = canvas.getContext('2d');
+                            canvas.height = viewport.height;
+                            canvas.width = viewport.width;
+                            await page.render({ canvasContext: context, viewport: viewport }).promise;
+                            pageDataUrls.push(canvas.toDataURL('image/png'));
+                        }
+                        resolve(pageDataUrls);
+                    } catch (error) {
+                        console.error("Erro ao processar PDF:", error);
+                        resolve([]);
+                    }
+                };
+                fileReader.readAsArrayBuffer(file);
+            });
+        }
+
+        async function processFile(file) {
+            if (!file) return [];
+            if (file.type.startsWith('image/')) {
+                const dataUrl = await fileToDataURL(file);
+                return dataUrl ? [dataUrl] : [];
+            }
+            if (file.type === 'application/pdf') {
+                return pdfToDataURLs(file);
+            }
+            return [];
+        }
+
+        async function updatePreview() {
+            try {
+                const formData = await getFormData();
+                const pages = createReportPages(formData);
+                const reportOutput = document.getElementById('reportOutput');
+                reportOutput.innerHTML = '';
+                pages.forEach(page => reportOutput.appendChild(page));
+
+                // *** ALTERAÇÃO (JS): Atualiza a aba externa, se estiver aberta ***
+                if (previewTab && !previewTab.closed) {
+                    try {
+                        const previewBody = previewTab.document.getElementById('previewBody');
+                        if (previewBody) {
+                            previewBody.innerHTML = reportOutput.innerHTML; // reportOutput é o container
+                        } else {
+                            // Failsafe caso o body não tenha o ID
+                            previewTab.document.body.innerHTML = reportOutput.innerHTML;
+                        }
+                    } catch (e) {
+                        console.warn("Erro ao atualizar a aba de pré-visualização. Pode ter sido fechada.", e);
+                        previewTab = null; // Limpa a referência
+                    }
+                }
+                // *** FIM DA ADIÇÃO ***
+
+            } catch (error) {
+                console.error("Erro ao atualizar a pré-visualização:", error);
+                document.getElementById('reportOutput').innerHTML = `<div class="p-4 text-red-600 bg-red-100 rounded-lg">Ocorreu um erro ao gerar a pré-visualização. Verifique os dados e tente novamente.</div>`;
+            }
+        }
+
+        async function getFormData(forSave = false) {
+            const data = {};
+            const formIds = ['clientName', 'clientAddress', 'reportDate', 'reportNumber', 'reportRevision', 'companyAddress', 'companyPhone', 'companyEmail', 'equipmentUsed', 'finalConclusion', 'engineerName', 'creaNumber', 'signatureCity', 'signatureDate'];
+            formIds.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) data[id] = element.value;
+            });
+
+            if (forSave) {
+                // Para salvar em JSON, pegamos o DataURL que já está carregado ou lemos o arquivo
+                data.companyLogoUrl = document.getElementById('companyLogo').__src || (document.getElementById('companyLogo').files[0] ? await fileToDataURL(document.getElementById('companyLogo').files[0]) : null);
+                data.engineerSignatureUrl = document.getElementById('engineerSignature').__src || (document.getElementById('engineerSignature').files[0] ? await fileToDataURL(document.getElementById('engineerSignature').files[0]) : null);
+
+                // Para arquivos PDF, processamos de forma diferente
+                const certFile = document.getElementById('calibrationCertificate');
+                data.calibrationCertificateUrls = certFile.__src || (certFile.files[0] ? await processFile(certFile.files[0]) : []);
+
+                const artFile = document.getElementById('artPdf');
+                data.artUrls = artFile.__src || (artFile.files[0] ? await processFile(artFile.files[0]) : []);
+
+            } else {
+                // Para renderizar o preview, usamos a mesma lógica
+                data.companyLogoUrl = document.getElementById('companyLogo').__src || await fileToDataURL(document.getElementById('companyLogo').files[0]);
+                data.engineerSignatureUrl = document.getElementById('engineerSignature').__src || await fileToDataURL(document.getElementById('engineerSignature').files[0]);
+
+                const certFile = document.getElementById('calibrationCertificate');
+                data.calibrationCertificateUrls = certFile.__src || (certFile.files[0] ? await processFile(certFile.files[0]) : []);
+
+                const artFile = document.getElementById('artPdf');
+                data.artUrls = artFile.__src || (artFile.files[0] ? await processFile(artFile.files[0]) : []);
+            }
+
+            data.inspectionPoints = [];
+            const pointElements = document.querySelectorAll('.inspection-point');
+            for (const el of pointElements) {
+                const normalInput = el.querySelector('.point-photo-normal');
+                const thermalInput = el.querySelector('.point-photo-thermal');
+                const pointData = {
+                    location: el.querySelector('.point-location').value,
+                    component: el.querySelector('.point-component').value,
+                    distance: el.querySelector('.point-distance').value,
+                    tempMax: el.querySelector('.point-temp-max').value,
+                    tempMin: el.querySelector('.point-temp-min').value,
+                    tempCorrected: el.querySelector('.point-temp-corrected').value,
+                    mta: el.querySelector('.point-mta').value,
+                    loadNominal: el.querySelector('.point-load-nominal').value,
+                    loadMeasured: el.querySelector('.point-load-measured').value,
+                    fcc: el.querySelector('.point-fcc').value,
+                    diagnosis: el.querySelector('.point-diagnosis').value,
+                    classification: el.querySelector('.point-classification').value,
+                    // Lógica para pegar a imagem correta para salvar ou renderizar
+                    photoNormalUrl: normalInput.nextElementSibling.dataset.loadedSrc || (normalInput.files[0] ? await fileToDataURL(normalInput.files[0]) : null),
+                    photoThermalUrl: thermalInput.nextElementSibling.dataset.loadedSrc || (thermalInput.files[0] ? await fileToDataURL(thermalInput.files[0]) : null),
+                    photoNormalName: normalInput.dataset.fileName,
+                    photoThermalName: thermalInput.dataset.fileName,
+                };
+                data.inspectionPoints.push(pointData);
+            }
+            return data;
+        }
+
+        function createReportPages(data) {
+            const contents = [];
+            const companyLogoUrl = data.companyLogoUrl || 'https://placehold.co/400x150/f0f0f0/CCCCCC?text=Sua+Empresa';
+
+            // --- PÁGINA 1: Capa ---
+            contents.push({
+                isCover: true, content: `
+            <div class="report-content flex flex-col justify-between text-center p-10 h-full" style="font-size: 1.2em;">
+                <div class="flex-shrink-0">
+                    <!-- *** ALTERAÇÃO (JS): Logo maior (h-48) e margem ajustada (mb-12) *** -->
+                    <img src="${companyLogoUrl}" alt="Logo da Empresa" class="h-48 mx-auto mb-12 object-contain">
+                </div>
+                <div class="flex-grow flex flex-col justify-center items-center text-center">
+                    <h1 class="text-4xl font-bold tracking-wide text-gray-800">LAUDO DE INSPEÇÃO TERMOGRÁFICA</h1>
+                    <p class="text-2xl mt-4 text-gray-600">LAUDO DE ENGENHARIA</p>
+                </div>
+                <div class="flex-shrink-0 mt-16">
+                    <div class="border-t border-gray-300 pt-6 w-full max-w-lg mx-auto text-center">
+                        <p class="text-xl font-semibold text-gray-800">${data.clientName || '(Nome do Cliente)'}</p>
+                        <p class="text-lg text-gray-600 mt-1">${data.reportDate ? new Date(data.reportDate + 'T00:00:00').toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' }) : '(Data da Inspeção)'}</p>
+                    </div>
+                </div>
+            </div>`
+            });
+
+            // --- PÁGINA 2: Introdução e Objetivo ---
+            contents.push({
+                content: `
+            <div class="mb-12">
+                <h3 class="report-section-title">1. INTRODUÇÃO</h3>
+                <p>O presente Laudo Técnico consolida os resultados da Inspeção Termográfica realizada nas instalações elétricas do cliente <strong>${data.clientName || '(Cliente não informado)'}</strong>, localizado em ${data.clientAddress || '(Endereço não informado)'}. O serviço foi executado em conformidade com um plano de manutenção preditiva preestabelecido, com o propósito de detectar, quantificar e diagnosticar anomalias térmicas em componentes e sistemas energizados.</p>
+            </div>
+            <div>
+                <h3 class="report-section-title">2. OBJETIVO</h3>
+                <p>A Termografia de Infravermelho é uma técnica de ensaio não destrutivo que permite medir e registrar padrões de temperatura em superfícies de equipamentos, utilizando a radiação infravermelha emitida por eles. O objetivo central desta inspeção é identificar precocemente pontos de sobreaquecimento, que são indicativos de falhas iminentes, visando:</p>
+                <ul class="list-disc list-inside mt-4 space-y-2 pl-4">
+                    <li>Reduzir a ocorrência de manutenções corretivas não planejadas.</li>
+                    <li>Otimizar os custos associados à manutenção e operação.</li>
+                    <li>Aumentar a eficiência energética através da eliminação de perdas por efeito Joule.</li>
+                    <li>Garantir a continuidade operacional, permitindo a programação de intervenções sem interromper o processo produtivo.</li>
+                </ul>
+            </div>`
+            });
+
+            // --- PÁGINA 3: Desenvolvimento e Metodologia ---
+            contents.push({
+                content: `
+            <h3 class="report-section-title">3. DESENVOLVIMENTO E METODOLOGIA</h3>
+            <p class="mb-4">O planejamento e a execução das atividades seguiram as melhores práticas de mercado e normas técnicas aplicáveis. Todas as medidas de segurança e proteção individual e coletiva foram adotadas para garantir a integridade da equipe e dos ativos inspecionados.</p>
+            <h4 class="font-semibold text-lg mb-2 mt-6">3.1. Critério de Classificação de Criticidade</h4>
+            <p>Para a análise e classificação das anomalias térmicas, foi adotado o Critério Flexível de Classificação de Aquecimentos (CFCA), fundamentado nas normas <strong>N-2475 (Petrobrás)</strong> e <strong>PN-T12 (Eletronuclear)</strong>. Este método considera não apenas a temperatura do componente, mas também variáveis como a Máxima Temperatura Admissível (MTA), a temperatura ambiente, a carga elétrica no momento da medição e a velocidade do vento.</p>
+            <p class="mt-4">O <strong>Aquecimento Corrigido (AC)</strong> é calculado pela diferença entre a Temperatura Corrigida (TC) e a Temperatura Ambiente (TA):</p>
+            <div class="text-center my-4 p-2 bg-gray-100 rounded-md font-mono">AC = TC – TA</div>
+            <p>A criticidade é determinada comparando-se o Aquecimento Corrigido (AC) com o <strong>Máximo Aquecimento Admissível (MAA)</strong>, que é definido como:</p>
+            <div class="text-center my-4 p-2 bg-gray-100 rounded-md font-mono">MAA = MTA – TA</div>
+            <p>Os valores de MTA são obtidos a partir das especificações técnicas dos fabricantes ou, na ausência destes, adotando-se valores de referência consolidados pela prática de engenharia.</p>
+            `
+            });
+
+            // --- PÁGINA 4: Fatores de Correção e Classificação ---
+            contents.push({
+                content: `
+            <h4 class="font-semibold text-lg mb-2">3.2. Fatores de Correção</h4>
+            <p class="mb-4">Para garantir a precisão da análise, as temperaturas medidas são ajustadas por fatores de correção.</p>
+            <p class="font-medium mb-2"><strong>Fator de Correção de Carga (FCC):</strong></p>
+            <p>O aquecimento em um componente elétrico é proporcional ao quadrado da corrente (I²R). Portanto, as medições realizadas com carga inferior à nominal são corrigidas para simular a condição de plena carga. Inspeções não são recomendadas para cargas inferiores a 50% da nominal.</p>
+            <p class="font-medium mt-4 mb-2"><strong>Fator de Correção da Velocidade do Vento (FCVV):</strong></p>
+            <p>A convecção forçada pelo vento dissipa calor, mascarando a real temperatura do componente. Em inspeções externas, aplica-se um fator para corrigir este efeito e estimar a temperatura em uma condição sem vento.</p>
+            
+            <h4 class="font-semibold text-lg mb-2 mt-8">3.3. Critérios de Classificação de Níveis de Criticidade</h4>
+            <p class="mb-4">As ocorrências são classificadas em quatro níveis, conforme a tabela abaixo, que orienta a prioridade da ação corretiva.</p>
+            <table class="text-center">
+                <thead>
+                    <tr>
+                        <th>Critério de Classificação</th>
+                        <th>Nível de Criticidade</th>
+                        <th>Cor de Referência</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>AC < 0,3 MAA</td><td class="font-semibold">NORMAL</td><td style="background-color:#22c55e; color:white;">Verde</td></tr>
+                    <tr><td>0,3 MAA ≤ AC < 0,6 MAA</td><td class="font-semibold">OBSERVAÇÃO</td><td style="background-color:#3b82f6; color:white;">Azul</td></tr>
+                    <tr><td>0,6 MAA ≤ AC < 0,9 MAA</td><td class="font-semibold">PROGRAMADO</td><td style="background-color:#f59e0b; color:white;">Amarelo</td></tr>
+                    <tr><td>AC ≥ 0,9 MAA</td><td class="font-semibold">IMEDIATO</td><td style="background-color:#ef4444; color:white;">Vermelho</td></tr>
+                </tbody>
+            </table>
+            `
+            });
+
+            // --- PÁGINA 5: Detalhamento dos Níveis, Recomendações e Tabela MTA ---
+            contents.push({
+                content: `
+            <h4 class="font-semibold text-lg mb-2">3.4. Detalhamento dos Níveis de Criticidade</h4>
+            <ul class="space-y-3">
+                <li><strong>Nível I – Normal:</strong> Indica um leve sobreaquecimento que não requer ação imediata. Recomenda-se, contudo, a verificação de contatos e conexões na próxima manutenção preventiva para limpeza e reaperto.</li>
+                <li><strong>Nível II – Observação:</strong> O sobreaquecimento não justifica uma intervenção imediata, mas o componente deve ser monitorado periodicamente para avaliar a evolução térmica. A correção pode ser agendada para uma parada geral da unidade.</li>
+                <li><strong>Nível III – Programado:</strong> Indica um sobreaquecimento elevado. A intervenção corretiva deve ser programada para a data mais breve possível, a fim de evitar a degradação do componente e uma possível falha.</li>
+                <li><strong>Nível IV – Imediato:</strong> Representa um sobreaquecimento extremamente elevado, com risco iminente de falha. A intervenção deve ser realizada com a máxima urgência.</li>
+            </ul>
+            <h4 class="font-semibold text-lg mb-2 mt-6">3.5. Recomendações Gerais de Intervenção</h4>
+             <p>Para a correção eficaz das anomalias identificadas em conexões, é fundamental não apenas o reaperto, mas também a limpeza completa das superfícies de contato. A oxidação e a contaminação criam resistência elétrica, e a sua remoção é crucial para a eliminação definitiva do ponto quente.</p>
+             <p class="mt-2">Em casos de sobreaquecimento em componentes como contatores, disjuntores ou buchas de transformadores, onde o ponto de origem pode ser interno, recomenda-se a desmontagem do equipamento por um profissional qualificado para uma inspeção detalhada.</p>
+            `
+            });
+
+            // --- PÁGINA 6: Tabela MTA e Anexo de Equipamento ---
+            contents.push({
+                content: `
+            <h4 class="font-semibold text-lg mb-2">3.6. Tabela de Referência - Máxima Temperatura Admissível (MTA)</h4>
+            <p class="mb-4">A tabela a seguir apresenta valores de MTA de referência para diversos componentes elétricos.</p>
+            <table>
+                <thead><tr><th>Componente</th><th>MTA (°C)</th></tr></thead>
+                <tbody>
+                    <tr><td>Cabos e Fios Isolados</td><td>Conforme Classe de Isolação (70°C, 90°C)</td></tr>
+                    <tr><td>Conexões aparafusadas e barramentos em Baixa Tensão</td><td>80°C</td></tr>
+                    <tr><td>Régua de Bornes</td><td>70°C</td></tr>
+                    <tr><td>Conexões em Linhas Aéreas</td><td>70°C</td></tr>
+                    <tr><td>Corpo de Fusíveis</td><td>80°C</td></tr>
+                    <tr><td>Conexões e Seccionadoras em Alta Tensão</td><td>50°C</td></tr>
+                    <tr><td>Corpo de Transformador a Óleo</td><td>80°C</td></tr>
+                    <tr><td>Corpo de Transformador a Seco</td><td>Conforme Classe de Isolação</td></tr>
+                    <tr><td>Carcaça de Motores</td><td>Conforme Classe de Isolação</td></tr>
+                    <tr><td>Mancais</td><td>70°C</td></tr>
+                </tbody>
+            </table>
+            <h3 class="report-section-title mt-8">4. ANEXO I: EQUIPAMENTO E CALIBRAÇÃO</h3>
+            <p class="mt-4"><strong>Equipamento Utilizado:</strong> ${data.equipmentUsed || 'Não especificado'}</p>
+            ${data.calibrationCertificateUrls && data.calibrationCertificateUrls.length > 0
+                        ? '' // Apenas o título aqui, as imagens vêm a seguir
+                        : '<p class="text-sm text-gray-500 mt-4">Nenhum certificado de calibração foi fornecido.</p>'
+                    }`
+            });
+
+            // --- Páginas do Certificado ---
+            if (data.calibrationCertificateUrls && data.calibrationCertificateUrls.length > 0) {
+                data.calibrationCertificateUrls.forEach((url, index) => {
+                    contents.push({
+                        content: `
+                    <h3 class="report-section-title">ANEXO I: EQUIPAMENTO E CALIBRAÇÃO (continuação)</h3>
+                    <p class="mt-6"><strong>Certificado de Calibração (Página ${index + 1} de ${data.calibrationCertificateUrls.length}):</strong></p>
+                    <img src="${url}" class="w-full h-auto object-contain border rounded-md shadow-sm mt-2" style="max-height: 220mm;">`
+                    });
+                });
+            }
+
+            // --- Páginas da ART ---
+            if (data.artUrls && data.artUrls.length > 0) {
+                data.artUrls.forEach((url, index) => {
+                    contents.push({
+                        content: `
+                    <h3 class="report-section-title">ANEXO III: ANOTAÇÃO DE RESPONSABILIDADE TÉCNICA (ART)</h3>
+                    <p class="mt-6"><strong>ART (Página ${index + 1} de ${data.artUrls.length}):</strong></p>
+                    <img src="${url}" class="w-full h-auto object-contain border rounded-md shadow-sm mt-2" style="max-height: 220mm;">`
+                    });
+                });
+            }
+
+            // --- Páginas dos Pontos de Inspeção (Anexo II) ---
+            data.inspectionPoints.forEach((point, index) => {
+                const classificationColors = { NORMAL: 'bg-green-100 text-green-800', OBSERVACAO: 'bg-blue-100 text-blue-800', PROGRAMADO: 'bg-yellow-100 text-yellow-800', IMEDIATO: 'bg-red-100 text-red-800' };
+                const colorClass = classificationColors[point.classification] || 'bg-gray-100 text-gray-800';
+
+                contents.push({
+                    content: `
+                <h3 class="report-section-title">ANEXO II: PONTO DE INSPEÇÃO ${index + 1}</h3>
+                <p class="mb-4 -mt-3 font-semibold">${point.location || ''} - ${point.component || ''}</p>
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                    
+                    <!-- *** ALTERAÇÃO (HTML): Ordem das fotos invertida no PDF *** -->
+                    <div class="border p-1 rounded-md shadow-sm flex flex-col"><img src="${point.photoThermalUrl || 'https://placehold.co/600x400/f0f0f0/CCCCCC?text=Foto+Termográfica'}" class="w-full h-auto object-cover rounded-sm flex-grow"><p class="text-center text-xs italic mt-1 p-1">Imagem Termográfica</p></div>
+                    <div class="border p-1 rounded-md shadow-sm flex flex-col"><img src="${point.photoNormalUrl || 'https://placehold.co/600x400/f0f0f0/CCCCCC?text=Foto+Normal'}" class="w-full h-auto object-cover rounded-sm flex-grow"><p class="text-center text-xs italic mt-1 p-1">Imagem Visível</p></div>
+                </div>
+                <div class="mt-4 border-t pt-4">
+                    <h4 class="font-semibold text-lg mb-2">Parâmetros de Análise</h4>
+                    <table class="w-full text-sm border-collapse">
+                        <tbody>
+                            <tr class="border-b"><td class="py-1 pr-4 font-medium text-gray-600">Distância do objeto:</td><td>${point.distance || 'N/A'} m</td><td class="py-1 px-4 font-medium text-gray-600">Temp. Max. Área:</td><td>${point.tempMax || 'N/A'} °C</td></tr>
+                            <tr class="border-b"><td class="py-1 pr-4 font-medium text-gray-600">Temp. Mín. Área:</td><td>${point.tempMin || 'N/A'} °C</td><td class="py-1 px-4 font-medium text-gray-600">Temp. Corrigida:</td><td>${point.tempCorrected || 'N/A'} °C</td></tr>
+                            <tr class="border-b"><td class="py-1 pr-4 font-medium text-gray-600">MTA:</td><td>${point.mta || 'N/A'} °C</td><td class="py-1 px-4 font-medium text-gray-600">Carga Nominal:</td><td>${point.loadNominal || 'N/A'} %</td></tr>
+                            <tr class="border-b"><td class="py-1 pr-4 font-medium text-gray-600">Carga Medida:</td><td>${point.loadMeasured || 'N/A'} %</td><td class="py-1 px-4 font-medium text-gray-600">FCC Correção:</td><td>${point.fcc || 'N/A'}</td></tr>
+                            <tr><td class="py-1 pr-4 font-medium text-gray-600">Classificação:</td><td colspan="3"><span class="px-2 py-1 text-xs font-semibold rounded-full ${colorClass}">${point.classification}</span></td></tr>
+                        </tbody>
+                    </table>
+                    <h5 class="font-semibold mt-4">Diagnóstico e Recomendações:</h5>
+                    <p class="text-sm mt-1 p-2 bg-gray-50 rounded-md">${point.diagnosis || 'Nenhuma anormalidade térmica detectada no momento da inspeção.'}</p>
+
+                </div>`});
+            });
+
+            // --- Página Final: Conclusão ---
+            const signatureImg = data.engineerSignatureUrl ? `<img src="${data.engineerSignatureUrl}" alt="Assinatura" class="h-24 mx-auto mb-2 object-contain">` : '<div class="h-24 flex items-center justify-center text-gray-400">(Assinatura não carregada)</div>';
+            const signatureDate = data.signatureDate ? new Date(data.signatureDate + 'T00:00:00').toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' }) : '(Data da Assinatura)';
+            contents.push({
+                content: `
+            <div class="flex flex-col h-full">
+                <div>
+                    <h3 class="report-section-title">5. CONCLUSÃO</h3>
+                    <p>${data.finalConclusion || 'A inspeção termográfica foi concluída em todos os pontos planejados. Recomenda-se que as ações corretivas para os pontos classificados como "Programado" ou "Imediato" sejam priorizadas.'}</p>
+                </div>
+                <div class="mt-auto pt-12 text-center">
+                    <div class="inline-flex flex-col items-center">
+                        ${signatureImg}
+                        <p class="border-t border-slate-400 pt-2 mt-2 px-12">${data.engineerName}</p>
+                        <p class="text-sm">Engenheiro Eletricista</p>
+                        <p class="text-sm font-bold">CREA ${data.creaNumber}</p>
+                    </div>
+                    <p class="text-center mt-8 text-sm">${data.signatureCity}, ${signatureDate}.</p>
+                </div>
+            </div>`
+            });
+
+            return contents.map((pageData, index) => {
+                const pageContainer = document.createElement('div');
+                pageContainer.className = 'report-page-container';
+                const pageElement = document.createElement('div');
+                pageElement.className = 'report-page';
+
+                if (pageData.isCover) {
+                    pageElement.innerHTML = pageData.content;
+                } else {
+                    const totalPages = contents.length; // Ajustado para total de páginas de conteúdo
+                    const header = createHeader(data, index + 1, totalPages);
+                    const footer = createFooter(data);
+                    const content = document.createElement('div');
+                    content.className = 'report-content';
+                    content.innerHTML = pageData.content;
+
+                    pageElement.appendChild(header);
+                    pageElement.appendChild(content);
+                    pageElement.appendChild(footer);
+                }
+                pageContainer.appendChild(pageElement);
+                return pageContainer;
+            });
+        }
+
+        function createHeader(data, currentPage, totalPages) {
+            const header = document.createElement('header');
+            header.className = 'report-header';
+            const companyLogoUrl = data.companyLogoUrl || 'https://placehold.co/200x80/f0f0f0/CCCCCC?text=Sua+Logo';
+            const reportDate = data.reportDate ? new Date(data.reportDate + 'T00:00:00').toLocaleDateString('pt-BR') : 'N/A';
+
+            header.innerHTML = `
+            <div class="flex border-2 border-gray-800 text-[10px]">
+                <div class="w-1/4 p-2 flex items-center justify-center border-r-2 border-gray-800">
+                    <img src="${companyLogoUrl}" alt="Logo da Empresa" class="max-h-16 object-contain">
+                </div>
+                <div class="w-3/4 flex flex-col">
+                    <div class="flex-grow flex border-b-2 border-gray-800">
+                        <div class="w-2/3 p-2 border-r-2 border-gray-800">
+                            <p class="font-bold">CLIENTE:</p>
+                            <p class="font-semibold text-[12px]">${data.clientName}</p>
+                            <p>${data.clientAddress}</p>
+                        </div>
+                        <div class="w-1/3 p-2 text-center flex flex-col justify-center">
+                            <p class="font-bold">TÍTULO:</p>
+                            <p class="font-bold text-[12px]">LAUDO DE TERMOGRAFIA</p>
+                        </div>
+                    </div>
+                    <div class="flex text-center">
+                        <div class="flex-1 p-1"><p class="font-bold">Nº LAUDO</p><p>${data.reportNumber}</p></div>
+                        <div class="flex-1 p-1 border-l border-gray-400"><p class="font-bold">REVISÃO</p><p>${data.reportRevision || '00'}</p></div>
+                        <div class="flex-1 p-1 border-l border-gray-400"><p class="font-bold">DATA</p><p>${reportDate}</p></div>
+                        <div class="flex-1 p-1 border-l border-gray-400"><p class="font-bold">FOLHA</p><p>${currentPage} de ${totalPages}</p></div>
+                    </div>
+                </div>`;
+            return header;
+        }
+
+        function createFooter(data) {
+            const footer = document.createElement('footer');
+            // *** ALTERAÇÃO (JS): Rodapé com fonte maior (text-xs) e endereço em negrito ***
+            footer.className = 'report-footer text-center text-xs';
+            footer.innerHTML = `<p class="font-semibold">${data.companyAddress}</p><p class="text-gray-600">TEL: ${data.companyPhone} | E-MAIL: ${data.companyEmail}</p>`;
+            return footer;
+        }
+
+        function showStatus(message, isSuccess = true) {
+            document.getElementById('statusMessage').textContent = message;
+            document.getElementById('statusMessage').className = `text-center mb-4 h-6 ${isSuccess ? 'text-green-600' : 'text-red-600'}`;
+            setTimeout(() => {
+                document.getElementById('statusMessage').textContent = '';
+            }, 3000);
+        }
+
+        // *** ALTERAÇÃO (JS): Nova função para abrir a pré-visualização em nova aba ***
+        function openPreviewInNewTab() {
+            // Força a atualização do conteúdo antes de abrir
+            updatePreview();
+
+            if (previewTab && !previewTab.closed) {
+                previewTab.focus();
+                return;
+            }
+
+            previewTab = window.open('', 'LaudoTermograficoPreview');
+            if (!previewTab) {
+                showStatus("Por favor, habilite pop-ups para abrir a pré-visualização.", false);
+                return;
+            }
+
+            const headContent = document.head.innerHTML;
+            const previewContent = document.getElementById('reportOutput').innerHTML;
+
+            previewTab.document.write('<html><head><title>Pré-visualização do Laudo</title>' + headContent + '</head>');
+            // Adiciona um ID ao body para ser mais fácil de encontrar
+            previewTab.document.write('<body class="bg-gray-400 p-4 md:p-8" id="previewBody">' + previewContent + '</body></html>');
+            previewTab.document.close();
+
+            // Limpa a variável se a aba for fechada
+            previewTab.addEventListener('beforeunload', () => {
+                previewTab = null;
+            });
+        }
+
+        // *** ALTERAÇÃO 1 (JS): Função saveProgress trocada por saveJson ***
+        async function saveJson() {
+            // Força a atualização dos dados antes de salvar
+            await updatePreview();
+
+            try {
+                const dataToSave = await getFormData(true);
+                const jsonString = JSON.stringify(dataToSave, null, 2); // Formatação com 2 espaços
+                const blob = new Blob([jsonString], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+
+                const a = document.createElement('a');
+                a.href = url;
+                const reportNumber = document.getElementById('reportNumber').value || 'laudo-termografico';
+                a.download = `${reportNumber}.json`;
+
+                document.body.appendChild(a);
+                a.click();
+
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                showStatus('Projeto salvo em JSON com sucesso!', true);
+            } catch (error) {
+                console.error("Erro ao salvar JSON:", error);
+                showStatus('Falha ao salvar o projeto em JSON.', false);
+            }
+        }
+
+        // *** ALTERAÇÃO 1 (JS): Função loadProgress trocada por loadJson ***
+        function loadJson(event) {
+            const file = event.target.files[0];
+            if (!file) {
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const jsonString = e.target.result;
+                    const savedData = JSON.parse(jsonString);
+
+                    // Limpa o formulário antes de carregar
+                    clearForm(false);
+
+                    // Preenche os campos de texto
+                    Object.keys(savedData).forEach(key => {
+                        const el = document.getElementById(key);
+                        if (el && typeof savedData[key] === 'string' && !el.type.startsWith('file')) {
+                            el.value = savedData[key];
+                        }
+                    });
+
+                    // Armazena os DataURLs dos arquivos para o preview
+                    // A função `processFile` e `getFormData` agora usam `__src` como fallback
+                    document.getElementById('companyLogo').__src = savedData.companyLogoUrl;
+                    document.getElementById('engineerSignature').__src = savedData.engineerSignatureUrl;
+                    document.getElementById('calibrationCertificate').__src = savedData.calibrationCertificateUrls;
+                    document.getElementById('artPdf').__src = savedData.artUrls;
+
+                    // Limpa e recria os pontos de inspeção
+                    document.getElementById('inspectionPointsContainer').innerHTML = '';
+                    if (savedData.inspectionPoints && savedData.inspectionPoints.length > 0) {
+                        savedData.inspectionPoints.forEach(pointData => addInspectionPoint(pointData));
+                    } else {
+                        addInspectionPoint(); // Adiciona um ponto em branco se não houver nenhum
+                    }
+
+                    showStatus('Projeto JSON carregado com sucesso!', true);
+                    updatePreview();
+                } catch (error) {
+                    console.error("Erro ao carregar ou processar o arquivo JSON:", error);
+                    showStatus('Falha ao carregar o arquivo JSON.', false);
+                } finally {
+                    // Limpa o valor do input para permitir carregar o mesmo arquivo novamente
+                    event.target.value = null;
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function clearForm(confirmFirst = true) {
+            // *** ALTERAÇÃO: Removido confirm() ***
+            if (confirmFirst) {
+                // O confirm() original foi removido pois pode não funcionar no ambiente.
+                console.log("Limpeza do formulário solicitada.");
+            }
+            document.getElementById('reportForm').reset();
+
+            document.querySelectorAll('input[type="file"]').forEach(input => {
+                input.value = '';
+                input.__src = null; // Limpa a fonte carregada do JSON
+                const imgPreview = input.nextElementSibling;
+                if (imgPreview && imgPreview.tagName === 'IMG') {
+                    imgPreview.src = '';
+                    imgPreview.classList.add('hidden');
+                    delete imgPreview.dataset.loadedSrc;
+                }
+            });
+
+            // Limpa nomes de arquivos únicos
+            uploadedFileNames.clear();
+
+            document.getElementById('inspectionPointsContainer').innerHTML = '';
+            addInspectionPoint();
+
+            document.getElementById('reportDate').valueAsDate = new Date();
+            document.getElementById('signatureDate').valueAsDate = new Date();
+
+            updatePreview();
+            if (confirmFirst) {
+                showStatus('Formulário limpo.', true);
+            }
+        }
+
+        // *** CORREÇÃO: Adicionando a função loadFileIntoSlot que estava faltando ***
+        async function loadFileIntoSlot(file, inputElement, analyze = false, pointDiv = null) {
+            if (!file || !inputElement) return;
+
+            if (uploadedFileNames.has(file.name)) {
+                console.warn(`Imagem ${file.name} já carregada, pulando.`);
+                // Mesmo que já carregada, mostra na tela
+                const existingSrc = Array.from(document.querySelectorAll('img[data-loaded-src]'))
+                    .find(img => img.dataset.fileName === file.name)?.src;
+                if (existingSrc) {
+                    const imgPreview = inputElement.nextElementSibling;
+                    imgPreview.src = existingSrc;
+                    imgPreview.dataset.loadedSrc = existingSrc;
+                    imgPreview.classList.remove('hidden');
+                    inputElement.dataset.fileName = file.name;
+                }
+                return; // Não processa novamente
+            }
+
+            const imgPreview = inputElement.nextElementSibling;
+            const dataUrl = await fileToDataURL(file);
+
+            imgPreview.src = dataUrl;
+            imgPreview.dataset.loadedSrc = dataUrl;
+            imgPreview.classList.remove('hidden');
+
+            uploadedFileNames.add(file.name);
+            inputElement.dataset.fileName = file.name;
+
+            if (analyze && pointDiv) {
+                analyzeThermalImage(file, pointDiv);
+            }
+        }
+
+        // *** ALTERAÇÃO 2 (JS): Função para upload de múltiplas imagens ***
+        // *** REESCRITA para lógica sequencial (Termográfica 1, Visível 1, ...) ***
+        async function handleBatchImageUpload(event) {
+            const files = Array.from(event.target.files);
+            if (files.length === 0) return;
+
+            showStatus(`Processando ${files.length} imagens...`, true);
+
+            let pointsAdded = 0;
+
+            // Itera pelos arquivos de 2 em 2
+            for (let i = 0; i < files.length; i += 2) {
+                // *** ALTERAÇÃO (JS): Invertendo a lógica de qual arquivo é qual ***
+                const fileTermografica = files[i];
+                const fileVisivel = files[i + 1]; // Pode ser undefined se for um número ímpar
+
+                if (!fileTermografica || !fileTermografica.type.startsWith('image/')) continue;
+
+                // Verifica se a foto termográfica já foi carregada
+                if (uploadedFileNames.has(fileTermografica.name)) {
+                    console.warn(`Imagem ${fileTermografica.name} já carregada, pulando par.`);
+                    if (fileVisivel) i++;
+                    continue;
+                }
+
+                try {
+                    // 1. Adiciona um novo ponto de inspeção em branco
+                    addInspectionPoint();
+                    pointsAdded++;
+                    const newPointDiv = document.getElementById('inspectionPointsContainer').lastElementChild;
+
+                    // Tenta preencher Local/Componente pelo nome da foto termográfica (que é a primeira agora)
+                    const fileName = fileTermografica.name.split('.').slice(0, -1).join('.');
+                    const parts = fileName.split(/[-_–\s]+/);
+                    if (parts.length > 0) newPointDiv.querySelector('.point-location').value = parts[0].trim().toUpperCase();
+                    if (parts.length > 1) newPointDiv.querySelector('.point-component').value = parts.slice(1).join(' ').trim();
+
+                    // 2. Se houver uma segunda imagem (fileVisivel), carrega no slot "Foto Normal" PRIMEIRO
+                    // Isso é crucial para a IA ter as duas imagens para analisar
+                    if (fileVisivel && fileVisivel.type.startsWith('image/')) {
+                        if (uploadedFileNames.has(fileVisivel.name)) {
+                            console.warn(`Imagem visível ${fileVisivel.name} já carregada, pulando slot.`);
+                        } else {
+                            await loadFileIntoSlot(
+                                fileVisivel,
+                                newPointDiv.querySelector('.point-photo-normal'),
+                                false, // Não analisa a foto normal ainda
+                                null
+                            );
+                        }
+                    }
+
+                    // 3. Carrega a primeira imagem (fileTermografica) no slot "Foto Termográfica" e analisa
+                    // Agora ela vai encontrar a foto visível já carregada
+                    await loadFileIntoSlot(
+                        fileTermografica,
+                        newPointDiv.querySelector('.point-photo-thermal'),
+                        true, // Analisa a foto termográfica
+                        newPointDiv
+                    );
+
+                } catch (error) {
+                    console.error(`Erro ao processar o par de arquivos começando com ${fileTermografica.name}:`, error);
+                    showStatus(`Erro ao processar ${fileTermografica.name}.`, false);
+                }
+            } // Fim do loop
+
+            // Após o loop
+            event.target.value = null; // Limpa o seletor de arquivos
+            updatePointTitles(); // Renumera os pontos
+            updatePreview(); // Atualiza a pré-visualização
+            showStatus(`${pointsAdded} pontos de inspeção adicionados.`, true);
+        }
+
+        // *** ALTERAÇÃO (JS): IA agora usa a foto visível para identificar o componente ***
+        async function analyzeThermalImage(fileThermal, pointDiv) {
+            const statusDiv = pointDiv.querySelector('.thermal-analysis-status');
+            statusDiv.textContent = 'Analisando imagens...'; // Alterado para "imagens"
+            statusDiv.classList.add('text-blue-600');
+
+            // Converte a imagem termográfica (obrigatória)
+            const thermalBase64ImageData = await fileToDataURL(fileThermal);
+            const thermalBase64Data = thermalBase64ImageData.split(',')[1];
+
+            // *** NOVO: Procura pela imagem visível (opcional) ***
+            const visivelImg = pointDiv.querySelector('.point-photo-normal + img');
+            const visivelDataUrl = visivelImg.dataset.loadedSrc; // Pode ser null
+
+            let visivelBase64Data = null;
+            let visivelMimeType = 'image/jpeg'; // Padrão
+            if (visivelDataUrl) {
+                try {
+                    visivelBase64Data = visivelDataUrl.split(',')[1];
+                    visivelMimeType = visivelDataUrl.match(/data:(image\/[a-z]+);/)[1] || 'image/jpeg';
+                } catch (e) {
+                    console.warn("Não foi possível processar a imagem visível, analisando apenas com a termográfica.");
+                    visivelBase64Data = null;
+                }
+            }
+            // *** Fim da adição ***
+
+
+            // *** ALTERAÇÃO (JS): Prompt da IA atualizado para usar AMBAS as imagens ***
+            const prompt = `Analise as imagens fornecidas. A primeira imagem é a termográfica. A segunda (se existir) é a foto visível normal.
+1.  Use a **foto visível** (se disponível) para identificar o principal componente elétrico mostrado. Use termos técnicos como 'Disjuntor', 'Contator', 'Mufla', 'Barramento', 'Conexão', 'Transformador', 'Isolador', 'Motor'. Se não houver foto visível ou não conseguir identificar, retorne "Componente não identificado".
+2.  Use a **foto termográfica** para extrair os valores numéricos: 'tempMax' (temperatura mais alta na escala de cores), 'tempMin' (temperatura mais baixa na escala de cores), 'tempCorrigida' (temperatura principal mostrada, geralmente no canto superior esquerdo ou centro).
+3.  Retorne tudo em um formato JSON único com as chaves: "tempMax", "tempMin", "tempCorrigida", "componente".`;
+
+            let chatHistory = [];
+            // *** NOVO: Monta as 'parts' da API dinamicamente ***
+            let apiParts = [
+                { text: prompt },
+                { inlineData: { mimeType: fileThermal.type, data: thermalBase64Data } }
+            ];
+
+            if (visivelBase64Data) {
+                // Adiciona a imagem visível à chamada da API
+                apiParts.push({ inlineData: { mimeType: visivelMimeType, data: visivelBase64Data } });
+            }
+
+            chatHistory.push({ role: "user", parts: apiParts });
+            // *** Fim da alteração ***
+
+            // *** ALTERAÇÃO (JS): Definindo um schema JSON para forçar a resposta da IA ***
+            const generationConfig = {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: "OBJECT",
+                    properties: {
+                        "tempMax": { "type": "NUMBER" },
+                        "tempMin": { "type": "NUMBER" },
+                        "tempCorrigida": { "type": "NUMBER" },
+                        "componente": { "type": "STRING" }
+                    },
+                    required: ["componente"] // Apenas componente é obrigatório, temps podem falhar
+                }
+            };
+
+            // *** ALTERAÇÃO (JS): Adicionando o generationConfig ao payload ***
+            const payload = {
+                contents: chatHistory,
+                generationConfig: generationConfig // Adicionado
+            };
+            const apiKey = ""; // A API Key será injetada pelo ambiente
+            // *** ALTERAÇÃO (JS): Corrigindo o nome do modelo para o mais recente ***
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorBody = await response.text();
+                    console.error("API Error:", response.status, errorBody);
+                    throw new Error(`A API de análise de imagem retornou um erro: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (result.promptFeedback && result.promptFeedback.blockReason) {
+                    throw new Error(`API bloqueou o prompt de análise de imagem: ${result.promptFeedback.blockReason}`);
+                }
+
+                if (result.candidates && result.candidates[0]?.content?.parts[0]?.text) {
+                    // *** ALTERAÇÃO (JS): O texto agora é garantido como JSON, não precisa limpar ```json ***
+                    const jsonText = result.candidates[0].content.parts[0].text;
+                    const parsedJson = JSON.parse(jsonText);
+
+                    // *** ALTERAÇÃO (JS): Usando '??' para fallback e garantindo que '0' seja um valor válido ***
+                    pointDiv.querySelector('.point-temp-max').value = parsedJson.tempMax ?? '';
+                    pointDiv.querySelector('.point-temp-min').value = parsedJson.tempMin ?? '';
+                    pointDiv.querySelector('.point-temp-corrected').value = parsedJson.tempCorrigida ?? '';
+
+                    // *** ALTERAÇÃO (JS): Lógica para preencher o componente se estiver vazio ***
+                    const componentField = pointDiv.querySelector('.point-component');
+                    if (parsedJson.componente && parsedJson.componente.toLowerCase() !== "componente não identificado" && componentField.value.trim() === '') {
+                        componentField.value = parsedJson.componente;
+                    }
+                    // *** Fim da alteração ***
+
+                    statusDiv.textContent = 'Análise concluída!';
+                    statusDiv.classList.remove('text-blue-600');
+                    statusDiv.classList.add('text-green-600');
+                } else {
+                    throw new Error("Resposta da API de análise de imagem inválida ou vazia.");
+                }
+            } catch (error) {
+                console.error("Erro ao analisar a imagem:", error);
+                statusDiv.textContent = 'Falha na análise.';
+                statusDiv.classList.remove('text-blue-600');
+                statusDiv.classList.add('text-red-600');
+            } finally {
+                setTimeout(() => {
+                    statusDiv.textContent = '';
+                }, 4000);
+            }
+        }
+
+        async function getCorrectionFromAPI(textToCorrect) {
+            if (!textToCorrect || textToCorrect.trim().length < 10) { // Check for minimum length
+                return null;
+            }
+            const prompt = `Por favor, corrija o seguinte texto em português do Brasil, focando em erros de gramática, ortografia e pontuação. Mantenha o tom técnico e profissional original. Retorne APENAS o texto corrigido, sem nenhuma introdução, explicação ou formatação extra. Texto original: "${textToCorrect}"`;
+            const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
+            const apiKey = ""; // A API Key será injetada pelo ambiente
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorBody = await response.text();
+                    console.error("API Error:", response.status, errorBody);
+                    throw new Error(`A API de correção retornou um erro: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (result.promptFeedback && result.promptFeedback.blockReason) {
+                    console.warn(`API bloqueou o prompt de correção: ${result.promptFeedback.blockReason}`);
+                    return null;
+                }
+
+                if (result.candidates && result.candidates[0]?.content?.parts[0]?.text) {
+                    const correctedText = result.candidates[0].content.parts[0].text.trim();
+                    // Only return if the corrected text is actually different
+                    if (correctedText.toLowerCase() !== textToCorrect.toLowerCase()) {
+                        return correctedText;
+                    }
+                }
+                return null;
+            } catch (error) {
+                console.error("Erro ao obter correção da API:", error);
+                return null;
+            }
+        }
+
+        function setupCorrectionListener(field, suggestionContainer) {
+            let correctionDebounceTimer;
+            field.addEventListener('input', () => {
+                clearTimeout(correctionDebounceTimer);
+                suggestionContainer.style.display = 'none';
+                correctionDebounceTimer = setTimeout(async () => {
+                    const originalText = field.value;
+                    const correctedText = await getCorrectionFromAPI(originalText);
+                    if (correctedText && correctedText !== originalText) {
+                        const suggestionTextDiv = suggestionContainer.querySelector('.suggestion-text');
+                        const applyBtn = suggestionContainer.querySelector('.apply-correction-btn');
+                        const dismissBtn = suggestionContainer.querySelector('.dismiss-correction-btn');
+
+                        suggestionTextDiv.textContent = correctedText;
+                        suggestionContainer.style.display = 'block';
+
+                        applyBtn.onclick = () => {
+                            field.value = correctedText;
+                            suggestionContainer.style.display = 'none';
+                            updatePreview(); // Atualiza a pré-visualização após aplicar a correção
+                        };
+                        dismissBtn.onclick = () => {
+                            suggestionContainer.style.display = 'none';
+                        };
+                    }
+                }, 2000); // Aguarda 2 segundos de inatividade
+            });
+        }
+
+        // --- Inicialização do script ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Atribuição de elementos do DOM às variáveis globais
+            let reportForm = document.getElementById('reportForm');
+            let downloadPdfBtn = document.getElementById('downloadPdfBtn');
+            let addInspectionPointBtn = document.getElementById('addInspectionPointBtn');
+            let finalConclusionTextarea = document.getElementById('finalConclusion');
+            let clearFormBtn = document.getElementById('clearFormBtn');
+
+            // *** ALTERAÇÃO 1 e 2 (JS): Novos listeners ***
+            let saveJsonBtn = document.getElementById('saveJsonBtn');
+            let loadJsonInput = document.getElementById('loadJsonInput');
+            let batchAddImagesInput = document.getElementById('batchAddImagesInput');
+            let openPreviewTabBtn = document.getElementById('openPreviewTabBtn'); // *** ALTERAÇÃO (JS): Novo botão ***
+
+
+            // Configuração inicial e listeners
+            document.getElementById('reportDate').valueAsDate = new Date();
+            document.getElementById('signatureDate').valueAsDate = new Date();
+            finalConclusionTextarea.value = `O planejamento e a execução dos serviços de inspeção termográfica apresentaram excelentes resultados. As anomalias identificadas foram devidamente documentadas e classificadas para orientar as ações de manutenção.\n\nRecomenda-se que as intervenções para os pontos classificados como "Programado" ou "Imediato" sejam priorizadas para garantir a confiabilidade e segurança das instalações. As informações detalhadas sobre localização, identificação e roteiro de inspeção foram fornecidas pela equipe técnica responsável.`;
+            addInspectionPoint();
+            updatePreview();
+
+            // Setup text correction for all designated fields
+            document.querySelectorAll('.enable-correction').forEach(field => {
+                const suggestionContainer = field.nextElementSibling;
+                if (suggestionContainer && suggestionContainer.classList.contains('correction-suggestion-container')) {
+                    setupCorrectionListener(field, suggestionContainer);
+                }
+            });
+
+            reportForm.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(updatePreview, 500);
+            });
+            reportForm.addEventListener('change', updatePreview);
+            downloadPdfBtn.addEventListener('click', () => downloadPDF());
+            addInspectionPointBtn.addEventListener('click', () => addInspectionPoint());
+            clearFormBtn.addEventListener('click', () => clearForm(true));
+
+            // *** ALTERAÇÃO 1 e 2 (JS): Eventos para as novas funções ***
+            saveJsonBtn.addEventListener('click', saveJson);
+            loadJsonInput.addEventListener('change', loadJson);
+            batchAddImagesInput.addEventListener('change', handleBatchImageUpload);
+            openPreviewTabBtn.addEventListener('click', openPreviewInNewTab); // *** ALTERAÇÃO (JS): Novo listener ***
+        });
+    </script>
+</body>
+
+</html>

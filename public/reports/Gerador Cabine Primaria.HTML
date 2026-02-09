@@ -1,0 +1,1343 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Laudo de Cabine PrimÃ¡ria</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .form-section {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        .form-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #111827;
+            border-bottom: 1px solid #d1d5db;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            color: #4b5563;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background-color: #f9fafb;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+        }
+
+        /* Estilos do RelatÃ³rio Gerado (Preview) */
+        .report-page-container {
+            width: 100%;
+            max-width: 210mm;
+            /* A4 width */
+            margin: 1rem auto;
+            page-break-after: always;
+        }
+
+        .report-page-container:last-of-type {
+            page-break-after: auto;
+        }
+
+        .report-page {
+            background: white;
+            width: 100%;
+            aspect-ratio: 210 / 297;
+            /* ProporÃ§Ã£o A4 para o preview */
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border: 1px solid #e5e7eb;
+            font-size: 11pt;
+        }
+
+        .report-header,
+        .report-footer {
+            padding: 8mm 10mm;
+            flex-shrink: 0;
+        }
+
+        .report-header {
+            border-bottom: 1px solid #d1d5db;
+        }
+
+        .report-footer {
+            margin-top: auto;
+            padding: 6mm 10mm;
+            flex-shrink: 0;
+        }
+
+        .report-content {
+            flex-grow: 1;
+            padding: 10mm;
+            overflow: hidden;
+        }
+
+        .report-section-title {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #111827;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.25rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .report-content p,
+        .report-content li {
+            text-align: justify;
+            line-height: 1.6;
+        }
+
+        .report-content table {
+            width: 100%;
+            font-size: 0.9em;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .report-content th,
+        .report-content td {
+            border: 1px solid #d1d5db;
+            padding: 6px 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .report-content th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+        }
+
+        /* Classe especial para forÃ§ar dimensÃµes corretas na hora de gerar o PDF */
+        .pdf-render-mode .report-page-container {
+            width: 794px !important;
+            /* A4 width @ 96 DPI */
+            height: 1123px !important;
+            /* A4 height @ 96 DPI */
+            margin: 0 !important;
+            box-shadow: none !important;
+            border: none !important;
+        }
+
+        .pdf-render-mode .report-page {
+            width: 100% !important;
+            height: 100% !important;
+            aspect-ratio: unset !important;
+        }
+
+        @media print {
+            body {
+                background-color: #fff;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            #reportOutputContainer {
+                padding: 0;
+            }
+
+            .report-page-container {
+                margin: 0;
+                box-shadow: none;
+                border: none;
+            }
+
+            .report-page {
+                width: 210mm;
+                height: 297mm;
+                aspect-ratio: unset;
+                box-shadow: none;
+                border: none;
+                font-size: 11pt;
+            }
+        }
+
+        /* --- Patch de Responsividade --- */
+        @media (max-width: 1024px) {
+
+            .topbar-inner,
+            .cover-top,
+            .doc-head {
+                flex-direction: column !important;
+                display: flex !important;
+                gap: 15px !important;
+                text-align: center !important;
+                padding: 20px !important;
+                height: auto !important;
+                grid-template-columns: 1fr !important;
+            }
+
+            .brand,
+            .actions,
+            .tabs {
+                width: 100% !important;
+                justify-content: center !important;
+                min-width: unset !important;
+            }
+
+            .tabs {
+                overflow-x: auto;
+                padding: 10px 0;
+            }
+
+            .grid,
+            .row,
+            .row-3,
+            .equip-details-grid,
+            .grid-cols-2,
+            .grid-cols-3,
+            .grid-cols-4 {
+                grid-template-columns: 1fr !important;
+            }
+
+            .wrap,
+            .max-w-7xl,
+            .max-w-5xl,
+            .report-page-container {
+                padding: 10px !important;
+            }
+
+            .meta-strip {
+                grid-template-columns: 1fr 1fr !important;
+                display: grid !important;
+            }
+
+            .meta-strip .m {
+                border-right: none !important;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .meta-strip {
+                grid-template-columns: 1fr !important;
+            }
+
+            .sheet,
+            .report-page {
+                width: 210mm !important;
+            }
+
+            #reportOutput,
+            #previewPane,
+            .preview-shell {
+                overflow-x: auto !important;
+                display: block !important;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .cover-mid h1 {
+                font-size: 20pt !important;
+            }
+        }
+    </style>`n    <script>
+        // Protecao Anti-Copia ChameiApp
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || (e.ctrlKey && (e.keyCode == 85 || e.keyCode == 83))) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
+</head>
+
+<body class="text-gray-800">
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-4 md:p-8 h-screen">
+        <div id="formContainer" class="no-print overflow-y-auto pr-4">
+            <div class="max-w-2xl mx-auto">
+                <div class="text-center mb-10">
+                    <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Gerador de Laudo de Cabine PrimÃ¡ria</h1>
+                    <p class="text-gray-600 mt-2">Preencha os campos para gerar o laudo.</p>
+                </div>
+
+                <div class="form-section flex items-center justify-between flex-wrap gap-4">
+                    <h2 class="text-lg font-semibold mb-0 border-b-0 pb-0">AÃ§Ãµes de Dados</h2>
+                    <div class="flex gap-2 flex-wrap">
+                        <button type="button" id="importFileBtn"
+                            class="bg-teal-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-teal-700 transition-colors">Importar
+                            Dados</button>
+                        <button type="button" id="saveProgressBtn"
+                            class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Baixar
+                            Dados</button>
+                        <input type="file" id="importFileInput" class="hidden" accept=".json,.txt">
+                        <button type="button" id="clearFormBtn"
+                            class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors">Limpar
+                            FormulÃ¡rio</button>
+                    </div>
+                </div>
+                <div id="statusMessage" class="text-center mb-4 h-6"></div>
+
+
+                <form id="reportForm">
+                    <div class="form-section">
+                        <h2 class="section-title">Dados Gerais</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div><label for="companyLogo" class="form-label">Logo da Sua Empresa</label><input
+                                    type="file" id="companyLogo" accept="image/*" class="form-input"></div>
+                            <div><label for="clientName" class="form-label">Nome do Cliente</label><input type="text"
+                                    id="clientName" class="form-input" placeholder="Digite o nome do cliente..."
+                                    required></div>
+                            <div class="md:col-span-2"><label for="clientAddress" class="form-label">EndereÃ§o do
+                                    Cliente</label><input type="text" id="clientAddress" class="form-input"
+                                    placeholder="Digite o endereÃ§o do cliente..." required></div>
+                            <div><label for="reportNumber" class="form-label">NÂº do Laudo</label><input type="text"
+                                    id="reportNumber" class="form-input" placeholder="Ex: 2025/001" required></div>
+                            <div><label for="reportRevision" class="form-label">RevisÃ£o</label><input type="text"
+                                    id="reportRevision" class="form-input" placeholder="Rev. 0"></div>
+                            <div><label for="refProcesso" class="form-label">NÂº Ref. de Processo</label><input
+                                    type="text" id="refProcesso" class="form-input" placeholder="Opcional"></div>
+                            <div><label for="reportDate" class="form-label">Data da ManutenÃ§Ã£o</label><input type="date"
+                                    id="reportDate" class="form-input" required></div>
+                            <div class="md:col-span-2"><label for="companyName" class="form-label">Nome da Sua Empresa
+                                    (RodapÃ©)</label><input type="text" id="companyName" class="form-input"
+                                    placeholder="Digite o Nome da Sua Empresa..." required></div>
+                            <div class="md:col-span-2"><label for="companyAddress" class="form-label">EndereÃ§o da Sua
+                                    Empresa (RodapÃ©)</label><input type="text" id="companyAddress" class="form-input"
+                                    placeholder="Digite o endereÃ§o completo da sua empresa..." required></div>
+                            <div><label for="companyPhone" class="form-label">Telefone (RodapÃ©)</label><input type="tel"
+                                    id="companyPhone" class="form-input" placeholder="(xx) xxxxx-xxxx" required></div>
+                            <div><label for="companyEmail" class="form-label">E-mail (RodapÃ©)</label><input type="email"
+                                    id="companyEmail" class="form-input" placeholder="seu@email.com" required></div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2 class="section-title">Anexo da ART</h2>
+                        <div><label for="artPdf" class="form-label">ART (PDF ou Imagem)</label><input type="file"
+                                id="artPdf" accept="image/*,application/pdf" class="form-input"></div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2 class="section-title">Textos do RelatÃ³rio</h2>
+                        <div><label for="introText" class="form-label">IntroduÃ§Ã£o</label><textarea id="introText"
+                                rows="5"
+                                class="form-textarea">Este laudo tÃ©cnico apresenta os resultados da manutenÃ§Ã£o preventiva realizada na cabine primÃ¡ria de mÃ©dia tensÃ£o, em conformidade com as recomendaÃ§Ãµes da norma ABNT NBR 14039. A subestaÃ§Ã£o, como ponto central de recebimento e distribuiÃ§Ã£o de energia elÃ©trica, requer inspeÃ§Ãµes periÃ³dicas para garantir sua operaÃ§Ã£o segura, confiÃ¡vel e eficiente, prevenindo falhas que possam resultar em interrupÃ§Ãµes de fornecimento e riscos operacionais.</textarea>
+                        </div>
+                        <div class="mt-4"><label for="objectiveText" class="form-label">Objetivo</label><textarea
+                                id="objectiveText" rows="5"
+                                class="form-textarea">O objetivo principal desta manutenÃ§Ã£o Ã© assegurar que todos os componentes da cabine primÃ¡ria estejam em perfeitas condiÃ§Ãµes de funcionamento. Isso inclui a verificaÃ§Ã£o da integridade fÃ­sica e operacional dos equipamentos, a limpeza tÃ©cnica de barramentos e isoladores, o reaperto de todas as conexÃµes para eliminar pontos de aquecimento, a realizaÃ§Ã£o de ensaios elÃ©tricos para avaliar a condiÃ§Ã£o dos ativos e a emissÃ£o de um relatÃ³rio documentado para fins de conformidade e histÃ³rico.</textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="flex justify-between items-center">
+                            <h2 class="section-title mb-0 pb-0 border-b-0">Itens de InspeÃ§Ã£o Visual</h2>
+                            <button type="button" id="addVisualItemBtn"
+                                class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">Adicionar
+                                Item</button>
+                        </div>
+                        <div id="visualItemsContainer" class="mt-6 space-y-4"></div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="section-title mb-0 pb-0 border-b-0">Ensaios ElÃ©tricos</h2>
+                            <button type="button" id="addEquipmentBtn"
+                                class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">Adicionar
+                                Equipamento</button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label for="micrommimetro" class="form-label">Equipamento Utilizado
+                                    (MicrommÃ­metro)</label>
+                                <input type="text" id="micrommimetro" class="form-input" value="Megabras MPK 253">
+                            </div>
+                            <div>
+                                <label for="escalaMedicao" class="form-label">Escala Utilizada</label>
+                                <select id="escalaMedicao" class="form-select">
+                                    <option value="2000 ÂµÎ© (10 A)">2000 ÂµÎ© (10 A)</option>
+                                    <option value="20 mÎ© (10 A)">20 mÎ© (10 A)</option>
+                                    <option value="200 mÎ© (1 A)">200 mÎ© (1 A)</option>
+                                    <option value="2000 mÎ© (100 mA)">2000 mÎ© (100 mA)</option>
+                                    <option value="20 Î© (10 mA)">20 Î© (10 mA)</option>
+                                    <option value="200 Î© (1 mA)">200 Î© (1 mA)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-800 p-4 rounded-r-lg mb-6"
+                            role="alert">
+                            <p class="font-bold">Resumo PrÃ¡tico para Laudo</p>
+                            <p class="text-sm mt-2">
+                                â€œOs contatos de disjuntores de mÃ©dia tensÃ£o devem apresentar resistÃªncia tÃ­pica inferior
+                                a 100 ÂµÎ©, nÃ£o devendo haver diferenÃ§as significativas entre os polos. Valores acima
+                                deste limite ou com variaÃ§Ãµes superiores a 20% entre fases indicam necessidade de
+                                intervenÃ§Ã£o/manutenÃ§Ã£o.â€
+                            </p>
+                        </div>
+                        <div id="equipmentsContainer" class="space-y-8">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="flex justify-between items-center">
+                            <h2 class="section-title mb-0 pb-0 border-b-0">Anexos FotogrÃ¡ficos</h2>
+                            <button type="button" id="addPhotoBtn"
+                                class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">Adicionar
+                                Foto</button>
+                        </div>
+                        <div id="photosContainer" class="mt-6 space-y-6"></div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2 class="section-title">ConclusÃ£o e ResponsÃ¡vel</h2>
+                        <div class="mt-6"><label for="finalConclusion" class="form-label">Texto da
+                                ConclusÃ£o</label><textarea id="finalConclusion" rows="6"
+                                class="form-textarea">O planejamento e a execuÃ§Ã£o dos serviÃ§os apresentaram excelentes resultados. Foi realizada uma inspeÃ§Ã£o minuciosa, seguindo rigorosamente os princÃ­pios e critÃ©rios dos testes aplicÃ¡veis. Todas as informaÃ§Ãµes sobre a localizaÃ§Ã£o e identificaÃ§Ã£o foram fornecidas pelo tÃ©cnico responsÃ¡vel pela execuÃ§Ã£o do serviÃ§o.</textarea>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                            <div><label for="engineerSignature" class="form-label">Upload da Assinatura</label><input
+                                    type="file" id="engineerSignature" accept="image/*" class="form-input"></div>
+                            <div><label for="engineerName" class="form-label">Nome do Engenheiro</label><input
+                                    type="text" id="engineerName" class="form-input" value="Anderson Diniz" required>
+                            </div>
+                            <div><label for="creaNumber" class="form-label">CREA</label><input type="text"
+                                    id="creaNumber" class="form-input" value="254516/D" required></div>
+                            <div><label for="signatureCity" class="form-label">Cidade da Assinatura</label><input
+                                    type="text" id="signatureCity" class="form-input" value="Contagem" required></div>
+                            <div class="md:col-span-2"><label for="signatureDate" class="form-label">Data da
+                                    Assinatura</label><input type="date" id="signatureDate" class="form-input" required>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="reportOutputContainer" class="flex flex-col h-full">
+            <div
+                class="no-print bg-gray-800 text-white p-4 flex justify-between items-center sticky top-0 z-50 shadow-lg rounded-t-lg flex-shrink-0">
+                <h3 class="font-bold text-lg">PrÃ©-visualizaÃ§Ã£o ao Vivo</h3>
+                <button id="downloadPdfBtn"
+                    class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-wait">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" x2="12" y1="15" y2="3" />
+                    </svg>
+                    <span id="downloadBtnText">Baixar PDF</span>
+                </button>
+            </div>
+            <div id="reportOutput" class="bg-gray-400 p-4 md:p-8 rounded-b-lg overflow-y-auto flex-grow"></div>
+        </div>
+    </div>
+
+    <template id="visualItemTemplate">
+        <div class="visual-item border p-4 rounded-lg bg-gray-50 relative">
+            <button type="button"
+                class="remove-visual-item-btn absolute -top-3 -right-3 bg-red-600 text-white rounded-full h-7 w-7 flex items-center justify-center font-bold text-lg hover:bg-red-700">&times;</button>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                <div class="md:col-span-2">
+                    <label class="form-label text-sm">Item</label>
+                    <input type="text" class="form-input item-description" placeholder="DescriÃ§Ã£o do item">
+                </div>
+                <div>
+                    <label class="form-label text-sm">Resultado</label>
+                    <select class="form-select item-status">
+                        <option value="SatisfatÃ³rio">SatisfatÃ³rio</option>
+                        <option value="InsatisfatÃ³rio">InsatisfatÃ³rio</option>
+                        <option value="NÃ£o se aplica">NÃ£o se aplica</option>
+                    </select>
+                </div>
+            </div>
+            <div class="reason-container hidden mt-3">
+                <label class="form-label text-sm text-red-600">Motivo (se insatisfatÃ³rio):</label>
+                <textarea class="form-textarea item-reason" rows="2"
+                    placeholder="Descreva o problema encontrado..."></textarea>
+            </div>
+        </div>
+    </template>
+
+    <template id="equipmentTemplate">
+        <div class="equipment-item border-2 border-dashed p-4 rounded-lg relative">
+            <button type="button"
+                class="remove-equipment-btn absolute -top-3 -right-3 bg-red-600 text-white rounded-full h-7 w-7 flex items-center justify-center font-bold text-lg hover:bg-red-700">&times;</button>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="md:col-span-2">
+                    <label class="form-label">Tipo de Equipamento</label>
+                    <input type="text" class="form-input equipment-type" placeholder="Ex: Disjuntor de MÃ©dia TensÃ£o PVO"
+                        value="Disjuntor de MÃ©dia TensÃ£o PVO">
+                </div>
+                <div><input type="text" class="form-input equipment-fabricante" placeholder="Fabricante"></div>
+                <div><input type="text" class="form-input equipment-modelo" placeholder="Modelo/Tipo"></div>
+                <div><input type="text" class="form-input equipment-ano" placeholder="Ano"></div>
+                <div><input type="text" class="form-input equipment-serie" placeholder="NÂº de SÃ©rie"></div>
+                <div><input type="text" class="form-input equipment-tensao" placeholder="TensÃ£o Nominal (kV)"></div>
+                <div><input type="number" class="form-input equipment-corrente" placeholder="Corrente Nominal (A)">
+                </div>
+            </div>
+            <div class="mt-6">
+                <h4 class="font-semibold text-md mb-2">Resultados do Ensaio de ResistÃªncia</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="form-label text-sm">Valor MÃ¡ximo Rec. (ÂµÎ©)</label>
+                        <input type="number" class="form-input equipment-max-value" placeholder="Ex: 100">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                    <div><input type="number" class="form-input equipment-r" placeholder="Fase R / R-Massa"></div>
+                    <div><input type="number" class="form-input equipment-s" placeholder="Fase S / S-Massa"></div>
+                    <div><input type="number" class="form-input equipment-t" placeholder="Fase T / T-Massa"></div>
+                </div>
+                <select class="form-select mt-4 equipment-resultado">
+                    <option value="SatisfatÃ³rio">SatisfatÃ³rio</option>
+                    <option value="InsatisfatÃ³rio">InsatisfatÃ³rio</option>
+                    <option value="NÃ£o se aplica">NÃ£o se aplica</option>
+                </select>
+                <div class="reason-container hidden mt-3">
+                    <label class="form-label text-sm text-red-600">Motivo (se insatisfatÃ³rio):</label>
+                    <textarea class="form-textarea equipment-reason" rows="2"
+                        placeholder="Descreva o problema encontrado..."></textarea>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="photoTemplate">
+        <div class="photo-item border p-4 rounded-lg">
+            <div class="flex justify-between items-center mb-4">
+                <label class="form-label mb-0">DescriÃ§Ã£o da Foto</label>
+                <button type="button"
+                    class="remove-photo-btn text-red-600 hover:text-red-800 text-sm font-semibold">Remover</button>
+            </div>
+            <input type="text" class="form-input photo-description" placeholder="Ex: Antes da limpeza">
+            <div class="mt-4"><label class="form-label">Arquivo de Imagem</label><input type="file"
+                    class="form-input photo-file" accept="image/*"></div>
+            <img class="mt-2 h-40 w-full object-contain rounded-md hidden bg-gray-100 p-1" src=""
+                alt="PrÃ©-visualizaÃ§Ã£o">
+        </div>
+    </template>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const { jsPDF } = window.jspdf;
+
+            // --- Elementos do DOM ---
+            const reportForm = document.getElementById('reportForm');
+            const reportOutput = document.getElementById('reportOutput');
+            const reportOutputContainer = document.getElementById('reportOutputContainer');
+            const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+            const addVisualItemBtn = document.getElementById('addVisualItemBtn');
+            const visualItemsContainer = document.getElementById('visualItemsContainer');
+            const visualItemTemplate = document.getElementById('visualItemTemplate');
+            const addPhotoBtn = document.getElementById('addPhotoBtn');
+            const photosContainer = document.getElementById('photosContainer');
+            const photoTemplate = document.getElementById('photoTemplate');
+            const addEquipmentBtn = document.getElementById('addEquipmentBtn');
+            const equipmentsContainer = document.getElementById('equipmentsContainer');
+            const equipmentTemplate = document.getElementById('equipmentTemplate');
+            const saveProgressBtn = document.getElementById('saveProgressBtn');
+            const importFileBtn = document.getElementById('importFileBtn');
+            const importFileInput = document.getElementById('importFileInput');
+            const clearFormBtn = document.getElementById('clearFormBtn');
+            const statusMessage = document.getElementById('statusMessage');
+            const escalaMedicaoSelect = document.getElementById('escalaMedicao');
+            let debounceTimer;
+
+            // --- FunÃ§Ãµes ---
+
+            function getUnitFromScale(scaleString) {
+                if (scaleString.includes('ÂµÎ©')) return 'ÂµÎ©';
+                if (scaleString.includes('mÎ©')) return 'mÎ©';
+                if (scaleString.includes('Î©')) return 'Î©';
+                return 'ÂµÎ©';
+            }
+
+            function convertToMicroOhms(value, scaleString) {
+                if (isNaN(value)) return NaN;
+                if (scaleString.includes('mÎ©')) return value * 1000;
+                if (scaleString.includes('Î©')) return value * 1000000;
+                return value; // Assume ÂµÎ©
+            }
+
+            function updateAllEquipmentUnits() {
+                const newUnit = getUnitFromScale(escalaMedicaoSelect.value);
+                document.querySelectorAll('.equipment-item').forEach(item => {
+                    item.querySelector('.equipment-r').placeholder = `Fase R / R-Massa (${newUnit})`;
+                    item.querySelector('.equipment-s').placeholder = `Fase S / S-Massa (${newUnit})`;
+                    item.querySelector('.equipment-t').placeholder = `Fase T / T-Massa (${newUnit})`;
+                });
+            }
+
+            function addVisualItem(data = {}) {
+                const { description = '', status = 'SatisfatÃ³rio', reason = '' } = data;
+                const templateContent = visualItemTemplate.content.cloneNode(true);
+                const visualItem = templateContent.querySelector('.visual-item');
+                const statusSelect = visualItem.querySelector('.item-status');
+                const reasonContainer = visualItem.querySelector('.reason-container');
+                const reasonTextarea = visualItem.querySelector('.item-reason');
+                const removeBtn = visualItem.querySelector('.remove-visual-item-btn');
+
+                visualItem.querySelector('.item-description').value = description;
+                statusSelect.value = status;
+                reasonTextarea.value = reason;
+
+                const toggleReasonField = () => {
+                    if (statusSelect.value === 'InsatisfatÃ³rio') {
+                        reasonContainer.classList.remove('hidden');
+                    } else {
+                        reasonContainer.classList.add('hidden');
+                    }
+                };
+
+                statusSelect.addEventListener('change', toggleReasonField);
+                removeBtn.addEventListener('click', () => {
+                    visualItem.remove();
+                    updateAndRender();
+                });
+
+                toggleReasonField();
+
+                visualItemsContainer.appendChild(visualItem);
+            }
+
+            function addEquipment(data = {}) {
+                const {
+                    type = 'Disjuntor de MÃ©dia TensÃ£o PVO',
+                    fabricante = '', modelo = '', ano = '', serie = '',
+                    tensao = '', corrente = '', maxValue = '', r = '', s = '', t = '',
+                    resultado = 'SatisfatÃ³rio', reason = ''
+                } = data;
+
+                const templateContent = equipmentTemplate.content.cloneNode(true);
+                const equipmentItem = templateContent.querySelector('.equipment-item');
+
+                const correnteInput = equipmentItem.querySelector('.equipment-corrente');
+                const maxValueInput = equipmentItem.querySelector('.equipment-max-value');
+
+                equipmentItem.querySelector('.equipment-type').value = type;
+                equipmentItem.querySelector('.equipment-fabricante').value = fabricante;
+                equipmentItem.querySelector('.equipment-modelo').value = modelo;
+                equipmentItem.querySelector('.equipment-ano').value = ano;
+                equipmentItem.querySelector('.equipment-serie').value = serie;
+                equipmentItem.querySelector('.equipment-tensao').value = tensao;
+                correnteInput.value = corrente;
+                maxValueInput.value = maxValue;
+                equipmentItem.querySelector('.equipment-r').value = r;
+                equipmentItem.querySelector('.equipment-s').value = s;
+                equipmentItem.querySelector('.equipment-t').value = t;
+
+                const statusSelect = equipmentItem.querySelector('.equipment-resultado');
+                const reasonContainer = equipmentItem.querySelector('.reason-container');
+                const reasonTextarea = equipmentItem.querySelector('.equipment-reason');
+
+                statusSelect.value = resultado;
+                reasonTextarea.value = reason;
+
+                const toggleReasonField = () => {
+                    if (statusSelect.value === 'InsatisfatÃ³rio') {
+                        reasonContainer.classList.remove('hidden');
+                    } else {
+                        reasonContainer.classList.add('hidden');
+                    }
+                };
+
+                const validateResistance = () => {
+                    const maxVal = parseFloat(maxValueInput.value);
+                    const scale = escalaMedicaoSelect.value;
+
+                    const rValRaw = parseFloat(equipmentItem.querySelector('.equipment-r').value);
+                    const sValRaw = parseFloat(equipmentItem.querySelector('.equipment-s').value);
+                    const tValRaw = parseFloat(equipmentItem.querySelector('.equipment-t').value);
+
+                    const rVal = convertToMicroOhms(rValRaw, scale);
+                    const sVal = convertToMicroOhms(sValRaw, scale);
+                    const tVal = convertToMicroOhms(tValRaw, scale);
+
+                    let isUnsatisfactory = false;
+
+                    // 1. Check against max value
+                    if (!isNaN(maxVal)) {
+                        if ((!isNaN(rVal) && rVal > maxVal) ||
+                            (!isNaN(sVal) && sVal > maxVal) ||
+                            (!isNaN(tVal) && tVal > maxVal)) {
+                            isUnsatisfactory = true;
+                        }
+                    }
+
+                    // 2. Check for 20% variation between phases
+                    const measuredValues = [rVal, sVal, tVal].filter(v => !isNaN(v) && v > 0);
+                    if (measuredValues.length === 3) {
+                        const min = Math.min(...measuredValues);
+                        const max = Math.max(...measuredValues);
+                        if (min > 0) { // Avoid division by zero
+                            const variation = ((max - min) / min);
+                            if (variation > 0.20) {
+                                isUnsatisfactory = true;
+                            }
+                        }
+                    }
+
+                    if (isUnsatisfactory) {
+                        statusSelect.value = 'InsatisfatÃ³rio';
+                    } else {
+                        if (statusSelect.value !== 'NÃ£o se aplica') {
+                            statusSelect.value = 'SatisfatÃ³rio';
+                        }
+                    }
+                    toggleReasonField();
+                };
+
+                correnteInput.addEventListener('input', () => {
+                    const currentVal = parseFloat(correnteInput.value);
+                    if (!isNaN(currentVal)) {
+                        maxValueInput.value = currentVal > 1250 ? '200' : '100';
+                    }
+                });
+
+                equipmentItem.querySelectorAll('.equipment-max-value, .equipment-r, .equipment-s, .equipment-t').forEach(input => {
+                    input.addEventListener('input', validateResistance);
+                });
+
+                statusSelect.addEventListener('change', toggleReasonField);
+
+                // Set initial state
+                toggleReasonField();
+                updateAllEquipmentUnits(); // Update placeholders for the new item
+
+                equipmentItem.querySelector('.remove-equipment-btn').addEventListener('click', () => {
+                    equipmentItem.remove();
+                    updateAndRender();
+                });
+
+                equipmentsContainer.appendChild(equipmentItem);
+            }
+
+            function addPhoto(data = null) {
+                const templateContent = photoTemplate.content.cloneNode(true);
+                const photoItem = templateContent.querySelector('.photo-item');
+                const fileInput = photoItem.querySelector('.photo-file');
+                const imgPreview = photoItem.querySelector('img');
+                const removeBtn = photoItem.querySelector('.remove-photo-btn');
+                const descriptionInput = photoItem.querySelector('.photo-description');
+
+                if (data) {
+                    descriptionInput.value = data.description || '';
+                    if (data.src) {
+                        imgPreview.src = data.src;
+                        imgPreview.classList.remove('hidden');
+                        imgPreview.dataset.loadedSrc = data.src;
+                    }
+                }
+
+                fileInput.addEventListener('change', () => {
+                    const file = fileInput.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            imgPreview.src = e.target.result;
+                            imgPreview.dataset.loadedSrc = e.target.result;
+                            imgPreview.classList.remove('hidden');
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+
+                removeBtn.addEventListener('click', () => {
+                    photoItem.remove();
+                    updateAndRender();
+                });
+
+                photosContainer.appendChild(photoItem);
+            }
+
+            async function fileToDataURL(file) {
+                return new Promise((resolve) => {
+                    if (!file) { resolve(null); return; }
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = () => resolve(null);
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            async function pdfToDataURLs(file) {
+                return new Promise(async (resolve) => {
+                    if (!file) { resolve([]); return; }
+                    const fileReader = new FileReader();
+                    fileReader.onload = async function () {
+                        try {
+                            const typedarray = new Uint8Array(this.result);
+                            const pdfDoc = await pdfjsLib.getDocument(typedarray).promise;
+                            const pageDataUrls = [];
+                            for (let i = 1; i <= pdfDoc.numPages; i++) {
+                                const page = await pdfDoc.getPage(i);
+                                const viewport = page.getViewport({ scale: 2.0 });
+                                const canvas = document.createElement('canvas');
+                                const context = canvas.getContext('2d');
+                                canvas.height = viewport.height;
+                                canvas.width = viewport.width;
+                                await page.render({ canvasContext: context, viewport: viewport }).promise;
+                                pageDataUrls.push(canvas.toDataURL('image/png'));
+                            }
+                            resolve(pageDataUrls);
+                        } catch (error) {
+                            console.error("Erro ao processar PDF:", error);
+                            resolve([]);
+                        }
+                    };
+                    fileReader.readAsArrayBuffer(file);
+                });
+            }
+
+            async function processFile(file) {
+                if (!file) return [];
+                if (file.type.startsWith('image/')) {
+                    const dataUrl = await fileToDataURL(file);
+                    return dataUrl ? [dataUrl] : [];
+                }
+                if (file.type === 'application/pdf') {
+                    return pdfToDataURLs(file);
+                }
+                return [];
+            }
+
+            async function getFormData(forSave = false) {
+                const data = {};
+                [
+                    'clientName', 'clientAddress', 'reportDate', 'reportNumber', 'reportRevision', 'refProcesso',
+                    'introText', 'objectiveText', 'finalConclusion', 'engineerName', 'creaNumber', 'signatureCity', 'signatureDate',
+                    'micrommimetro', 'escalaMedicao', 'companyName', 'companyAddress', 'companyPhone', 'companyEmail'
+                ].forEach(id => {
+                    data[id] = document.getElementById(id).value;
+                });
+
+                const companyLogoInput = document.getElementById('companyLogo');
+                data.companyLogoUrl = forSave ? (companyLogoInput.files[0] ? await fileToDataURL(companyLogoInput.files[0]) : companyLogoInput.__src) : (companyLogoInput.__src || await fileToDataURL(companyLogoInput.files[0]));
+
+                const engineerSignatureInput = document.getElementById('engineerSignature');
+                data.engineerSignatureUrl = forSave ? (engineerSignatureInput.files[0] ? await fileToDataURL(engineerSignatureInput.files[0]) : engineerSignatureInput.__src) : (engineerSignatureInput.__src || await fileToDataURL(engineerSignatureInput.files[0]));
+
+                const artPdfInput = document.getElementById('artPdf');
+                data.artUrls = forSave ? (artPdfInput.files[0] ? await processFile(artPdfInput.files[0]) : artPdfInput.__src) : (artPdfInput.__src || await processFile(artPdfInput.files[0]));
+
+
+                data.visualItems = Array.from(document.querySelectorAll('.visual-item')).map(item => ({
+                    description: item.querySelector('.item-description').value,
+                    status: item.querySelector('.item-status').value,
+                    reason: item.querySelector('.item-reason').value
+                }));
+
+                data.equipments = Array.from(document.querySelectorAll('.equipment-item')).map(item => ({
+                    type: item.querySelector('.equipment-type').value,
+                    fabricante: item.querySelector('.equipment-fabricante').value,
+                    modelo: item.querySelector('.equipment-modelo').value,
+                    ano: item.querySelector('.equipment-ano').value,
+                    serie: item.querySelector('.equipment-serie').value,
+                    tensao: item.querySelector('.equipment-tensao').value,
+                    corrente: item.querySelector('.equipment-corrente').value,
+                    maxValue: item.querySelector('.equipment-max-value').value,
+                    r: item.querySelector('.equipment-r').value,
+                    s: item.querySelector('.equipment-s').value,
+                    t: item.querySelector('.equipment-t').value,
+                    resultado: item.querySelector('.equipment-resultado').value,
+                    reason: item.querySelector('.equipment-reason').value
+                }));
+
+                data.photos = [];
+                const photoItems = document.querySelectorAll('.photo-item');
+                for (const item of photoItems) {
+                    const fileInput = item.querySelector('.photo-file');
+                    const imgPreview = item.querySelector('img');
+                    data.photos.push({
+                        description: item.querySelector('.photo-description').value,
+                        src: forSave ? (fileInput.files[0] ? await fileToDataURL(fileInput.files[0]) : imgPreview.dataset.loadedSrc) : (imgPreview.dataset.loadedSrc || await fileToDataURL(fileInput.files[0]))
+                    });
+                }
+                return data;
+            }
+
+            function createReportPages(data) {
+                const pages = [];
+                let currentPage = 1;
+
+                // --- PÃ¡gina 1: Capa ---
+                const coverPage = document.createElement('div');
+                coverPage.className = 'report-page-container';
+                coverPage.innerHTML = `
+                <div class="report-page flex flex-col justify-between text-center p-10">
+                    <div class="flex-shrink-0">
+                        <img src="${data.companyLogoUrl || 'https://placehold.co/400x150/f0f0f0/CCCCCC?text=Sua+Empresa'}" alt="Logo da Empresa" class="max-h-32 w-auto mx-auto mb-16 object-contain">
+                    </div>
+                    <div class="flex-grow flex flex-col justify-center items-center">
+                        <h1 class="text-2xl font-bold">LAUDO DE MANUTENÃ‡ÃƒO EM CABINE PRIMÃRIA</h1>
+                        <p class="text-lg mt-2">${new Date(data.reportDate + 'T00:00:00').toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }).toUpperCase()}</p>
+                    </div>
+                    <div class="flex-shrink-0 mt-16">
+                        <p class="text-xl font-semibold">${data.clientName}</p>
+                    </div>
+                </div>`;
+                pages.push(coverPage);
+
+                // --- PÃ¡gina 2: IntroduÃ§Ã£o, Objetivo, Procedimentos ---
+                const introPage = document.createElement('div');
+                introPage.className = 'report-page-container';
+                introPage.innerHTML = `
+                <div class="report-page">
+                    ${createHeader(data, currentPage++)}
+                    <div class="report-content">
+                        <h3 class="report-section-title">1. INTRODUÃ‡ÃƒO</h3>
+                        <p>${data.introText}</p>
+                        <h3 class="report-section-title">2. OBJETIVO</h3>
+                        <p>${data.objectiveText}</p>
+                        <h3 class="report-section-title">3. PROCEDIMENTOS EXECUTADOS</h3>
+                        <ul class="list-disc list-inside space-y-1 text-sm">
+                            <li>VerificaÃ§Ã£o da conformidade dos materiais e equipamentos.</li>
+                            <li>Testes de operaÃ§Ãµes e funcionamento.</li>
+                            <li>VerificaÃ§Ã£o visual da montagem e estado dos componentes.</li>
+                            <li>VerificaÃ§Ã£o da presenÃ§a de umidade, vazamentos e infiltraÃ§Ãµes.</li>
+                            <li>Limpeza e reaperto geral de parafusos e conexÃµes.</li>
+                            <li>VerificaÃ§Ã£o de equipamento de seguranÃ§a e combate a incÃªndio.</li>
+                            <li>MediÃ§Ã£o de resistÃªncia de isolamento e contato.</li>
+                        </ul>
+                    </div>
+                    ${createFooter(data)}
+                </div>`;
+                pages.push(introPage);
+
+                // --- PÃ¡gina 3: Resultados da InspeÃ§Ã£o Visual ---
+                const visualResultsPage = document.createElement('div');
+                visualResultsPage.className = 'report-page-container';
+                visualResultsPage.innerHTML = `
+                <div class="report-page">
+                    ${createHeader(data, currentPage++)}
+                    <div class="report-content">
+                        <h3 class="report-section-title">4. RESULTADOS OBTIDOS - INSPEÃ‡ÃƒO VISUAL</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Item Verificado</th>
+                                    <th>Resultado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.visualItems.map(item => `
+                                    <tr>
+                                        <td>
+                                            ${item.description}
+                                            ${item.status === 'InsatisfatÃ³rio' && item.reason ? `<br><small style="color: #c53030; font-style: italic;"><strong>Motivo:</strong> ${item.reason}</small>` : ''}
+                                        </td>
+                                        <td>${item.status}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                    ${createFooter(data)}
+                </div>`;
+                pages.push(visualResultsPage);
+
+                // --- PÃ¡gina 4: Ensaios ElÃ©tricos ---
+                const electricTestPage = document.createElement('div');
+                electricTestPage.className = 'report-page-container';
+
+                let equipmentsHtml = data.equipments.map(eq => `
+                <div class="mt-4" style="page-break-inside: avoid;">
+                    <h4 class="font-semibold">${eq.type}</h4>
+                    <table class="text-xs">
+                        <tbody>
+                            <tr>
+                                <td><strong>Fabricante:</strong> ${eq.fabricante || 'N/A'}</td>
+                                <td><strong>Modelo/Tipo:</strong> ${eq.modelo || 'N/A'}</td>
+                                <td><strong>Ano:</strong> ${eq.ano || 'N/A'}</td>
+                                <td><strong>SÃ©rie:</strong> ${eq.serie || 'N/A'}</td>
+                            </tr>
+                             <tr>
+                                <td><strong>TensÃ£o:</strong> ${eq.tensao || 'N/A'} kV</td>
+                                <td colspan="3"><strong>Corrente:</strong> ${eq.corrente || 'N/A'} A</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h5 class="font-semibold mt-2 text-xs">ResistÃªncia de Contato (Valor MÃ¡x. Rec.: ${eq.maxValue} ÂµÎ©)</h5>
+                    <table>
+                        <thead><tr><th>Fase</th><th>ResistÃªncia (${getUnitFromScale(data.escalaMedicao)})</th></tr></thead>
+                        <tbody>
+                            <tr><td>Fase R / R-Massa</td><td>${eq.r || 'N/A'}</td></tr>
+                            <tr><td>Fase S / S-Massa</td><td>${eq.s || 'N/A'}</td></tr>
+                            <tr><td>Fase T / T-Massa</td><td>${eq.t || 'N/A'}</td></tr>
+                            <tr><td class="font-bold">Resultado</td><td class="font-bold">${eq.resultado}</td></tr>
+                        </tbody>
+                    </table>
+                    ${eq.resultado === 'InsatisfatÃ³rio' && eq.reason ? `<div style="font-size: 0.8em; color: #c53030; margin-top: 4px; border: 1px solid #fed7d7; background-color: #fff5f5; padding: 4px; border-radius: 4px;"><strong>Motivo:</strong> ${eq.reason}</div>` : ''}
+                </div>
+            `).join('');
+
+                electricTestPage.innerHTML = `
+                <div class="report-page">
+                    ${createHeader(data, currentPage++)}
+                    <div class="report-content">
+                        <h3 class="report-section-title">5. ENSAIOS ELÃ‰TRICOS</h3>
+                        <p class="text-xs"><strong>Equipamento Utilizado:</strong> MicrommÃ­metro ${data.micrommimetro || 'NÃ£o informado'} | <strong>Escala:</strong> ${data.escalaMedicao || 'NÃ£o informada'}</p>
+                        ${equipmentsHtml.length > 0 ? equipmentsHtml : '<p>Nenhum equipamento ensaiado.</p>'}
+                    </div>
+                    ${createFooter(data)}
+                </div>`;
+                pages.push(electricTestPage);
+
+                // --- PÃ¡ginas de Anexos FotogrÃ¡ficos ---
+                const photos = data.photos.filter(p => p.src);
+                for (let i = 0; i < photos.length; i += 4) {
+                    const photoChunk = photos.slice(i, i + 4);
+                    const photoPage = document.createElement('div');
+                    photoPage.className = 'report-page-container';
+
+                    // CORREÃ‡ÃƒO AQUI: max-w-full max-h-full para evitar esticamento no PDF
+                    let photoGridHtml = photoChunk.map(photo => `
+                    <div class="border p-1 rounded-md shadow-sm flex flex-col" style="page-break-inside: avoid;">
+                        <div class="w-full bg-gray-100 rounded-sm overflow-hidden flex items-center justify-center" style="aspect-ratio: 4 / 3;">
+                             <img src="${photo.src}" class="max-w-full max-h-full object-contain mx-auto my-auto" style="width: auto; height: auto;" alt="${photo.description || 'Anexo FotogrÃ¡fico'}">
+                        </div>
+                        <p class="text-center text-[9px] italic p-1 flex-shrink-0">${photo.description || '&nbsp;'}</p>
+                    </div>
+                `).join('');
+
+                    photoPage.innerHTML = `
+                    <div class="report-page">
+                        ${createHeader(data, currentPage++)}
+                        <div class="report-content flex flex-col">
+                            <h3 class="report-section-title flex-shrink-0">6. ANEXO FOTOGRÃFICO</h3>
+                            <div class="grid grid-cols-2 grid-rows-2 flex-grow gap-4 py-2">
+                                ${photoGridHtml}
+                            </div>
+                        </div>
+                        ${createFooter(data)}
+                    </div>`;
+                    pages.push(photoPage);
+                }
+
+                // --- PÃ¡ginas da ART ---
+                if (data.artUrls && data.artUrls.length > 0) {
+                    data.artUrls.forEach((url, index) => {
+                        const artPage = document.createElement('div');
+                        artPage.className = 'report-page-container';
+                        artPage.innerHTML = `
+                    <div class="report-page">
+                        ${createHeader(data, currentPage++)}
+                        <div class="report-content">
+                            <h3 class="report-section-title">7. ANEXO - ART</h3>
+                             <img src="${url}" class="w-auto h-auto max-w-full max-h-[220mm] object-contain mx-auto border rounded-md shadow-sm mt-4">
+                        </div>
+                        ${createFooter(data)}
+                    </div>`;
+                        pages.push(artPage);
+                    });
+                }
+
+                // --- PÃ¡gina Final: ConclusÃ£o ---
+                const conclusionPage = document.createElement('div');
+                conclusionPage.className = 'report-page-container';
+                conclusionPage.innerHTML = `
+                <div class="report-page">
+                    ${createHeader(data, currentPage)}
+                    <div class="report-content">
+                        <h3 class="report-section-title">8. CONCLUSÃƒO</h3>
+                        <p>${data.finalConclusion}</p>
+                        <div class="mt-auto pt-12 text-center">
+                            <div class="inline-flex flex-col items-center">
+                                <img src="${data.engineerSignatureUrl || 'https://placehold.co/200x80/f0f0f0/CCCCCC?text=Assinatura'}" alt="Assinatura" class="h-24 w-auto mx-auto mb-2 object-contain">
+                                <p class="border-t border-slate-400 pt-2 mt-2 px-12">${data.engineerName}</p>
+                                <p class="text-sm">Engenheiro Eletricista</p>
+                                <p class="text-sm font-bold">CREA: ${data.creaNumber}</p>
+                            </div>
+                            <p class="text-center mt-8 text-sm">${data.signatureCity}, ${new Date(data.signatureDate + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}.</p>
+                        </div>
+                    </div>
+                    ${createFooter(data)}
+                </div>`;
+                pages.push(conclusionPage);
+
+                return pages;
+            }
+
+            function createHeader(data, pageNumber) {
+                return `
+                <div class="report-header text-[10px]">
+                    <table class="w-full border-2 border-gray-800">
+                        <tbody>
+                            <tr>
+                                <td class="w-1/4 p-2 border-r-2 border-gray-800 align-middle text-center" rowspan="3">
+                                    <img src="${data.companyLogoUrl || 'https://placehold.co/200x80/f0f0f0/CCCCCC?text=Logo'}" class="max-h-20 w-auto object-contain inline-block">
+                                </td>
+                                <td class="p-1 text-center font-bold" colspan="3">LAUDO TÃ‰CNICO</td>
+                            </tr>
+                            <tr>
+                                <td class="p-1 border-t-2 border-gray-800" colspan="2"><strong>CLIENTE:</strong> ${data.clientName}</td>
+                                <td class="p-1 border-t-2 border-l-2 border-gray-800"><strong>PÃGINA:</strong> ${pageNumber}</td>
+                            </tr>
+                            <tr>
+                                <td class="p-1 border-t-2 border-gray-800" colspan="2"><strong>ENDEREÃ‡O:</strong> ${data.clientAddress}</td>
+                                <td class="p-1 border-t-2 border-l-2 border-gray-800"><strong>DATA:</strong> ${new Date(data.reportDate + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
+                            </tr>
+                             <tr>
+                                <td class="p-1 border-t-2 border-gray-800 text-center font-bold">${data.companyName}</td>
+                                <td class="p-1 border-t-2 border-l-2 border-gray-800"><strong>NÂº LAUDO:</strong> ${data.reportNumber}</td>
+                                <td class="p-1 border-t-2 border-l-2 border-gray-800"><strong>NÂº REF. PROCESSO:</strong> ${data.refProcesso}</td>
+                                <td class="p-1 border-t-2 border-l-2 border-gray-800"><strong>REV:</strong> ${data.reportRevision}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>`;
+            }
+
+            function createFooter(data) {
+                const phoneIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 inline-block mr-1.5" viewBox="0 0 20 20" fill="currentColor"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path></svg>`;
+                const emailIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 inline-block mr-1.5" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>`;
+                const addressIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 inline-block mr-1.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>`;
+
+                return `
+                <div class="report-footer text-[8pt] text-gray-600">
+                    <div class="w-full h-0.5 bg-gray-300 mb-3"></div>
+                    <div class="flex justify-between items-start">
+                        <div class="w-1/2 pr-4">
+                            <p class="font-bold text-gray-800 text-[9pt]">${data.companyName}</p>
+                            <p class="mt-1 flex items-start">${addressIcon} <span class="ml-1">${data.companyAddress}</span></p>
+                        </div>
+                        <div class="w-1/2 text-right">
+                            <p class="flex items-center justify-end">${phoneIcon} ${data.companyPhone}</p>
+                            <p class="mt-1 flex items-center justify-end">${emailIcon} ${data.companyEmail}</p>
+                        </div>
+                    </div>
+                </div>`;
+            }
+
+            async function updateAndRender() {
+                const formData = await getFormData();
+                const pages = createReportPages(formData);
+                reportOutput.innerHTML = '';
+                pages.forEach(page => reportOutput.appendChild(page));
+            }
+
+            async function downloadPDF() {
+                const downloadBtnText = document.getElementById('downloadBtnText');
+                const originalText = downloadBtnText.textContent;
+                downloadPdfBtn.disabled = true;
+                downloadBtnText.textContent = 'Processando...';
+
+                // Adiciona a classe para forÃ§ar as dimensÃµes corretas para o render
+                reportOutputContainer.classList.add('pdf-render-mode');
+
+                const pages = reportOutput.querySelectorAll('.report-page-container');
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pdfWidth = 210;
+                const pdfHeight = 297;
+
+                try {
+                    for (let i = 0; i < pages.length; i++) {
+                        const page = pages[i];
+                        const canvas = await html2canvas(page, {
+                            scale: 3,
+                            useCORS: true,
+                            logging: false,
+                            width: 794,
+                            height: 1123
+                        });
+                        if (i > 0) pdf.addPage();
+                        const imgData = canvas.toDataURL('image/jpeg', 0.9);
+                        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+                    }
+                    const reportNumber = document.getElementById('reportNumber').value || 'laudo-cabine-primaria';
+                    pdf.save(`${reportNumber}.pdf`);
+                } catch (error) {
+                    console.error("Erro ao gerar PDF:", error);
+                    alert(`Ocorreu um erro ao gerar o PDF. Verifique o console para mais detalhes.`);
+                } finally {
+                    // Remove a classe para restaurar o preview, ocorrendo erro ou nÃ£o
+                    reportOutputContainer.classList.remove('pdf-render-mode');
+                    downloadPdfBtn.disabled = false;
+                    downloadBtnText.textContent = originalText;
+                }
+            }
+
+            function showStatus(message, isSuccess = true) {
+                const statusMessage = document.getElementById('statusMessage');
+                statusMessage.textContent = message;
+                statusMessage.className = `text-center mb-4 h-6 ${isSuccess ? 'text-green-600' : 'text-red-600'}`;
+                setTimeout(() => {
+                    statusMessage.textContent = '';
+                }, 3000);
+            }
+
+            async function saveProgress() {
+                try {
+                    const dataToSave = await getFormData(true);
+                    const dataString = JSON.stringify(dataToSave, null, 2);
+                    const blob = new Blob([dataString], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    const reportNumber = document.getElementById('reportNumber').value || 'dados-laudo';
+                    a.href = url;
+                    a.download = `${reportNumber}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    showStatus('Dados baixados com sucesso!', true);
+                } catch (error) {
+                    console.error("Erro ao baixar dados:", error);
+                    showStatus('Falha ao baixar os dados.', false);
+                }
+            }
+
+            function populateForm(savedData) {
+                if (!savedData) {
+                    showStatus('Dados invÃ¡lidos para importaÃ§Ã£o.', false);
+                    return;
+                }
+                try {
+                    clearForm(false);
+
+                    Object.keys(savedData).forEach(key => {
+                        const el = document.getElementById(key);
+                        if (el && typeof savedData[key] === 'string' && !el.type.startsWith('file')) {
+                            el.value = savedData[key];
+                        }
+                    });
+
+                    if (savedData.companyLogoUrl) document.getElementById('companyLogo').__src = savedData.companyLogoUrl;
+                    if (savedData.engineerSignatureUrl) document.getElementById('engineerSignature').__src = savedData.engineerSignatureUrl;
+                    if (savedData.artUrls) document.getElementById('artPdf').__src = savedData.artUrls;
+
+                    if (savedData.visualItems && Array.isArray(savedData.visualItems)) {
+                        savedData.visualItems.forEach(itemData => addVisualItem(itemData));
+                    }
+                    if (savedData.equipments && Array.isArray(savedData.equipments)) {
+                        savedData.equipments.forEach(eqData => addEquipment(eqData));
+                    }
+                    if (savedData.photos && Array.isArray(savedData.photos)) {
+                        savedData.photos.forEach(photoData => addPhoto(photoData));
+                    }
+
+                    showStatus('Dados importados com sucesso!', true);
+                    updateAndRender();
+                } catch (error) {
+                    console.error("Erro ao popular formulÃ¡rio:", error);
+                    showStatus('Falha ao importar. Verifique o formato do arquivo.', false);
+                }
+            }
+
+            function handleFileImport(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        populateForm(data);
+                    } catch (error) {
+                        console.error("Erro ao ler o arquivo JSON:", error);
+                        showStatus('Arquivo invÃ¡lido. Selecione um arquivo JSON gerado por esta aplicaÃ§Ã£o.', false);
+                    }
+                };
+                reader.readAsText(file);
+                // Reset file input to allow re-uploading the same file
+                event.target.value = '';
+            }
+
+            function addInitialItems() {
+                const initialItems = ["Luvas para alta tensÃ£o", "Vara de manobra elÃ©trica", "IluminaÃ§Ã£o SubestaÃ§Ã£o PrimÃ¡ria", "IluminaÃ§Ã£o de emergÃªncia SubestaÃ§Ã£o PrimÃ¡ria", "Estrado de borracha", "Tomadas/iluminaÃ§Ã£o", "Extintor de incÃªndio"];
+                initialItems.forEach(item => addVisualItem({ description: item }));
+                addPhoto();
+                addEquipment();
+                document.getElementById('reportDate').valueAsDate = new Date();
+                document.getElementById('signatureDate').valueAsDate = new Date();
+            }
+
+            function clearForm(confirmFirst = true) {
+                if (confirmFirst && !confirm('Tem certeza que deseja limpar todo o formulÃ¡rio?')) {
+                    return;
+                }
+                reportForm.reset();
+                visualItemsContainer.innerHTML = '';
+                photosContainer.innerHTML = '';
+                equipmentsContainer.innerHTML = '';
+
+                addInitialItems();
+
+                updateAndRender();
+                if (confirmFirst) {
+                    showStatus('FormulÃ¡rio limpo.', true);
+                }
+            }
+
+            // --- InicializaÃ§Ã£o do script ---
+            addInitialItems();
+            updateAndRender();
+
+            // --- Event Listeners ---
+            reportForm.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(updateAndRender, 500);
+            });
+            reportForm.addEventListener('change', updateAndRender);
+            addVisualItemBtn.addEventListener('click', () => addVisualItem());
+            addPhotoBtn.addEventListener('click', () => addPhoto());
+            addEquipmentBtn.addEventListener('click', () => addEquipment());
+            downloadPdfBtn.addEventListener('click', downloadPDF);
+            saveProgressBtn.addEventListener('click', saveProgress);
+            importFileBtn.addEventListener('click', () => importFileInput.click());
+            importFileInput.addEventListener('change', handleFileImport);
+            clearFormBtn.addEventListener('click', () => clearForm(true));
+            escalaMedicaoSelect.addEventListener('change', updateAllEquipmentUnits);
+
+            // --- SincronizaÃ§Ã£o de Rolagem ---
+            const formScroller = document.getElementById('formContainer');
+            const previewScroller = document.getElementById('reportOutput');
+
+            formScroller.addEventListener('scroll', () => {
+                const formScrollableHeight = formScroller.scrollHeight - formScroller.clientHeight;
+                if (formScrollableHeight <= 0) return;
+
+                const scrollPercent = formScroller.scrollTop / formScrollableHeight;
+                const previewScrollableHeight = previewScroller.scrollHeight - previewScroller.clientHeight;
+
+                previewScroller.scrollTop = scrollPercent * previewScrollableHeight;
+            });
+        });
+    </script>
+</body>
+
+</html>
+

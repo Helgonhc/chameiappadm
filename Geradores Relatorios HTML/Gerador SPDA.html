@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Laudo SPDA Profissional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&family=Merriweather:ital,wght@0,400;1,400&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #312e81;
+            /* Indigo-900 */
+            --light-gray: #f3f4f6;
+            --medium-gray: #d1d5db;
+            --dark-gray: #374151;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-gray);
+        }
+
+        .form-section {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 1.5rem 2rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark-gray);
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-section-header svg {
+            width: 28px;
+            height: 28px;
+            color: var(--primary-color);
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background-color: #f9fafb;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+
+        .photo-preview-container img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+            border: 2px solid #e5e7eb;
+        }
+
+        .photo-entry-item .preview-img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+            border: 2px solid #e5e7eb;
+            background-color: #f9fafb;
+        }
+
+        /* ESTILOS DO RELATÓRIO GERADO */
+        .report-page-container {
+            width: 210mm;
+            margin: 1rem auto;
+            page-break-after: always;
+        }
+
+        .report-page-container:last-of-type {
+            page-break-after: auto;
+        }
+
+        .report-page {
+            background: white;
+            width: 210mm;
+            height: 297mm;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border: 1px solid #e5e7eb;
+            font-family: 'Inter', sans-serif;
+            font-size: 10.5pt;
+            color: #374151;
+        }
+
+        .report-footer {
+            padding: 8mm 12mm;
+            flex-shrink: 0;
+            border-top: 1px solid var(--medium-gray);
+            margin-top: auto;
+            text-align: center;
+            font-size: 8pt;
+            color: #6b7280;
+        }
+
+        .report-content {
+            flex-grow: 1;
+            padding: 12mm;
+            overflow: hidden;
+            font-family: 'Merriweather', serif;
+            page-break-inside: avoid;
+        }
+
+        .report-section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16pt;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+
+        .report-content p,
+        .report-content li {
+            text-align: justify;
+            line-height: 1.8;
+            margin-bottom: 1.25rem;
+            font-size: 10.5pt;
+        }
+
+        .report-content ul {
+            padding-left: 5mm;
+            list-style-position: outside;
+        }
+
+        .report-content table.data-table {
+            width: 100%;
+            font-size: 9pt;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            page-break-inside: avoid;
+        }
+
+        .report-content table.data-table th,
+        .report-content table.data-table td {
+            border-bottom: 1px solid var(--medium-gray);
+            padding: 10px 4px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .report-content table.data-table th {
+            background-color: transparent;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            color: var(--dark-gray);
+            border-bottom-width: 2px;
+        }
+
+        .report-content table.data-table tr:nth-child(even) {
+            background-color: var(--light-gray);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 9999px;
+            font-size: 9pt;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            text-align: center;
+        }
+
+        .status-conforme {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .status-observacoes {
+            background-color: #fef9c3;
+            color: #854d0e;
+        }
+
+        .status-nao-conforme {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Fotos de página inteira (pontos de inspeção e captação) */
+        .point-photo-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5mm;
+            margin-top: 1rem;
+            justify-content: flex-start;
+        }
+
+        .point-photo-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            background-color: #ffffff;
+            width: calc(50% - 2.5mm);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            page-break-inside: avoid;
+        }
+
+        .point-photo-image {
+            width: 100%;
+            height: 60mm;
+            object-fit: contain;
+            background-color: #f9fafb;
+            padding: 4px;
+        }
+
+        .point-photo-caption {
+            font-family: 'Inter', sans-serif;
+            font-size: 8pt;
+            text-align: center;
+            padding: 6px;
+            background-color: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+            font-weight: 600;
+            color: #4b5563;
+        }
+
+        /* Fotos dentro da página de Gerenciamento de Riscos */
+        .risk-photo-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8mm;
+            margin-top: 1rem;
+            justify-content: center;
+        }
+
+        .risk-photo-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            background-color: #ffffff;
+            width: 90%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            page-break-inside: avoid;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .risk-photo-card-image {
+            width: 100%;
+            height: 100mm;
+            object-fit: contain;
+            background-color: #f9fafb;
+            padding: 4px;
+        }
+
+        .risk-photo-card-caption {
+            font-family: 'Merriweather', serif;
+            font-size: 8.5pt;
+            text-align: justify;
+            padding: 6px 8px;
+            flex-grow: 1;
+            background-color: #ffffff;
+            border-top: 1px solid #e5e7eb;
+            line-height: 1.5;
+        }
+
+
+        @media print {
+            body {
+                background-color: #fff;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            #reportOutputContainer {
+                padding: 0;
+            }
+
+            .report-page-container {
+                margin: 0;
+                box-shadow: none;
+                border: none;
+            }
+
+            .report-page {
+                width: 210mm;
+                height: 297mm;
+                box-shadow: none;
+                border: none;
+            }
+        }
+    </style>
+</head>
+
+<body class="text-gray-800">
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-4 md:p-8">
+        <div id="formContainer" class="no-print">
+            <div class="max-w-2xl mx-auto">
+                <div class="text-center mb-10">
+                    <h1 class="text-3xl md:text-4xl font-bold text-gray-800"
+                        style="font-family: 'Montserrat', sans-serif;">Gerador de Laudos de SPDA</h1>
+                    <p class="text-gray-600 mt-2">Uma ferramenta profissional para laudos de engenharia.</p>
+                </div>
+
+                <div class="form-section sticky top-4 z-20 flex items-center justify-between flex-wrap gap-4">
+                    <h2 class="text-lg font-semibold mb-0 border-b-0 pb-0"
+                        style="font-family: 'Montserrat', sans-serif;">Ações de Dados</h2>
+                    <div class="flex gap-2 flex-wrap">
+                        <button type="button" id="importFileBtn"
+                            class="bg-teal-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-teal-700 transition-colors">Importar
+                            Dados</button>
+                        <button type="button" id="saveProgressBtn"
+                            class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Baixar
+                            Dados</button>
+                        <input type="file" id="importFileInput" class="hidden" accept=".json,.txt">
+                        <button type="button" id="clearFormBtn"
+                            class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors">Limpar
+                            Tudo</button>
+                    </div>
+                </div>
+                <div id="statusMessage" class="text-center mb-4 h-6 font-semibold"></div>
+
+                <form id="reportForm">
+                    <div class="form-section">
+                        <div class="form-section-header">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.106a.75.75 0 010 1.06l-1.591 1.59a.75.75 0 11-1.06-1.06l1.59-1.59a.75.75 0 011.06 0zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.894 17.894a.75.75 0 01-1.06 0l-1.59-1.591a.75.75 0 111.06-1.06l1.59 1.59a.75.75 0 010 1.061zM12 18a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM5.106 17.894a.75.75 0 010-1.06l1.59-1.59a.75.75 0 011.06 1.06l-1.59 1.59a.75.75 0 01-1.06 0zM3 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H3.75A.75.75 0 013 12zM6.106 6.106a.75.75 0 011.06 0l1.591 1.59a.75.75 0 01-1.06 1.06l-1.59-1.59a.75.75 0 010-1.06z" />
+                            </svg>
+                            <h2>Capa e Dados Gerais</h2>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div><label for="reportTitle" class="form-label">Título Principal do Laudo</label><input
+                                    type="text" id="reportTitle" class="form-input text-lg font-semibold"
+                                    value="LAUDO DE INSPEÇÃO DE SPDA"></div>
+                            <div><label for="reportSubtitle" class="form-label">Subtítulo</label><input type="text"
+                                    id="reportSubtitle" class="form-input"
+                                    value="Sistema de Proteção contra Descargas Atmosféricas"></div>
+                            <hr class="md:col-span-2 my-2" />
+                            <div><label for="companyName" class="form-label">Sua Empresa</label><input type="text"
+                                    id="companyName" class="form-input" placeholder="Digite o Nome da Sua Empresa..."
+                                    required>
+                            </div>
+                            <div><label for="companyLogo" class="form-label">Logo da Sua Empresa</label><input
+                                    type="file" id="companyLogo" accept="image/*" class="form-input"></div>
+                            <div class="md:col-span-2"><label for="companyAddress" class="form-label">Endereço da Sua
+                                    Empresa</label><input type="text" id="companyAddress" class="form-input"
+                                    placeholder="Digite o endereço completo da sua empresa..." required>
+                            </div>
+                            <hr class="md:col-span-2 my-2" />
+                            <div><label for="clientName" class="form-label">Cliente</label><input type="text"
+                                    id="clientName" class="form-input" placeholder="Digite o nome do cliente..."
+                                    required></div>
+                            <div><label for="reportNumber" class="form-label">Nº do Laudo</label><input type="text"
+                                    id="reportNumber" class="form-input" placeholder="Ex: 2025/001" required>
+                            </div>
+                            <div class="md:col-span-2"><label for="clientAddress" class="form-label">Endereço do
+                                    Cliente</label><input type="text" id="clientAddress" class="form-input"
+                                    placeholder="Digite o endereço completo do cliente..." required>
+                            </div>
+                            <div><label for="reportDate" class="form-label">Data da Inspeção</label><input type="date"
+                                    id="reportDate" class="form-input" required></div>
+                            <div><label for="reportRevision" class="form-label">Revisão</label><input type="text"
+                                    id="reportRevision" class="form-input" placeholder="Rev. 0"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-header">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M11.25 4.533A9.707 9.707 0 006 3a9.735 9.735 0 00-3.25.555.75.75 0 00-.5.707v14.5a.75.75 0 00.5.707A9.735 9.735 0 006 21a9.707 9.707 0 005.25-1.533.75.75 0 000-1.332A8.207 8.207 0 016 18a8.235 8.235 0 01-2.25-.33v-11.5c.49-.126 1.01-.22 1.556-.277l.004-.001a.75.75 0 00.696-.749v-.065a.75.75 0 00-.75-.75 8.25 8.25 0 00-1.5.152V6a.75.75 0 001.5 0V5.263a8.217 8.217 0 014.25-1.189.75.75 0 000-1.492z" />
+                                <path
+                                    d="M18 3a9.735 9.735 0 00-3.25.555.75.75 0 00-.5.707v14.5a.75.75 0 00.5.707A9.735 9.735 0 0018 21a9.707 9.707 0 005.25-1.533.75.75 0 000-1.332A8.207 8.207 0 0118 18a8.235 8.235 0 01-2.25-.33v-11.5c.49-.126 1.01-.22 1.556-.277l.004-.001a.75.75 0 00.696-.749v-.065a.75.75 0 00-.75-.75 8.25 8.25 0 00-1.5.152V6a.75.75 0 001.5 0V5.263a8.217 8.217 0 014.25-1.189.75.75 0 000-1.492A9.707 9.707 0 0018 3z" />
+                            </svg>
+                            <h2>Conteúdo Introdutório</h2>
+                        </div>
+                        <div><label for="textDecisaoNormativa" class="form-label">Decisão Normativa</label><textarea
+                                id="textDecisaoNormativa" rows="10" class="form-textarea"></textarea></div>
+                        <div class="mt-4"><label for="textCaracteristicasGerais" class="form-label">Características
+                                Gerais</label><textarea id="textCaracteristicasGerais" rows="5"
+                                class="form-textarea"></textarea></div>
+                        <div class="mt-4"><label for="textObjetivoInspecao" class="form-label">Objetivo da
+                                Inspeção</label><textarea id="textObjetivoInspecao" rows="8"
+                                class="form-textarea"></textarea></div>
+                        <div class="mt-4"><label for="textInspecao" class="form-label">Inspeção</label><textarea
+                                id="textInspecao" rows="8" class="form-textarea"></textarea></div>
+                        <div class="mt-6 border-t pt-6">
+                            <label for="textCaptacao" class="form-label font-semibold text-lg">Captação</label>
+                            <textarea id="textCaptacao" rows="10" class="form-textarea"></textarea>
+                        </div>
+                        <div class="mt-4">
+                            <label for="captacaoAnexo" class="form-label">Anexo(s) para Seção Captação</label>
+                            <input type="file" id="captacaoAnexo" accept="image/*" class="form-input" multiple>
+                            <div id="captacaoAnexoPreview" class="mt-2 flex flex-wrap gap-2"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-header">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M11.078 2.25c-.917 0-1.699.663-1.946 1.542A12.034 12.034 0 006 5.514a.75.75 0 001.498.07 10.533 10.533 0 013.578-2.032.75.75 0 01.946-.079Z"
+                                    clip-rule="evenodd" />
+                                <path fill-rule="evenodd"
+                                    d="M12.922 2.25c.917 0 1.699.663 1.946 1.542.205.74.288 1.503.294 2.274a.75.75 0 101.498-.07 12.036 12.036 0 00-.293-2.274c-.247-.879-1.03-1.542-1.945-1.542a.75.75 0 00-.554.22l-2.053 2.053a.75.75 0 001.06 1.06l2.053-2.053a.75.75 0 00.554-.22z"
+                                    clip-rule="evenodd" />
+                                <path fill-rule="evenodd"
+                                    d="M11.078 21.75c-.917 0-1.699-.663-1.946-1.542a12.034 12.034 0 01-3.578-2.031.75.75 0 00-1.06 1.061 13.536 13.536 0 004.108 2.285.75.75 0 00.946-.079l2.053-2.053a.75.75 0 00-1.06-1.06l-2.053 2.053a.75.75 0 00-.554-.22z"
+                                    clip-rule="evenodd" />
+                                <path fill-rule="evenodd"
+                                    d="M12.922 21.75a.75.75 0 00.554-.22l2.053-2.053a.75.75 0 10-1.06-1.06l-2.053 2.053a.75.75 0 00.554 1.28c.917 0 1.699-.663 1.946-1.542a12.034 12.034 0 003.578-2.031.75.75 0 10-1.06-1.061 10.533 10.533 0 01-3.578 2.032.75.75 0 00-.946.079z"
+                                    clip-rule="evenodd" />
+                                <path fill-rule="evenodd"
+                                    d="M10.03 8.93a.75.75 0 01.94-.316l3 .75a.75.75 0 01-.316 1.48l-3-.75a.75.75 0 01-.624-1.164z"
+                                    clip-rule="evenodd" />
+                                <path d="M12 10.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                                <path fill-rule="evenodd" d="M12 10.5a.75.75 0 010 1.5H5.25a.75.75 0 010-1.5H12z"
+                                    clip-rule="evenodd" />
+                                <path d="M12.75 14.25a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+                                <path fill-rule="evenodd" d="M12.75 14.25a.75.75 0 010-1.5h6a.75.75 0 010 1.5h-6z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            <h2>Equipamentos</h2>
+                        </div>
+                        <div id="equipmentContainer" class="space-y-4"></div>
+                        <button type="button" id="addEquipmentBtn"
+                            class="mt-4 bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors w-full">Adicionar
+                            Equipamento</button>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-header">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 005.169-4.438 18.754 18.754 0 002.042-5.997c-.044-3.39-2.285-6.161-5.23-7.585a.758.758 0 00-.814.025l-2.282 1.63a.75.75 0 00-.294.664v.005l-.014.015a12.193 12.193 0 00-2.585 3.339.75.75 0 00.28.98l1.63 1.085a.75.75 0 00.98-.28l.015-.014v.005a.75.75 0 00.664-.294l1.63-2.282a.75.75 0 00.025-.814 11.232 11.232 0 01-3.64-1.127 1.5 1.5 0 00-1.932 2.323c1.23 1.23 2.417 2.545 3.518 3.965a18.753 18.753 0 01-5.997 2.042 16.975 16.975 0 01-4.438 5.169l-.04.07-.016.028a.76.76 0 010 .723l.015.028.04.071a16.975 16.975 0 004.438 5.169 18.753 18.753 0 005.997 2.042c3.39-.044 6.161-2.285 7.585-5.23a.758.758 0 00-.025-.814l-1.63-2.282a.75.75 0 00-.664-.294h-.005l-.014-.015a12.193 12.193 0 00-3.339-2.585.75.75 0 00-.98.28l-1.085 1.63a.75.75 0 00.28.98l.014.014h.005a.75.75 0 00.294.664l2.282 1.63a.75.75 0 00.814.025c2.945-1.424 5.186-4.195 5.23-7.585a18.754 18.754 0 01-2.042 5.997 16.975 16.975 0 01-5.169 4.438z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            <h2>Pontos de Inspeção</h2>
+                        </div>
+                        <button type="button" id="addInspectionPointBtn"
+                            class="mb-6 bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors w-full">Adicionar
+                            Novo Ponto de Inspeção</button>
+                        <div id="inspectionPointsContainer" class="space-y-8"></div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-header">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M12.983 2.523a3 3 0 00-2.12.878L5.293 8.27a3 3 0 00-.878 2.122v2.176a3 3 0 00.878 2.12l5.572 5.572a3 3 0 002.12.878h2.176a3 3 0 002.122-.878l5.57-5.57a3 3 0 00.878-2.122v-2.176a3 3 0 00-.878-2.12l-5.57-5.572a3 3 0 00-2.122-.878H12.983zM14.25 9.75a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75h-.008a.75.75 0 01-.75-.75V9.75zM13.5 12a.75.75 0 000 1.5h.008a.75.75 0 000-1.5H13.5z" />
+                            </svg>
+                            <h2>Gerenciamento de Riscos</h2>
+                        </div>
+                        <div id="riskSectionsContainer" class="space-y-8"></div>
+                        <button type="button" id="addRiskSectionBtn"
+                            class="mt-4 bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors w-full">Adicionar
+                            Seção de Risco</button>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-header">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M8.603 3.799A4.49 4.49 0 0112 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 013.498 1.548A4.491 4.491 0 0119.502 12a4.491 4.491 0 01-1.549 3.397 4.491 4.491 0 01-1.548 3.498 4.49 4.49 0 01-1.549 3.397A4.49 4.49 0 0112 21.75a4.49 4.49 0 01-3.397-1.549 4.49 4.49 0 01-3.498-1.548A4.491 4.491 0 014.5 12a4.491 4.491 0 011.549-3.397A4.49 4.49 0 019.55 5.347a4.49 4.49 0 01-3.498-1.548A4.49 4.49 0 018.603 3.8zM12 15a.75.75 0 01.75.75v.008a.75.75 0 01-1.5 0V15.75a.75.75 0 01.75-.75z"
+                                    clip-rule="evenodd" />
+                                <path d="M12 6.75a.75.75 0 01.75.75v5.25a.75.75 0 01-1.5 0V7.5a.75.75 0 01.75-.75z" />
+                            </svg>
+                            <h2>Conclusão e Responsável</h2>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="md:col-span-2"><label for="finalConclusion" class="form-label">Texto da
+                                    Conclusão Geral</label><textarea id="finalConclusion" rows="8" class="form-textarea"
+                                    placeholder="Com base na inspeção visual, medições de continuidade e resistência de aterramento, atesta-se que o SPDA..."></textarea>
+                            </div>
+                            <div><label for="engineerName" class="form-label">Nome do Responsável Técnico</label><input
+                                    type="text" id="engineerName" class="form-input" value="Anderson Diniz" required>
+                            </div>
+                            <div><label for="engineerTitle" class="form-label">Título</label><input type="text"
+                                    id="engineerTitle" class="form-input" value="Engenheiro Eletricista" required></div>
+                            <div><label for="creaNumber" class="form-label">CREA</label><input type="text"
+                                    id="creaNumber" class="form-input" value="254516/D" required></div>
+                            <div><label for="signatureCity" class="form-label">Cidade da Assinatura</label><input
+                                    type="text" id="signatureCity" class="form-input" value="Contagem" required></div>
+                            <div class="md:col-span-2"><label for="engineerSignature" class="form-label">Upload da
+                                    Assinatura</label><input type="file" id="engineerSignature" accept="image/*"
+                                    class="form-input"></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="reportOutputContainer">
+            <div
+                class="no-print bg-gray-800 text-white p-4 flex justify-between items-center sticky top-0 z-50 shadow-lg rounded-t-lg">
+                <h3 class="font-bold text-lg" style="font-family: 'Montserrat', sans-serif;">Pré-visualização do Laudo
+                </h3>
+                <div class="flex gap-2">
+                    <button id="downloadPdfBtn"
+                        class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">Gerar
+                        PDF</button>
+                </div>
+            </div>
+            <div id="reportOutput" class="bg-gray-300 p-4 md:p-8 rounded-b-lg overflow-y-auto"
+                style="height: calc(100vh - 80px);"></div>
+        </div>
+    </div>
+
+    <template id="equipmentTemplate">
+        <div class="equipment-item grid grid-cols-1 sm:grid-cols-4 gap-4 items-end p-2 border-t border-gray-100">
+            <div class="sm:col-span-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div><label class="form-label text-sm">Equipamento</label><input type="text"
+                        class="form-input text-sm equip-name" placeholder="Terrômetro Digital"></div>
+                <div><label class="form-label text-sm">Marca</label><input type="text"
+                        class="form-input text-sm equip-brand" placeholder="CEM"></div>
+                <div><label class="form-label text-sm">Modelo/Serial</label><input type="text"
+                        class="form-input text-sm equip-model" placeholder="DT-5300B"></div>
+            </div>
+            <button type="button"
+                class="remove-btn bg-red-100 text-red-700 text-sm font-semibold py-2 px-3 rounded-lg hover:bg-red-200">Remover</button>
+        </div>
+    </template>
+
+    <template id="inspectionPointTemplate">
+        <div class="inspection-point border-2 border-indigo-100 p-6 rounded-lg bg-white shadow-sm">
+            <h4 class="font-semibold text-xl mb-4 border-b pb-2 flex justify-between items-center text-gray-800"
+                style="font-family: 'Montserrat', sans-serif;">
+                <span class="point-title">Novo Ponto de Inspeção</span>
+                <button type="button" class="remove-btn text-red-600 hover:text-red-800 text-sm font-semibold">Remover
+                    Ponto</button>
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                <div class="md:col-span-2"><label class="form-label">Local da Inspeção</label><input type="text"
+                        class="form-input point-location" placeholder="Ex: Portaria, Galpão G1"></div>
+                <div><label for="point-protection-level" class="form-label">Nível de Proteção</label><input type="text"
+                        id="point-protection-level" class="form-input point-protection-level"
+                        placeholder="Ex: Nível II"></div>
+                <div><label for="point-protection-model" class="form-label">Modelo de Proteção</label><input type="text"
+                        id="point-protection-model" class="form-input point-protection-model"
+                        placeholder="Ex: Gaiola de Faraday"></div>
+                <div class="md:col-span-2"><label for="point-subsystem-captor" class="form-label">Subsistema
+                        Captor</label><textarea id="point-subsystem-captor" class="form-textarea point-subsystem-captor"
+                        rows="3" placeholder="Descrição..."></textarea></div>
+                <div class="md:col-span-2"><label for="point-subsystem-descida" class="form-label">Subsistema de
+                        Descidas</label><textarea id="point-subsystem-descida"
+                        class="form-textarea point-subsystem-descida" rows="3" placeholder="Descrição..."></textarea>
+                </div>
+                <div class="md:col-span-2"><label for="point-subsystem-aterramento" class="form-label">Subsistema de
+                        Aterramento</label><textarea id="point-subsystem-aterramento"
+                        class="form-textarea point-subsystem-aterramento" rows="3"
+                        placeholder="Descrição..."></textarea></div>
+                <div><label for="point-resistance" class="form-label">Resistência de Aterramento (Ω)</label><input
+                        type="number" step="0.01" id="point-resistance" class="form-input point-resistance"
+                        placeholder="3.65"></div>
+                <div class="md:col-span-2"><label for="point-status" class="form-label">Status do Ponto</label><select
+                        id="point-status" class="form-select point-status">
+                        <option value="Conforme">Conforme</option>
+                        <option value="Conforme com Observações">Conforme com Observações</option>
+                        <option value="Não Conforme">Não Conforme</option>
+                    </select></div>
+                <div class="md:col-span-2"><label for="point-visual-notes" class="form-label">Observações
+                        Gerais</label><textarea id="point-visual-notes" class="form-textarea point-visual-notes"
+                        rows="3" placeholder="Descrever condições gerais, não conformidades, etc."></textarea></div>
+                <div class="md:col-span-2 mt-4">
+                    <label class="form-label">Anexos Fotográficos do Ponto</label>
+                    <input type="file" class="form-input point-photos" multiple accept="image/*">
+                    <div class="photo-preview-container grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-2">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="riskSectionTemplate">
+        <div class="risk-section border-2 border-indigo-100 p-6 rounded-lg bg-white shadow-sm">
+            <div class="flex justify-between items-center border-b pb-2 mb-4">
+                <input type="text" class="form-input risk-section-title font-semibold text-xl"
+                    placeholder="Título da Seção (Ex: Análise de Risco)">
+                <button type="button" class="remove-btn text-red-600 hover:text-red-800 text-sm font-semibold">Remover
+                    Seção</button>
+            </div>
+            <label class="form-label">Conteúdo da Seção</label>
+            <textarea class="form-textarea risk-section-content" rows="8"
+                placeholder="Escreva o texto desta seção aqui."></textarea>
+            <div class="mt-4">
+                <label class="form-label">Anexos Fotográficos da Seção</label>
+                <div class="risk-photos-container space-y-4"></div>
+                <button type="button"
+                    class="add-photo-btn mt-2 bg-gray-200 text-gray-800 text-sm font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 w-full">Adicionar
+                    Foto</button>
+            </div>
+        </div>
+    </template>
+
+    <template id="photoEntryTemplate">
+        <div class="photo-entry-item border-t border-gray-200 pt-4 flex flex-col sm:flex-row gap-4">
+            <div class="flex-shrink-0 text-center">
+                <img class="preview-img" src="https://placehold.co/120x120/f0f0f0/CCCCCC?text=Foto" alt="Preview">
+                <input type="file" class="photo-input hidden" accept="image/*">
+                <button type="button"
+                    class="change-photo-btn mt-2 bg-gray-100 text-gray-700 text-xs font-semibold py-1 px-3 rounded hover:bg-gray-200">Escolher
+                    Foto</button>
+            </div>
+            <div class="flex-grow">
+                <label class="form-label text-sm">Descrição da Foto</label>
+                <textarea class="form-textarea photo-description" rows="4"
+                    placeholder="Descreva a evidência ou o ponto de atenção..."></textarea>
+            </div>
+            <button type="button"
+                class="remove-btn self-start sm:self-center bg-red-100 text-red-700 text-sm font-semibold py-2 px-3 rounded-lg hover:bg-red-200">Remover</button>
+        </div>
+    </template>
+
+    <script>
+        const { jsPDF } = window.jspdf;
+
+        let debounceTimer;
+
+        // --- LÓGICA DO FORMULÁRIO (ADICIONAR/REMOVER ELEMENTOS) ---
+        function addEquipment(data = {}) {
+            const container = document.getElementById('equipmentContainer');
+            const template = document.getElementById('equipmentTemplate').content.cloneNode(true);
+            const item = template.querySelector('.equipment-item');
+            item.querySelector('.equip-name').value = data.name || '';
+            item.querySelector('.equip-brand').value = data.brand || '';
+            item.querySelector('.equip-model').value = data.model || '';
+            container.appendChild(item);
+        }
+
+        function addInspectionPoint(data = {}) {
+            const container = document.getElementById('inspectionPointsContainer');
+            const template = document.getElementById('inspectionPointTemplate').content.cloneNode(true);
+            const item = template.querySelector('.inspection-point');
+            item.querySelector('.point-location').value = data.location || '';
+            item.querySelector('.point-protection-level').value = data.protection_level || '';
+            item.querySelector('.point-protection-model').value = data.protection_model || '';
+            item.querySelector('.point-subsystem-captor').value = data.subsystem_captor || '';
+            item.querySelector('.point-subsystem-descida').value = data.subsystem_descida || '';
+            item.querySelector('.point-subsystem-aterramento').value = data.subsystem_aterramento || '';
+            item.querySelector('.point-visual-notes').value = data.visualNotes || '';
+            item.querySelector('.point-resistance').value = data.resistance || '';
+            item.querySelector('.point-status').value = data.status || 'Conforme';
+            container.appendChild(item);
+            updatePointTitles();
+        }
+
+        function addRiskSection(data = {}) {
+            const container = document.getElementById('riskSectionsContainer');
+            const template = document.getElementById('riskSectionTemplate').content.cloneNode(true);
+            const item = template.querySelector('.risk-section');
+            item.querySelector('.risk-section-title').value = data.title || '';
+            item.querySelector('.risk-section-content').value = data.content || '';
+            const photoContainer = item.querySelector('.risk-photos-container');
+            if (data.photos) {
+                data.photos.forEach(p => addPhotoEntry(photoContainer, p));
+            }
+            container.appendChild(item);
+        }
+
+        function addPhotoEntry(container, data = {}) {
+            if (!container) return;
+            const template = document.getElementById('photoEntryTemplate').content.cloneNode(true);
+            const item = template.querySelector('.photo-entry-item');
+
+            if (data.src) item.querySelector('.preview-img').src = data.src;
+            if (data.description) item.querySelector('.photo-description').value = data.description;
+            container.appendChild(item);
+        }
+
+        function updatePointTitles() {
+            document.querySelectorAll('.inspection-point').forEach((point, index) => {
+                const location = point.querySelector('.point-location').value || `Ponto ${index + 1}`;
+                point.querySelector('.point-title').textContent = location;
+            });
+        }
+
+        // --- COLETA E MANIPULAÇÃO DE DADOS ---
+        function fileToDataURL(file) {
+            return new Promise(resolve => {
+                if (!file) { resolve(null); return; }
+                const reader = new FileReader();
+                reader.onload = e => resolve(e.target.result);
+                reader.onerror = () => resolve(null);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function getFilesAsDataURLs(fileList) {
+            if (!fileList || fileList.length === 0) return [];
+            return Promise.all(Array.from(fileList).map(fileToDataURL));
+        }
+
+        async function getFormData(forSave = false) {
+            const data = { general: {}, textSections: {}, equipments: [], inspectionPoints: [], riskSections: [] };
+            const formIds = ['reportTitle', 'reportSubtitle', 'companyName', 'companyAddress', 'companyPhone', 'companyEmail', 'clientName', 'reportNumber', 'clientAddress', 'reportDate', 'reportRevision', 'finalConclusion', 'engineerName', 'engineerTitle', 'creaNumber', 'signatureCity'];
+            formIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) data.general[id] = el.value;
+            });
+
+            const textIds = ['textDecisaoNormativa', 'textCaracteristicasGerais', 'textObjetivoInspecao', 'textInspecao', 'textCaptacao'];
+            textIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) data.textSections[id] = el.value;
+            });
+
+            async function getFileData(inputId) {
+                const input = document.getElementById(inputId);
+                if (forSave) {
+                    return input.files[0] ? await fileToDataURL(input.files[0]) : (input.__src || null);
+                }
+                return input.__src || await fileToDataURL(input.files[0]);
+            }
+
+            data.general.companyLogoUrl = await getFileData('companyLogo');
+            data.general.engineerSignatureUrl = await getFileData('engineerSignature');
+
+            const captacaoInput = document.getElementById('captacaoAnexo');
+            data.general.captacaoAnexoUrls = forSave ? (captacaoInput.files.length > 0 ? await getFilesAsDataURLs(captacaoInput.files) : (captacaoInput.__src || [])) : (captacaoInput.__src || await getFilesAsDataURLs(captacaoInput.files));
+
+            data.equipments = Array.from(document.querySelectorAll('.equipment-item')).map(el => ({ name: el.querySelector('.equip-name').value, brand: el.querySelector('.equip-brand').value, model: el.querySelector('.equip-model').value }));
+
+            for (const el of document.querySelectorAll('.inspection-point')) {
+                const photoInput = el.querySelector('.point-photos');
+                data.inspectionPoints.push({
+                    location: el.querySelector('.point-location').value, protection_level: el.querySelector('.point-protection-level').value,
+                    protection_model: el.querySelector('.point-protection-model').value, subsystem_captor: el.querySelector('.point-subsystem-captor').value,
+                    subsystem_descida: el.querySelector('.point-subsystem-descida').value, subsystem_aterramento: el.querySelector('.point-subsystem-aterramento').value,
+                    visualNotes: el.querySelector('.point-visual-notes').value, resistance: el.querySelector('.point-resistance').value,
+                    status: el.querySelector('.point-status').value,
+                    photos: forSave ? (photoInput.files.length > 0 ? await getFilesAsDataURLs(photoInput.files) : (photoInput.__src || [])) : (photoInput.__src || await getFilesAsDataURLs(photoInput.files))
+                });
+            }
+
+            for (const el of document.querySelectorAll('.risk-section')) {
+                const photos = [];
+                for (const item of el.querySelectorAll('.photo-entry-item')) {
+                    const img = item.querySelector('.preview-img');
+                    const photoInput = item.querySelector('.photo-input');
+                    let src = null;
+                    if (forSave) {
+                        src = photoInput.files[0] ? await fileToDataURL(photoInput.files[0]) : (img.src.startsWith('https://placehold.co') ? null : img.src);
+                    } else {
+                        src = (img.src.startsWith('https://placehold.co') ? null : img.src) || await fileToDataURL(photoInput.files[0]);
+                    }
+                    if (src) {
+                        photos.push({ src, description: item.querySelector('.photo-description').value });
+                    }
+                }
+                data.riskSections.push({
+                    title: el.querySelector('.risk-section-title').value,
+                    content: el.querySelector('.risk-section-content').value,
+                    photos: photos
+                });
+            }
+
+            return data;
+        }
+
+        function populateForm(data) {
+            if (!data) {
+                showStatus('Dados de arquivo inválidos.', false);
+                return;
+            }
+
+            clearForm(false);
+
+            if (data.general) {
+                Object.keys(data.general).forEach(key => {
+                    const el = document.getElementById(key);
+                    if (el && typeof data.general[key] !== 'object' && el.type !== 'file') {
+                        el.value = data.general[key];
+                    }
+                });
+                document.getElementById('companyLogo').__src = data.general.companyLogoUrl;
+                document.getElementById('engineerSignature').__src = data.general.engineerSignatureUrl;
+                document.getElementById('captacaoAnexo').__src = data.general.captacaoAnexoUrls;
+            }
+
+            if (data.textSections) {
+                Object.keys(data.textSections).forEach(key => {
+                    const el = document.getElementById(key);
+                    if (el) el.value = data.textSections[key];
+                });
+            }
+
+            if (data.equipments) data.equipments.forEach(addEquipment);
+            if (data.inspectionPoints) {
+                data.inspectionPoints.forEach(pointData => {
+                    addInspectionPoint(pointData);
+                    const lastPoint = document.querySelector('.inspection-point:last-of-type');
+                    if (lastPoint && pointData.photos && pointData.photos.length > 0) {
+                        const previewContainer = lastPoint.querySelector('.photo-preview-container');
+                        lastPoint.querySelector('.point-photos').__src = pointData.photos;
+                        pointData.photos.forEach(src => { if (src) previewContainer.innerHTML += `<img src="${src}">`; });
+                    }
+                });
+            }
+            if (data.riskSections) {
+                data.riskSections.forEach(sec => addRiskSection(sec));
+            }
+
+            updatePreview();
+            showStatus('Dados importados com sucesso!', true);
+        }
+
+        // --- LÓGICA DE GERAÇÃO DO RELATÓRIO ---
+        async function updatePreview() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(async () => {
+                try {
+                    const data = await getFormData();
+                    const pages = createReportPages(data);
+                    const reportOutput = document.getElementById('reportOutput');
+                    reportOutput.innerHTML = '';
+                    pages.forEach(page => reportOutput.appendChild(page));
+                } catch (error) { console.error("Erro na pré-visualização:", error); }
+            }, 300);
+        }
+
+        async function downloadPDF() {
+            const btn = document.getElementById('downloadPdfBtn');
+            btn.disabled = true;
+            btn.innerHTML = 'Gerando...';
+
+            try {
+                const reportOutput = document.getElementById('reportOutput');
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const reportPages = reportOutput.querySelectorAll('.report-page');
+                const reportNumberEl = document.getElementById('reportNumber');
+                const fileName = (reportNumberEl && reportNumberEl.value) ? `${reportNumberEl.value}.pdf` : 'laudo-spda.pdf';
+
+                for (let i = 0; i < reportPages.length; i++) {
+                    const pageElement = reportPages[i];
+                    await new Promise(resolve => setTimeout(resolve, 0));
+                    const canvas = await html2canvas(pageElement, {
+                        scale: 3,
+                        useCORS: true,
+                        logging: false,
+                        scrollX: -window.scrollX,
+                        scrollY: -window.scrollY,
+                        windowWidth: pageElement.scrollWidth,
+                        windowHeight: pageElement.scrollHeight
+                    });
+                    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+
+                    if (i > 0) {
+                        pdf.addPage();
+                    }
+                    pdf.addImage(imgData, 'JPEG', 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight());
+                }
+
+                pdf.save(fileName);
+
+            } catch (error) {
+                console.error("Erro ao gerar PDF:", error);
+                showStatus('Erro ao gerar PDF.', false);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Gerar PDF';
+            }
+        }
+
+        function createReportPages(data) {
+            const pageContents = getPageContents(data);
+            const totalPages = pageContents.length;
+            return pageContents.map((pageData, index) => {
+                const pageContainer = document.createElement('div');
+                pageContainer.className = 'report-page-container';
+                const pageElement = document.createElement('div');
+                pageElement.className = 'report-page';
+                if (pageData.isCover) {
+                    pageElement.innerHTML = pageData.content;
+                } else {
+                    pageElement.innerHTML = `${createHeader(data.general, index + 1, totalPages)}<div class="report-content">${pageData.content}</div>${createFooter(data.general, index + 1, totalPages)}`;
+                }
+                pageContainer.appendChild(pageElement);
+                return pageContainer;
+            });
+        }
+
+        function getPageContents(data) {
+            let contents = [];
+            let sectionCounter = 1;
+
+            contents.push({ isCover: true, content: getCoverPageContent(data.general) });
+
+            const textSections = [
+                { title: 'DECISÃO NORMATIVA', content: data.textSections.textDecisaoNormativa },
+                { title: 'CARACTERÍSTICAS GERAIS', content: data.textSections.textCaracteristicasGerais },
+                { title: 'OBJETIVO DAS INSPEÇÕES', content: data.textSections.textObjetivoInspecao },
+                { title: 'INSPEÇÃO', content: data.textSections.textInspecao },
+            ];
+
+            textSections.forEach(sec => {
+                if (sec.content && sec.content.trim() !== '') {
+                    contents.push({ content: `<div class="report-text-body"><h3 class="report-section-title">${sectionCounter++}. ${sec.title}</h3><p>${sec.content.replace(/\n/g, '<br>')}</p></div>` });
+                }
+            });
+
+            const captacaoSection = {
+                title: `${sectionCounter++}. CAPTAÇÃO`,
+                content: data.textSections.textCaptacao,
+                anexoUrls: data.general.captacaoAnexoUrls
+            };
+            if ((captacaoSection.content && captacaoSection.content.trim() !== '') || (captacaoSection.anexoUrls && captacaoSection.anexoUrls.length > 0)) {
+                contents.push({ content: getCaptacaoPageContent(captacaoSection) });
+            }
+
+            if (data.equipments.length > 0) {
+                contents.push({ content: getMethodologyPageContent(data.equipments, sectionCounter++) });
+            }
+            if (data.inspectionPoints.length > 0) {
+                contents.push({ content: getResultsSummaryPageContent(data.inspectionPoints, sectionCounter++) });
+            }
+
+            data.inspectionPoints.forEach((point, index) => {
+                contents.push({ content: getInspectionPointPageContent(point, index + 1) });
+            });
+
+            if (data.riskSections.length > 0) {
+                contents.push({ isCover: true, content: getRiskManagementCover(data.general) });
+                data.riskSections.forEach(sec => {
+                    if (sec.title || sec.content || (sec.photos && sec.photos.length > 0)) {
+                        contents.push({ content: getRiskSectionPageContent(sec) });
+                    }
+                });
+            }
+
+            contents.push({ content: getConclusionPageContent(data.general) });
+            return contents;
+        }
+
+        function createHeader(d, currentPage, totalPages) {
+            const logo = d.companyLogoUrl || 'https://placehold.co/200x80/f0f0f0/CCCCCC?text=Sua+Logo';
+            const dateStr = d.reportDate ? new Date(d.reportDate + 'T00:00:00').toLocaleDateString('pt-BR') : '--/--/----';
+            return `<header class="report-header" style="padding: 6mm 12mm;"><table style="width: 100%; font-size: 8pt; border-collapse: collapse; border: 1px solid #333;">
+            <tr>
+                <td rowspan="3" style="width: 25%; text-align: center; border: 1px solid #333; padding: 5px;"><img src="${logo}" alt="Logo" style="max-height: 25mm; max-width: 100%;"></td>
+                <td style="width: 50%; border: 1px solid #333; padding: 5px;"><strong>CLIENTE:</strong><br>${d.clientName}</td>
+                <td style="width: 25%; border: 1px solid #333; padding: 5px; text-align: center;"><strong>LAUDO SPDA</strong></td>
+            </tr>
+            <tr>
+                <td colspan="2" style="border: 1px solid #333; padding: 5px;"><strong>ENDEREÇO:</strong><br>${d.clientAddress}</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #333; padding: 5px;"><strong>Nº LAUDO:</strong> ${d.reportNumber}</td>
+                <td style="display: flex; justify-content: space-between; padding: 0;">
+                    <span style="border-left: 1px solid #333; padding: 5px; flex: 1;"><strong>REV:</strong> ${d.reportRevision}</span>
+                    <span style="border-left: 1px solid #333; padding: 5px; flex: 1;"><strong>DATA:</strong> ${dateStr}</span>
+                    <span style="border-left: 1px solid #333; padding: 5px; flex: 1;"><strong>FOLHA:</strong> ${currentPage} de ${totalPages}</span>
+                </td>
+            </tr>
+        </table></header>`;
+        }
+
+        function createFooter(d) {
+            return `<footer class="report-footer"><p>${d.companyAddress}</p></footer>`;
+        }
+
+        function getCoverPageContent(d) {
+            const logo = d.companyLogoUrl || 'https://placehold.co/400x150/f0f0f0/CCCCCC?text=Sua+Empresa';
+            const dateStr = d.reportDate ? new Date(d.reportDate + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' }) : 'Data não definida';
+            return `<div style="display: flex; flex-direction: column; height: 100%; text-align: center; border: 1px solid #ccc;"><div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20mm;"><img src="${logo}" alt="Logo" style="max-height: 100px; margin-bottom: 30px;"><h1 style="font-family: 'Montserrat', sans-serif; font-size: 28pt; font-weight: 800; line-height: 1.2; color: var(--dark-gray);">${d.reportTitle}</h1><p style="font-family: 'Inter', sans-serif; font-size: 14pt; margin-top: 10px; color: #6b7280;">${d.reportSubtitle}</p></div><div style="flex-shrink: 0; padding: 20mm; border-top: 1px solid var(--medium-gray);"><p style="font-size: 16pt; font-weight: bold; margin: 0;">${d.clientName || ''}</p><p style="font-size: 12pt; margin-top: 5px;">${d.clientAddress}</p><p style="font-size: 12pt; margin-top: 20px;">${d.signatureCity}, ${dateStr}</p></div></div>`;
+        }
+
+        function getMethodologyPageContent(equipments, counter) {
+            let rows = equipments.map(e => `<tr><td>${e.name || ''}</td><td>${e.brand || ''}</td><td>${e.model || ''}</td></tr>`).join('');
+            if (!rows) rows = '<tr><td colspan="3">Nenhum equipamento cadastrado.</td></tr>';
+            return `<div class="report-text-body"><h3 class="report-section-title">${counter}. EQUIPAMENTOS UTILIZADOS</h3><table class="data-table"><thead><tr><th>Equipamento</th><th>Marca</th><th>Modelo/Serial</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+        }
+        function getStatusBadge(status) {
+            const classes = { 'Conforme': 'status-conforme', 'Conforme com Observações': 'status-observacoes', 'Não Conforme': 'status-nao-conforme' };
+            return `<span class="status-badge ${classes[status] || ''}">${(status || '').toUpperCase()}</span>`;
+        }
+        function getResultsSummaryPageContent(points, counter) {
+            let rows = points.map((p, i) => `<tr><td><strong>${p.location || `Ponto ${i + 1}`}</strong></td><td style="text-align: center;">${p.resistance || 'N/A'} Ω</td><td style="text-align: center;">${getStatusBadge(p.status)}</td></tr>`).join('');
+            if (!rows) rows = '<tr><td colspan="3">Nenhum ponto de inspeção cadastrado.</td></tr>';
+            return `<div class="report-text-body"><h3 class="report-section-title">${counter}. RESULTADOS CONSOLIDADOS</h3><p>A tabela a seguir resume os resultados obtidos. O detalhamento é apresentado nas páginas subsequentes.</p><table class="data-table"><thead><tr><th>Local</th><th>Resistência (Ω)</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+        }
+
+        function getInspectionPointPageContent(point, index) {
+            const format = (text) => text ? text.replace(/\n/g, '<br>') : 'Não informado.';
+            let pageHtml = `
+            <div>
+                <h3 class="report-section-title">DETALHAMENTO: ${point.location || `Ponto ${index}`}</h3>
+                <table class="data-table">
+                    <tr><th style="width:33%">Item</th><th>Descrição / Medição</th></tr>
+                    <tr><td><strong>Nível de Proteção</strong></td><td>${point.protection_level || 'Não informado.'}</td></tr>
+                    <tr><td><strong>Modelo de Proteção</strong></td><td>${point.protection_model || 'Não informado.'}</td></tr>
+                    <tr><td><strong>Subsistema Captor</strong></td><td>${format(point.subsystem_captor)}</td></tr>
+                    <tr><td><strong>Subsistema de Descidas</strong></td><td>${format(point.subsystem_descida)}</td></tr>
+                    <tr><td><strong>Subsistema de Aterramento</strong></td><td>${format(point.subsystem_aterramento)}</td></tr>
+                    <tr><td><strong>Resistência</strong></td><td><strong>${point.resistance ? `${point.resistance} Ω` : 'Não medido'}</strong></td></tr>
+                    <tr><td><strong>Status</strong></td><td>${getStatusBadge(point.status)}</td></tr>
+                    <tr><td><strong>Observações</strong></td><td>${format(point.visualNotes)}</td></tr>
+                </table>
+            </div>`;
+
+            if (point.photos && point.photos.length > 0) {
+                const photosHtml = point.photos.map((src, i) => `
+                <div class="point-photo-card">
+                    <img src="${src}" class="point-photo-image"/>
+                    <div class="point-photo-caption">Fotografia ${i + 1}</div>
+                </div>
+            `).join('');
+
+                pageHtml += `
+                <div style="margin-top: 1.5rem;">
+                    <h4 style="font-family: 'Montserrat', sans-serif; font-size: 12pt; font-weight: 700; color: var(--dark-gray); margin-bottom: 1rem; border-bottom: 1px solid var(--medium-gray); padding-bottom: 0.5rem;">Anexos Fotográficos</h4>
+                    <div class="point-photo-container">${photosHtml}</div>
+                </div>
+            `;
+            }
+
+            return pageHtml;
+        }
+
+        function getCaptacaoPageContent(section) {
+            let contentHtml = `<h3 class="report-section-title">${section.title}</h3>`;
+            if (section.content) {
+                contentHtml += `<p>${section.content.replace(/\n/g, '<br>')}</p>`;
+            }
+            if (section.anexoUrls && section.anexoUrls.length > 0) {
+                const photosHtml = section.anexoUrls.map((src, i) => `
+                <div class="point-photo-card">
+                    <img src="${src}" class="point-photo-image"/>
+                    <div class="point-photo-caption">Anexo ${i + 1}</div>
+                </div>
+            `).join('');
+                contentHtml += `<div class="point-photo-container" style="margin-top: 1.5rem;">${photosHtml}</div>`;
+            }
+            return contentHtml;
+        }
+
+        function getRiskManagementCover(d) {
+            const year = d.reportDate ? new Date(d.reportDate + 'T00:00:00').getFullYear() : new Date().getFullYear();
+            return `<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background-color: #fff; height: 100%;">
+                    <div style="border: 4px double var(--primary-color); padding: 20mm; width: 80%; height: 80%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                        <h2 style="font-family: 'Montserrat', sans-serif; font-size: 28pt; font-weight: 800; line-height: 1.2; color: var(--primary-color);">GERENCIAMENTO DE RISCOS</h2>
+                        <p style="font-size: 14pt; margin-top: 1rem; color: #4b5563;">Documentação de Suporte - NBR 5419:2015</p>
+                        <div style="margin-top: auto; padding-top: 20px; width: 100%;">
+                            <p style="font-size: 16pt; font-weight: bold; margin: 0;">${d.clientName || ''}</p>
+                            <p style="font-size: 12pt; margin-top: 5px;">${year}</p>
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        function getRiskSectionPageContent(section) {
+            let contentHtml = `<h3 class="report-section-title">${section.title || 'Gerenciamento de Riscos'}</h3>`;
+            if (section.content) {
+                contentHtml += `<div><p>${section.content.replace(/\n/g, '<br>')}</p></div>`;
+            }
+            if (section.photos && section.photos.length > 0) {
+                const photosHtml = section.photos.map((photo) => {
+                    let captionHtml = '';
+                    if (photo.description) {
+                        captionHtml = `<div class="risk-photo-card-caption">${photo.description.replace(/\n/g, '<br>')}</div>`;
+                    }
+                    return `
+                <div class="risk-photo-card">
+                    <img src="${photo.src}" class="risk-photo-card-image"/>
+                    ${captionHtml}
+                </div>`;
+                }).join('');
+                contentHtml += `<div class="risk-photo-container">${photosHtml}</div>`;
+            }
+            return `<div>${contentHtml}</div>`;
+        }
+
+        function getConclusionPageContent(d) {
+            const signatureImg = d.engineerSignatureUrl ? `<img src="${d.engineerSignatureUrl}" alt="Assinatura" style="max-height: 70px; margin-bottom: 5px;">` : '<div style="height: 1px; width: 250px; background-color: #374151; margin: 70px auto 5px auto;"></div>';
+            const date = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+            return `<div style="display: flex; flex-direction: column; height: 100%;">
+                    <h3 class="report-section-title">CONCLUSÃO TÉCNICA GERAL</h3>
+                    <div style="flex-grow: 1;">
+                        <p>${d.finalConclusion.replace(/\n/g, '<br><br>') || 'Nenhuma conclusão fornecida.'}</p>
+                    </div>
+                    <table style="width: 100%; margin-top: auto; text-align: center;">
+                        <tr>
+                            <td>
+                                <div style="display: inline-block; text-align: center; padding-top: 3rem;">
+                                    ${signatureImg}
+                                    <div style="border-top: 1px solid #374151; padding-top: 8px; min-width: 300px;">
+                                        <p style="font-weight: bold; margin: 0;">${d.engineerName}</p>
+                                        <p style="font-size: 0.9em; margin: 0; line-height: 1.3;">${d.engineerTitle}</p>
+                                        <p style="font-size: 0.9em; font-weight: bold; margin: 0; line-height: 1.3;">CREA ${d.creaNumber}</p>
+                                    </div>
+                                    <p style="margin-top: 2rem;">${d.signatureCity}, ${date}.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>`;
+        }
+
+        // PERSISTÊNCIA E INICIALIZAÇÃO
+        async function saveDataToFile() {
+            try {
+                const dataToSave = await getFormData(true);
+                const dataString = JSON.stringify(dataToSave, null, 2);
+                const blob = new Blob([dataString], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                const reportNumber = document.getElementById('reportNumber').value || 'dados-laudo-spda';
+                a.href = url;
+                a.download = `${reportNumber}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showStatus('Dados baixados com sucesso!', true);
+            } catch (error) {
+                console.error("Erro ao baixar dados:", error);
+                showStatus('Falha ao baixar os dados.', false);
+            }
+        }
+
+        function handleFileImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    populateForm(data);
+                } catch (error) {
+                    console.error("Erro ao ler o arquivo JSON:", error);
+                    showStatus('Arquivo inválido. Selecione um arquivo JSON gerado por esta aplicação.', false);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function clearForm(confirmFirst = true) {
+            if (confirmFirst && !confirm('Limpar todo o formulário?')) return;
+            document.getElementById('reportForm').reset();
+            document.querySelectorAll('input[type="file"]').forEach(input => { input.value = ''; input.__src = null; });
+            ['equipmentContainer', 'inspectionPointsContainer', 'riskSectionsContainer'].forEach(id => document.getElementById(id).innerHTML = '');
+            document.getElementById('captacaoAnexoPreview').innerHTML = '';
+            addDefaultData();
+            updatePreview();
+            if (confirmFirst) showStatus('Formulário limpo.', true);
+        }
+
+        function addDefaultData() {
+            document.getElementById('reportDate').valueAsDate = new Date();
+            addEquipment({ name: 'Terrômetro Digital', brand: 'CEM', model: 'DT-5300B' });
+            document.getElementById('finalConclusion').value = `Com base na inspeção visual, medições de continuidade e resistência de aterramento, atesta-se que o SPDA da instalação inspecionada se encontra em PLENA CONFORMIDADE com os requisitos técnicos da norma ABNT NBR 5419:2015.\n\nRecomenda-se a manutenção da documentação e a execução de inspeções anuais para garantir a contínua segurança do sistema.`;
+
+            addInspectionPoint({
+                location: 'Portaria',
+                protection_level: 'Nível II',
+                protection_model: 'Gaiola de Faraday',
+                subsystem_captor: 'Captores naturais constituídos pela cobertura metálica.',
+                subsystem_descida: '06 condutores de descida naturais constituídos das armações de aços das estruturas de concreto armado.',
+                subsystem_aterramento: 'Eletrodos de aterramento constituídos pelas próprias armações de aço das estacas da fundação em concreto armado.',
+                resistance: '3.38',
+                status: 'Conforme',
+                visualNotes: 'Sistema de equalização de potencial conforme projeto.'
+            });
+
+            addInspectionPoint({
+                location: 'Galpão G1',
+                protection_level: 'Nível II',
+                protection_model: 'Gaiola de Faraday',
+                subsystem_captor: 'Captores naturais constituído das telhas metálicas com espessura superior ou igual a 0,5mm.',
+                subsystem_descida: 'Condutores de descida naturais constituídos das armações de aços das estruturas de concreto armado.',
+                subsystem_aterramento: 'Armações de aços das estacas de fundação em concreto armado.',
+                resistance: '4.17',
+                status: 'Conforme',
+                visualNotes: 'Equalização de potencial realizada em caixas de ligação com barramento de cobre para inspeção e equalização de carcaças metálicas de equipamentos.'
+            });
+
+            document.getElementById('textDecisaoNormativa').value = `DECISÃO NORMATIVA Nº 70, DE 26 DE OUTUBRO DE 2001\nDispõe sobre a fiscalização dos serviços técnicos referentes aos sistemas de proteção contra descargas atmosféricas (para–raios).\nO CONSELHO FEDERAL DE ENGENHARIA, ARQUITETURA E AGRONOMIA–CONFEA, no uso das atribuições que lhe confere o inciso III do art. 10 do Regimento do CONFEA, aprovado pela Resolução nº 373, de 16 de dezembro de 1992, e Considerando a Resolução nº 218, de 29 de junho de 1973, que discrimina as atividades das diferentes modalidades profissionais da Engenharia, Arquitetura e Agronomia;\nConsiderando, também, a necessidade de fixar procedimentos visando a uniformidade de ação por parte dos Creas quanto ao registro de ART de projetos, fabricação, instalação e manutenção de SPDA, face às peculiaridades e o desenvolvimento tecnológico desses sistemas que, quando instalados de forma incorreta, podem causar acidentes, inclusive com vítimas fatais, e sérios danos a bens móveis e imóveis,\nDECIDE:\nArt. 1º As atividades de projeto, instalação e manutenção, vistoria, laudo, perícia e parecer referentes a Sistemas de Proteção contra Descargas Atmosféricas-SPDA, deverão ser executadas por pessoas físicas ou jurídicas devidamente registradas nos Creas.`;
+            document.getElementById('textCaracteristicasGerais').value = `Ítem 4 – NBR 5419\n\n4.1 Deve ser lembrado que um SPDA não impede a ocorrência das descargas atmosféricas.\n4.2 Um SPDA projetado e instalado conforme esta Norma não pode assegurar a proteção absoluta de uma estrutura, de pessoas e bens. Entretanto, a aplicação desta Norma reduz de forma significativa os riscos de danos devidos às descargas atmosféricas.`;
+            document.getElementById('textObjetivoInspecao').value = `O presente documento tem por objetivo atestar as condições técnicas da malha de aterramento do Sistema de Proteção contra Descargas Atmosféricas (SPDA).\nEste item não se aplica aos subsistemas do SPDA instalados, que tenham seus acessos impossibilitados por estarem embutidos no concreto armado (ferragens estruturais) ou reboco.\n\nAs inspeções visam a assegurar que:\na) o SPDA está conforme o projeto;\nb) todos os componentes do SPDA estão em bom estado, as conexões e fixações estão firmes e livres de corrosão;\nc) o valor da resistência de aterramento seja compatível com o arranjo e com as dimensões do subsistema de aterramento, e com a resistividade do solo.`;
+            document.getElementById('textInspecao').value = `Em visita técnica realizada na data informada, foi feita uma inspeção visual em todos os pontos do telhado a fim de identificar possíveis pontos de colisão por raios (descargas atmosféricas) nos seguintes locais:\n- Cabine primária\n- Torre caixa d’agua;\n- Casa de máquinas;\n- Cabine secundaria G1;\n- Subestação 01\n- Portaria\n- Galpão 01\n- Galpão 02`;
+
+            const captacaoText = `Constamos que o sistema de captação dos galpões caracteriza-se como CAPTAÇÃO NATURAL conforme item 5.1.1.4 da NBR 5419.\nAs descidas são feitas por Re-bar embutidas nos pilares de concreto.\ndescidas naturais conforme NBR5419\n\n5.1.1.4 Captores naturais\n5.1.1.4.1 Quaisquer elementos condutores expostos, isto é, que do ponto de vista físico possam ser atingidos pelos raios, devem ser considerados como parte do SPDA.`;
+            document.getElementById('textCaptacao').value = captacaoText;
+        }
+
+        function showStatus(message, isSuccess = true) {
+            const el = document.getElementById('statusMessage');
+            el.textContent = message;
+            el.className = `text-center mb-4 h-6 font-semibold ${isSuccess ? 'text-green-600' : 'text-red-600'}`;
+            setTimeout(() => el.textContent = '', 4000);
+        }
+
+        // --- EVENT LISTENERS ---
+        document.addEventListener('DOMContentLoaded', () => {
+            addDefaultData();
+            updatePreview();
+
+            document.getElementById('formContainer').addEventListener('input', e => {
+                if (e.target.matches('.point-location')) updatePointTitles();
+                updatePreview();
+            });
+
+            document.getElementById('formContainer').addEventListener('change', e => {
+                const input = e.target;
+                if (input.matches('.point-photos')) {
+                    const previewContainer = input.nextElementSibling;
+                    previewContainer.innerHTML = '';
+                    input.__src = null;
+                    Array.from(input.files).forEach(file => {
+                        fileToDataURL(file).then(src => { if (src) previewContainer.innerHTML += `<img src="${src}">`; });
+                    });
+                } else if (input.matches('.photo-input')) {
+                    const file = input.files[0];
+                    if (file) {
+                        fileToDataURL(file).then(src => input.previousElementSibling.src = src);
+                    }
+                } else if (input.id === 'captacaoAnexo') {
+                    const previewContainer = document.getElementById('captacaoAnexoPreview');
+                    previewContainer.innerHTML = '';
+                    input.__src = null;
+                    if (input.files.length > 0) {
+                        Array.from(input.files).forEach(file => {
+                            fileToDataURL(file).then(src => {
+                                if (src) {
+                                    previewContainer.innerHTML += `<img src="${src}" class="w-32 h-32 object-cover rounded-lg border-2 border-gray-200">`;
+                                }
+                            });
+                        });
+                    }
+                }
+                updatePreview();
+            });
+
+            document.getElementById('formContainer').addEventListener('click', e => {
+                const target = e.target;
+                let shouldUpdate = true;
+                if (target.matches('.remove-btn')) {
+                    target.closest('.equipment-item, .inspection-point, .photo-entry-item, .risk-section').remove();
+                } else if (target.matches('.add-photo-btn')) {
+                    addPhotoEntry(target.closest('.risk-section').querySelector('.risk-photos-container'));
+                    shouldUpdate = false;
+                } else if (target.matches('.change-photo-btn')) {
+                    target.previousElementSibling.click();
+                    shouldUpdate = false;
+                } else if (target.matches('#addEquipmentBtn')) {
+                    addEquipment();
+                } else if (target.matches('#addInspectionPointBtn')) {
+                    addInspectionPoint();
+                } else if (target.matches('#addRiskSectionBtn')) {
+                    addRiskSection();
+                } else {
+                    shouldUpdate = false;
+                }
+                if (shouldUpdate) updatePreview();
+            });
+
+            document.getElementById('downloadPdfBtn').addEventListener('click', downloadPDF);
+            document.getElementById('saveProgressBtn').addEventListener('click', saveDataToFile);
+            document.getElementById('importFileBtn').addEventListener('click', () => document.getElementById('importFileInput').click());
+            document.getElementById('importFileInput').addEventListener('change', handleFileImport);
+            document.getElementById('clearFormBtn').addEventListener('click', () => clearForm(true));
+        });
+    </script>
+</body>
+
+</html>

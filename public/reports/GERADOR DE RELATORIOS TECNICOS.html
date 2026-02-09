@@ -1,0 +1,968 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Parecer TÃ©cnico</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Bibliotecas para geraÃ§Ã£o de PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&family=Merriweather:ital,wght@0,400;1,400&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #312e81;
+            /* Indigo-900 */
+            --light-gray: #f3f4f6;
+            --medium-gray: #d1d5db;
+            --dark-gray: #374151;
+            --a4-width: 210mm;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-gray);
+        }
+
+        .form-section {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        .form-section h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark-gray);
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            color: #4b5563;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background-color: #f9fafb;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+        }
+
+        /* --- Estilos do RelatÃ³rio Gerado --- */
+        .report-page-container {
+            width: 100%;
+            max-width: var(--a4-width);
+            margin: 1rem auto;
+            page-break-after: always;
+        }
+
+        .report-page-container:last-of-type {
+            page-break-after: auto;
+        }
+
+        .report-page {
+            background: white;
+            width: 100%;
+            aspect-ratio: 210 / 297;
+            margin: 0;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border: 1px solid #e5e7eb;
+            font-size: 9.5pt;
+            /* Fonte base reduzida */
+            color: var(--dark-gray);
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .report-header {
+            padding: 8mm 12mm;
+            flex-shrink: 0;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+
+        .report-footer {
+            padding: 6mm 12mm;
+            flex-shrink: 0;
+            border-top: 1px solid var(--medium-gray);
+            margin-top: auto;
+        }
+
+        .report-content {
+            flex-grow: 1;
+            padding: 12mm;
+            overflow: hidden;
+            font-family: 'Merriweather', serif;
+            box-sizing: border-box;
+        }
+
+        .report-section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 12pt;
+            /* Fonte do tÃ­tulo de seÃ§Ã£o reduzida */
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .report-section-title:first-child {
+            margin-top: 0;
+        }
+
+        .report-content p,
+        .report-content li {
+            text-align: justify;
+            line-height: 1.5;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.8rem;
+            font-size: 9.5pt;
+            hyphens: auto;
+            word-wrap: break-word;
+        }
+
+        .report-image {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0.5rem auto;
+        }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .photo-item-preview {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            text-align: center;
+        }
+
+        .photo-item-preview img {
+            max-width: 100%;
+            max-height: 150px;
+            object-fit: contain;
+        }
+
+        .photo-description-preview {
+            font-size: 0.7rem;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        #pdf-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            flex-direction: column;
+        }
+
+        #pdf-loader .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .signature-container {
+            margin-top: auto;
+            padding-top: 2rem;
+            text-align: center;
+        }
+
+        .signature-image {
+            max-height: 80px;
+            margin-bottom: 0.5rem;
+        }
+
+        .signature-line {
+            border-top: 1px solid #374151;
+            width: 200px;
+            margin: 0 auto;
+            padding-top: 0.5rem;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .pdf-render-mode .report-page-container {
+            width: 794px !important;
+            /* A4 width @ 96 DPI */
+            height: 1123px !important;
+            /* A4 height @ 96 DPI */
+            margin: 0 !important;
+            box-shadow: none !important;
+            border: none !important;
+        }
+
+        .pdf-render-mode .report-page {
+            width: 100% !important;
+            height: 100% !important;
+            aspect-ratio: unset !important;
+        }
+
+        /* --- Patch de Responsividade --- */
+        @media (max-width: 1024px) {
+
+            .topbar-inner,
+            .cover-top,
+            .doc-head {
+                flex-direction: column !important;
+                display: flex !important;
+                gap: 15px !important;
+                text-align: center !important;
+                padding: 20px !important;
+                height: auto !important;
+                grid-template-columns: 1fr !important;
+            }
+
+            .brand,
+            .actions,
+            .tabs {
+                width: 100% !important;
+                justify-content: center !important;
+                min-width: unset !important;
+            }
+
+            .tabs {
+                overflow-x: auto;
+                padding: 10px 0;
+            }
+
+            .grid,
+            .row,
+            .row-3,
+            .equip-details-grid,
+            .grid-cols-2,
+            .grid-cols-3,
+            .grid-cols-4 {
+                grid-template-columns: 1fr !important;
+            }
+
+            .wrap,
+            .max-w-7xl,
+            .max-w-5xl,
+            .report-page-container {
+                padding: 10px !important;
+            }
+
+            .meta-strip {
+                grid-template-columns: 1fr 1fr !important;
+                display: grid !important;
+            }
+
+            .meta-strip .m {
+                border-right: none !important;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .meta-strip {
+                grid-template-columns: 1fr !important;
+            }
+
+            .sheet,
+            .report-page {
+                width: 210mm !important;
+            }
+
+            #reportOutput,
+            #previewPane,
+            .preview-shell {
+                overflow-x: auto !important;
+                display: block !important;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .cover-mid h1 {
+                font-size: 20pt !important;
+            }
+        }
+    </style>`n    <script>
+        // Protecao Anti-Copia ChameiApp
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || (e.ctrlKey && (e.keyCode == 85 || e.keyCode == 83))) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
+</head>
+
+<body class="text-gray-800">
+
+    <div id="pdf-loader" class="hidden">
+        <div class="spinner"></div>
+        <p id="loader-message">Gerando PDF, por favor aguarde...</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-4 md:p-8">
+        <!-- Coluna do FormulÃ¡rio -->
+        <div id="formContainer" class="no-print">
+            <div class="max-w-2xl mx-auto">
+                <div class="text-center mb-10">
+                    <h1 class="text-3xl md:text-4xl font-bold text-gray-800"
+                        style="font-family: 'Montserrat', sans-serif;">Gerador de Parecer TÃ©cnico</h1>
+                    <p class="text-gray-600 mt-2">Preencha os campos para gerar o documento.</p>
+                </div>
+
+                <div class="form-section flex items-center justify-between flex-wrap gap-4">
+                    <h2 class="text-lg font-semibold mb-0 border-b-0 pb-0"
+                        style="font-family: 'Montserrat', sans-serif;">AÃ§Ãµes de Dados</h2>
+                    <div class="flex gap-2 flex-wrap">
+                        <button type="button" id="importFileBtn"
+                            class="bg-teal-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-teal-700 transition-colors">Importar
+                            Dados</button>
+                        <button type="button" id="saveFileBtn"
+                            class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Baixar
+                            Dados</button>
+                        <input type="file" id="importFileInput" class="hidden" accept=".json">
+                        <button type="button" id="clearFormBtn"
+                            class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors">Limpar
+                            FormulÃ¡rio</button>
+                    </div>
+                </div>
+                <div id="statusMessage" class="text-center mb-4 h-6"></div>
+
+                <form id="reportForm">
+                    <div class="form-section">
+                        <h2>Dados Gerais</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div><label for="companyLogo" class="form-label">Logo da Sua Empresa</label><input
+                                    type="file" id="companyLogo" accept="image/*" class="form-input"></div>
+                            <div><label for="clientName" class="form-label">Nome do Solicitante / Cliente</label><input
+                                    type="text" id="clientName" class="form-input" placeholder="Nome do cliente"
+                                    required></div>
+                            <div class="md:col-span-2"><label for="clientAddress"
+                                    class="form-label">EndereÃ§o</label><input type="text" id="clientAddress"
+                                    class="form-input" placeholder="EndereÃ§o completo" required></div>
+                            <div class="md:col-span-2"><label for="reportTitle" class="form-label">TÃ­tulo do
+                                    Parecer</label><input type="text" id="reportTitle" class="form-input"
+                                    value="PARECER TÃ‰CNICO DE ENGENHARIA ELÃ‰TRICA" required></div>
+                            <div><label for="reportNumber" class="form-label">NÂº do Parecer</label><input type="text"
+                                    id="reportNumber" class="form-input" placeholder="Ex: 001/2024" required></div>
+                            <div><label for="reportDate" class="form-label">Data da Vistoria/AnÃ¡lise</label><input
+                                    type="date" id="reportDate" class="form-input" required></div>
+                            <div class="md:col-span-2"><label for="companyName" class="form-label">Nome da Sua Empresa
+                                    (RodapÃ©)</label><input type="text" id="companyName" class="form-input"
+                                    placeholder="Digite o Nome da Sua Empresa..." required></div>
+                            <div class="md:col-span-2"><label for="companyAddress" class="form-label">EndereÃ§o da Sua
+                                    Empresa (RodapÃ©)</label><input type="text" id="companyAddress" class="form-input"
+                                    placeholder="Digite o endereÃ§o completo da sua empresa..." required></div>
+                            <div><label for="companyPhone" class="form-label">Telefone (RodapÃ©)</label><input type="tel"
+                                    id="companyPhone" class="form-input" placeholder="Digite o telefone (xx) xxxxx-xxxx"
+                                    required></div>
+                            <div><label for="companyEmail" class="form-label">E-mail (RodapÃ©)</label><input type="email"
+                                    id="companyEmail" class="form-input" placeholder="Digite o e-mail comercial..."
+                                    required></div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2>Corpo do Parecer TÃ©cnico</h2>
+                        <div><label for="textObjeto" class="form-label">1. Objeto</label><textarea id="textObjeto"
+                                rows="4"
+                                class="form-textarea">O objeto deste parecer tÃ©cnico Ã© analisar e documentar as condiÃ§Ãµes de [descrever o sistema ou equipamento analisado], localizado em [local especÃ­fico], atendendo Ã  solicitaÃ§Ã£o de [Nome do Solicitante].</textarea>
+                        </div>
+                        <div class="mt-4"><label for="textAnalise" class="form-label">2. AnÃ¡lise TÃ©cnica /
+                                Vistoria</label><textarea id="textAnalise" rows="10"
+                                class="form-textarea">Durante a vistoria realizada na data de [Data da Vistoria], foram inspecionados os seguintes itens e realizadas as seguintes verificaÃ§Ãµes: [detalhar os procedimentos, inspeÃ§Ãµes visuais, mediÃ§Ãµes e ensaios realizados].</textarea>
+                        </div>
+                        <div class="mt-4"><label for="textDiagnostico" class="form-label">3. DiagnÃ³stico / ConsideraÃ§Ãµes
+                                TÃ©cnicas</label><textarea id="textDiagnostico" rows="10"
+                                class="form-textarea">Com base na anÃ¡lise, constatou-se que [descrever as constataÃ§Ãµes, anomalias, pontos de atenÃ§Ã£o e conformidade ou nÃ£o conformidade com as normas tÃ©cnicas pertinentes, como NBR 5410, NR-10, etc.].</textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="flex justify-between items-center">
+                            <h2>4. Anexos FotogrÃ¡ficos</h2>
+                            <button type="button" id="addPhotoBtn"
+                                class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">Adicionar
+                                Foto</button>
+                        </div>
+                        <div id="photosContainer" class="mt-6 space-y-6"></div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2>ConclusÃ£o e ResponsÃ¡vel</h2>
+                        <div class="mt-6"><label for="finalConclusion" class="form-label">5. Parecer Final
+                                (ConclusÃ£o)</label><textarea id="finalConclusion" rows="10"
+                                class="form-textarea">Diante do exposto, Ã© nosso parecer que [resumir a conclusÃ£o principal]. Recomenda-se [listar as aÃ§Ãµes corretivas ou preventivas necessÃ¡rias, se houver]. As instalaÃ§Ãµes, no estado em que se encontram, [apresentam/nÃ£o apresentam] riscos e [estÃ£o/nÃ£o estÃ£o] em conformidade com as normas tÃ©cnicas vigentes.</textarea>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                            <div><label for="engineerSignature" class="form-label">Upload da Assinatura</label><input
+                                    type="file" id="engineerSignature" accept="image/*" class="form-input"></div>
+                            <div><label for="engineerName" class="form-label">Nome do Engenheiro
+                                    Eletricista</label><input type="text" id="engineerName" class="form-input"
+                                    placeholder="Nome do ResponsÃ¡vel TÃ©cnico" required></div>
+                            <div><label for="creaNumber" class="form-label">DOCUMENTO DE IDENTIDADE</label><input
+                                    type="text" id="creaNumber" class="form-input" placeholder="CREA/CFT" required>
+                            </div>
+                            <div><label for="signatureCity" class="form-label">Cidade da Assinatura</label><input
+                                    type="text" id="signatureCity" class="form-input" placeholder="Cidade/UF" required>
+                            </div>
+                            <div class="md:col-span-2"><label for="signatureDate" class="form-label">Data da
+                                    Assinatura</label><input type="date" id="signatureDate" class="form-input" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <h2>Anexos Adicionais</h2>
+                        <div><label for="artPdf" class="form-label">ART, Diagramas, etc. (PDF ou Imagem)</label><input
+                                type="file" id="artPdf" accept="image/*,application/pdf" class="form-input"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Coluna da PrÃ©-visualizaÃ§Ã£o -->
+        <div id="reportOutputWrapper" class="flex flex-col h-screen lg:h-auto lg:overflow-y-auto">
+            <div
+                class="no-print bg-gray-800 text-white p-4 flex justify-between items-center sticky top-0 z-50 shadow-lg rounded-t-lg flex-shrink-0">
+                <h3 class="font-bold text-lg">PrÃ©-visualizaÃ§Ã£o ao Vivo</h3>
+                <button id="downloadPdfBtn"
+                    class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" x2="12" y1="15" y2="3" />
+                    </svg>
+                    <span id="downloadBtnText">Baixar PDF</span>
+                </button>
+            </div>
+            <div id="reportOutputContainer" class="bg-gray-400 p-4 md:p-8 rounded-b-lg flex-grow">
+                <!-- As pÃ¡ginas serÃ£o geradas aqui pelo JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Template para Anexo FotogrÃ¡fico -->
+    <template id="photoTemplate">
+        <div class="photo-item border p-4 rounded-lg">
+            <div class="flex justify-between items-center mb-4">
+                <label class="form-label mb-0">DescriÃ§Ã£o da Foto</label>
+                <button type="button"
+                    class="remove-photo-btn text-red-600 hover:text-red-800 text-sm font-semibold">Remover</button>
+            </div>
+            <textarea class="form-textarea photo-description" rows="3"
+                placeholder="Digite a descriÃ§Ã£o da foto..."></textarea>
+            <div class="mt-4"><label class="form-label">Arquivo de Imagem</label><input type="file"
+                    class="form-input photo-file" accept="image/*"></div>
+            <img class="mt-2 h-40 w-full object-contain rounded-md hidden bg-gray-100 p-1" src=""
+                alt="PrÃ©-visualizaÃ§Ã£o">
+        </div>
+    </template>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- CONFIGURAÃ‡ÃƒO INICIAL ---
+            const { jsPDF } = window.jspdf;
+            pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js`;
+            let debounceTimer;
+            let isGeneratingPDF = false;
+            document.getElementById('pdf-loader').style.display = 'none';
+
+            // --- FUNÃ‡Ã•ES DE DADOS E ARQUIVOS ---
+            function fileToDataURL(file) {
+                return new Promise((resolve, reject) => {
+                    if (!file) { resolve(null); return; }
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = (error) => reject(error);
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            async function pdfToDataURLs(file) {
+                if (!file) return [];
+                try {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const pdfDoc = await pdfjsLib.getDocument(new Uint8Array(arrayBuffer)).promise;
+                    const pageDataUrls = [];
+                    for (let i = 1; i <= pdfDoc.numPages; i++) {
+                        const page = await pdfDoc.getPage(i);
+                        const viewport = page.getViewport({ scale: 2.0 });
+                        const canvas = document.createElement('canvas');
+                        const context = canvas.getContext('2d');
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+                        await page.render({ canvasContext: context, viewport: viewport }).promise;
+                        pageDataUrls.push(canvas.toDataURL('image/png'));
+                    }
+                    return pageDataUrls;
+                } catch (error) {
+                    console.error("Erro ao processar PDF:", error);
+                    showStatus("NÃ£o foi possÃ­vel processar o arquivo PDF.", false);
+                    return [];
+                }
+            }
+
+            async function getFormData(forSave = false) {
+                const data = {};
+                const formIds = [
+                    'clientName', 'clientAddress', 'reportTitle', 'reportNumber', 'reportDate',
+                    'textObjeto', 'textAnalise', 'textDiagnostico', 'finalConclusion',
+                    'engineerName', 'creaNumber', 'signatureCity', 'signatureDate',
+                    'companyName', 'companyAddress', 'companyPhone', 'companyEmail'
+                ];
+                formIds.forEach(id => { data[id] = document.getElementById(id).value; });
+
+                const getFileSrc = async (inputId, placeholder) => {
+                    const input = document.getElementById(inputId);
+                    if (input.files[0]) return await fileToDataURL(input.files[0]);
+                    return forSave ? (input.dataset.src || null) : (input.dataset.src || placeholder);
+                };
+
+                data.companyLogoUrl = await getFileSrc('companyLogo', 'https://placehold.co/200x80/f0f0f0/CCCCCC?text=Logo');
+                data.engineerSignatureUrl = await getFileSrc('engineerSignature', 'https://placehold.co/200x80/f0f0f0/CCCCCC?text=Assinatura');
+
+                data.photos = [];
+                const photoItems = document.querySelectorAll('.photo-item');
+                for (const item of photoItems) {
+                    const img = item.querySelector('img');
+                    const fileInput = item.querySelector('.photo-file');
+                    let src = img.dataset.src || img.src;
+                    if (fileInput.files[0]) src = await fileToDataURL(fileInput.files[0]);
+
+                    if (src && !src.includes('data:,')) {
+                        data.photos.push({ description: item.querySelector('.photo-description').value, src });
+                    }
+                }
+
+                const artInput = document.getElementById('artPdf');
+                if (artInput.files[0]) {
+                    const file = artInput.files[0];
+                    data.artUrls = file.type === 'application/pdf' ? await pdfToDataURLs(file) : [await fileToDataURL(file)];
+                } else {
+                    data.artUrls = artInput.dataset.artUrls ? JSON.parse(artInput.dataset.artUrls) : [];
+                }
+                return data;
+            }
+
+            // --- RENDERIZAÃ‡ÃƒO DA PRÃ‰-VISUALIZAÃ‡ÃƒO ---
+            async function updateAndRender() {
+                if (isGeneratingPDF) return;
+                const data = await getFormData();
+                const reportOutputContainer = document.getElementById('reportOutputContainer');
+                reportOutputContainer.innerHTML = '';
+
+                const allPages = createReportPages(data);
+                allPages.forEach(pageElement => {
+                    reportOutputContainer.appendChild(pageElement);
+                });
+            }
+
+            function createReportPages(data) {
+                const pages = [];
+                let pageCounter = 0;
+
+                const createPageWrapper = () => {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'report-page-container';
+                    const page = document.createElement('div');
+                    page.className = 'report-page';
+                    wrapper.appendChild(page);
+                    return wrapper;
+                };
+
+                const createHeader = (pageNum, totalPages) => {
+                    const header = document.createElement('header');
+                    header.className = 'report-header text-[8pt]';
+                    header.innerHTML = `<table class="w-full" style="border-collapse: collapse; border: 2px solid #333;">
+                        <tbody>
+                            <tr>
+                                <td class="w-1/4 p-2 align-middle text-center" rowspan="4" style="border-right: 2px solid #333;"><img src="${data.companyLogoUrl}" class="max-h-16 object-contain inline-block"></td>
+                                <td class="p-1 text-center font-bold" colspan="2" style="font-family: 'Montserrat', sans-serif;">${data.reportTitle}</td>
+                            </tr>
+                            <tr><td class="p-1" colspan="2" style="border-top: 2px solid #333;"><strong>SOLICITANTE:</strong> ${data.clientName}</td></tr>
+                            <tr><td class="p-1" colspan="2" style="border-top: 2px solid #333;"><strong>ENDEREÃ‡O:</strong> ${data.clientAddress}</td></tr>
+                            <tr>
+                                <td class="p-1" style="border-top: 2px solid #333;"><strong>NÂº PARECER:</strong> ${data.reportNumber}</td>
+                                <td class="p-1" style="border-top: 2px solid #333; border-left: 2px solid #333;"><strong>PÃGINA:</strong> ${pageNum} de ${totalPages}</td>
+                            </tr>
+                        </tbody>
+                    </table>`;
+                    return header;
+                };
+
+                const createFooter = () => {
+                    const footer = document.createElement('footer');
+                    footer.className = 'report-footer text-[7.5pt] text-gray-600';
+                    footer.innerHTML = `<div class="w-full h-px bg-gray-300 mb-2"></div>
+                    <div class="flex justify-between items-start">
+                        <div class="w-2/3 pr-4"><p class="font-bold text-gray-800 text-[8.5pt]">${data.companyName}</p><p class="mt-1">${data.companyAddress}</p></div>
+                        <div class="w-1/3 text-right"><p>${data.companyPhone}</p><p class="mt-1">${data.companyEmail}</p></div>
+                    </div>`;
+                    return footer;
+                };
+
+                // PÃ¡gina 1: Capa
+                const coverPageWrapper = createPageWrapper();
+                coverPageWrapper.firstElementChild.innerHTML = `
+                <div style="display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center; height: 100%; padding: 15mm;">
+                    <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                        <img src="${data.companyLogoUrl}" alt="Logo" style="max-height: 100px; margin-bottom: 30px;">
+                        <h1 style="font-family: 'Montserrat', sans-serif; font-size: 22pt; font-weight: 800; line-height: 1.2; color: var(--dark-gray);">${data.reportTitle}</h1>
+                    </div>
+                    <div style="flex-shrink: 0; width: 100%;">
+                        <p style="font-size: 13pt; font-weight: bold; margin: 0;">${data.clientName || ''}</p>
+                        <p style="font-size: 10pt; margin-top: 5px;">${data.clientAddress}</p>
+                        <p style="font-size: 10pt; margin-top: 20px;">${data.signatureCity}, ${new Date(data.reportDate + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+                    </div>
+                </div>`;
+                pages.push(coverPageWrapper);
+
+                // ConteÃºdo principal
+                const contentParts = [
+                    `<h3 class="report-section-title">1. OBJETO</h3><p>${data.textObjeto.replace(/\n/g, '</p><p>')}</p>`,
+                    `<h3 class="report-section-title">2. ANÃLISE TÃ‰CNICA / VISTORIA</h3><p>${data.textAnalise.replace(/\n/g, '</p><p>')}</p>`,
+                    `<h3 class="report-section-title">3. DIAGNÃ“STICO / CONSIDERAÃ‡Ã•ES TÃ‰CNICAS</h3><p>${data.textDiagnostico.replace(/\n/g, '</p><p>')}</p>`,
+                ];
+
+                let currentPageWrapper = createPageWrapper();
+                let contentDiv = document.createElement('div');
+                contentDiv.className = 'report-content';
+                currentPageWrapper.firstElementChild.appendChild(contentDiv);
+
+                const tempDiv = document.createElement('div');
+                tempDiv.style.visibility = 'hidden';
+                tempDiv.style.position = 'absolute';
+                tempDiv.style.width = '186mm'; // 210mm - 2*12mm
+                document.body.appendChild(tempDiv);
+                const MAX_CONTENT_HEIGHT_PX = (297 - 35 - 30) * 3.78;
+
+                contentParts.forEach(partHTML => {
+                    tempDiv.innerHTML = contentDiv.innerHTML + partHTML;
+                    if (tempDiv.offsetHeight > MAX_CONTENT_HEIGHT_PX) {
+                        pages.push(currentPageWrapper);
+                        currentPageWrapper = createPageWrapper();
+                        contentDiv = document.createElement('div');
+                        contentDiv.className = 'report-content';
+                        contentDiv.innerHTML = partHTML;
+                        currentPageWrapper.firstElementChild.appendChild(contentDiv);
+                    } else {
+                        contentDiv.innerHTML += partHTML;
+                    }
+                });
+                pages.push(currentPageWrapper);
+                document.body.removeChild(tempDiv);
+
+                // PÃ¡ginas de Fotos
+                if (data.photos.length > 0) {
+                    for (let i = 0; i < data.photos.length; i += 4) {
+                        const photoChunk = data.photos.slice(i, i + 4);
+                        const photoPageWrapper = createPageWrapper();
+                        photoPageWrapper.firstElementChild.innerHTML = `<div class="report-content"><h3 class="report-section-title">4. ANEXO FOTOGRÃFICO</h3>
+                        <div class="grid grid-cols-2 gap-4 mt-4">
+                            ${photoChunk.map(p => `
+                                <div class="border p-1 rounded-md shadow-sm flex flex-col">
+                                    <img src="${p.src}" class="w-full h-40 object-cover rounded-sm">
+                                    <p class="text-center text-xs italic mt-1 p-1">${p.description || ''}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>`;
+                        pages.push(photoPageWrapper);
+                    }
+                }
+
+                // PÃ¡gina de ConclusÃ£o
+                const conclusionPageWrapper = createPageWrapper();
+                conclusionPageWrapper.firstElementChild.innerHTML = `<div class="report-content flex flex-col">
+                    <h3 class="report-section-title">5. PARECER FINAL (CONCLUSÃƒO)</h3>
+                    <p>${data.finalConclusion.replace(/\n/g, '</p><p>')}</p>
+                    <div class="signature-container">
+                        <div class="inline-flex flex-col items-center">
+                            <img src="${data.engineerSignatureUrl}" alt="Assinatura" class="signature-image">
+                            <div class="signature-line"></div>
+                            <p class="mt-2">${data.engineerName}</p>
+                            <p class="text-sm">Engenheiro Eletricista</p>
+                            <p class="text-sm font-bold">CREA: ${data.creaNumber}</p>
+                        </div>
+                        <p class="text-center mt-8 text-sm">${data.signatureCity}, ${new Date(data.signatureDate + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}.</p>
+                    </div>
+                </div>`;
+                pages.push(conclusionPageWrapper);
+
+                // PÃ¡ginas de Anexos (ART, etc.)
+                if (data.artUrls && data.artUrls.length > 0) {
+                    data.artUrls.forEach(url => {
+                        const artPageWrapper = createPageWrapper();
+                        artPageWrapper.firstElementChild.innerHTML = `<div class="report-content flex flex-col items-center justify-center">
+                        <h3 class="report-section-title w-full">ANEXO ADICIONAL</h3>
+                        <img src="${url}" alt="Anexo" class="max-w-full max-h-[240mm] object-contain">
+                    </div>`;
+                        pages.push(artPageWrapper);
+                    });
+                }
+
+                // Adiciona cabeÃ§alhos e rodapÃ©s
+                const totalPages = pages.length;
+                pages.forEach((wrapper, index) => {
+                    if (index > 0) { // NÃ£o adiciona em capa
+                        const page = wrapper.firstElementChild;
+                        page.insertBefore(createHeader(data, index + 1, totalPages), page.firstChild);
+                        page.appendChild(createFooter(data));
+                    }
+                });
+
+                return pages;
+            }
+
+            // --- GERAÃ‡ÃƒO DE PDF ---
+            async function downloadPDF() {
+                const downloadBtn = document.getElementById('downloadPdfBtn');
+                const downloadBtnText = downloadBtn.querySelector('span');
+                if (isGeneratingPDF) return;
+
+                isGeneratingPDF = true;
+                const originalText = downloadBtnText.textContent;
+                downloadBtn.disabled = true;
+                downloadBtnText.textContent = 'Processando...';
+
+                const loader = document.getElementById('pdf-loader');
+                const loaderMessage = document.getElementById('loader-message');
+                loaderMessage.textContent = 'Preparando renderizaÃ§Ã£o...';
+                loader.style.display = 'flex';
+
+                await updateAndRender();
+                await new Promise(resolve => setTimeout(resolve, 300));
+
+                const reportOutputContainer = document.getElementById('reportOutputContainer');
+                const originalPageContainers = reportOutputContainer.querySelectorAll('.report-page-container');
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pdfWidth = 210;
+                const pdfHeight = 297;
+
+                try {
+                    reportOutputContainer.classList.add('pdf-render-mode');
+
+                    for (let i = 0; i < originalPageContainers.length; i++) {
+                        loaderMessage.textContent = `Processando pÃ¡gina ${i + 1} de ${originalPageContainers.length}...`;
+                        const pageContainer = originalPageContainers[i];
+
+                        await new Promise(resolve => setTimeout(resolve, 50));
+
+                        const canvas = await html2canvas(pageContainer, {
+                            scale: 3,
+                            useCORS: true,
+                            logging: false
+                        });
+
+                        if (i > 0) pdf.addPage();
+
+                        const imgData = canvas.toDataURL('image/jpeg', 0.92);
+                        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+                    }
+                    const reportNumber = document.getElementById('reportNumber').value.replace(/[\/\\]/g, '-') || 'parecer-tecnico';
+                    pdf.save(`${reportNumber}.pdf`);
+                    showStatus('PDF gerado com sucesso!');
+
+                } catch (error) {
+                    console.error("Erro ao gerar PDF:", error);
+                    showStatus('Ocorreu um erro ao gerar o PDF.', false);
+                } finally {
+                    reportOutputContainer.classList.remove('pdf-render-mode');
+
+                    isGeneratingPDF = false;
+                    downloadBtn.disabled = false;
+                    downloadBtnText.textContent = originalText;
+                    loader.style.display = 'none';
+                }
+            }
+
+            // --- MANIPULAÃ‡ÃƒO DO FORMULÃRIO E UI ---
+            function showStatus(message, isSuccess = true) {
+                const statusEl = document.getElementById('statusMessage');
+                statusEl.textContent = message;
+                statusEl.className = `text-center mb-4 h-6 ${isSuccess ? 'text-green-600' : 'text-red-600'}`;
+                setTimeout(() => { statusEl.textContent = ''; }, 4000);
+            }
+
+            function addPhoto(data = {}) {
+                const template = document.getElementById('photoTemplate').content.cloneNode(true);
+                const photoItem = template.querySelector('.photo-item');
+                const fileInput = photoItem.querySelector('.photo-file');
+                const imgPreview = photoItem.querySelector('img');
+                const descriptionInput = photoItem.querySelector('.photo-description');
+
+                if (data.src) {
+                    imgPreview.src = data.src;
+                    imgPreview.dataset.src = data.src;
+                    imgPreview.classList.remove('hidden');
+                }
+                if (data.description) descriptionInput.value = data.description;
+
+                fileInput.addEventListener('change', async (e) => {
+                    if (e.target.files[0]) {
+                        const dataUrl = await fileToDataURL(e.target.files[0]);
+                        imgPreview.src = dataUrl;
+                        imgPreview.dataset.src = dataUrl;
+                        imgPreview.classList.remove('hidden');
+                        updateAndRender();
+                    }
+                });
+                photoItem.querySelector('.remove-photo-btn').addEventListener('click', () => {
+                    photoItem.remove(); updateAndRender();
+                });
+                descriptionInput.addEventListener('input', () => {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(updateAndRender, 400);
+                });
+                document.getElementById('photosContainer').appendChild(photoItem);
+            }
+
+            function clearForm(confirmFirst = true) {
+                if (confirmFirst && !confirm('Tem certeza? Todos os dados nÃ£o salvos serÃ£o perdidos.')) return;
+                document.getElementById('reportForm').reset();
+                document.getElementById('photosContainer').innerHTML = '';
+                document.querySelectorAll('input[type="file"]').forEach(input => {
+                    input.value = '';
+                    delete input.dataset.src;
+                    delete input.dataset.artUrls;
+                });
+                addInitialItems();
+                showStatus('FormulÃ¡rio limpo.');
+            }
+
+            function addInitialItems() {
+                addPhoto();
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('reportDate').value = today;
+                document.getElementById('signatureDate').value = today;
+                setTimeout(updateAndRender, 50);
+            }
+
+            async function saveDataToFile() {
+                try {
+                    const data = await getFormData(true);
+                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `parecer-${data.reportNumber.replace(/[\/\\]/g, '-') || 'backup'}.json`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    showStatus('Dados salvos com sucesso!');
+                } catch (e) { showStatus('Erro ao salvar os dados.', false); console.error(e); }
+            }
+
+            function handleFileImport(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        populateForm(data);
+                    } catch { showStatus('Arquivo JSON invÃ¡lido.', false); }
+                };
+                reader.readAsText(file);
+                event.target.value = '';
+            }
+
+            function populateForm(data) {
+                clearForm(false);
+                Object.keys(data).forEach(key => {
+                    const el = document.getElementById(key);
+                    if (el && typeof data[key] === 'string' && !el.type.startsWith('file')) {
+                        el.value = data[key];
+                    }
+                });
+
+                document.getElementById('companyLogo').dataset.src = data.companyLogoUrl || '';
+                document.getElementById('engineerSignature').dataset.src = data.engineerSignatureUrl || '';
+                document.getElementById('artPdf').dataset.artUrls = JSON.stringify(data.artUrls || []);
+
+                document.getElementById('photosContainer').innerHTML = '';
+                if (data.photos && data.photos.length > 0) {
+                    data.photos.forEach(p => addPhoto(p));
+                } else {
+                    addPhoto();
+                }
+                updateAndRender();
+                showStatus('Dados importados com sucesso!');
+            }
+
+            // --- EVENT LISTENERS ---
+            document.getElementById('reportForm').addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(updateAndRender, 400);
+            });
+            document.getElementById('addPhotoBtn').addEventListener('click', () => addPhoto());
+            document.getElementById('downloadPdfBtn').addEventListener('click', downloadPDF);
+            document.getElementById('saveFileBtn').addEventListener('click', saveDataToFile);
+            document.getElementById('importFileBtn').addEventListener('click', () => document.getElementById('importFileInput').click());
+            document.getElementById('importFileInput').addEventListener('change', handleFileImport);
+            document.getElementById('clearFormBtn').addEventListener('click', () => clearForm(true));
+
+            addInitialItems();
+        });
+    </script>
+</body>
+
+</html>
+

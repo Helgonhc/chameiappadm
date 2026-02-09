@@ -1,0 +1,1051 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de RelatÃ³rio de ManutenÃ§Ã£o ElÃ©trica</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Bibliotecas para geraÃ§Ã£o de PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .form-section {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        .form-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #111827;
+            border-bottom: 1px solid #d1d5db;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            color: #4b5563;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background-color: #f9fafb;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+        }
+
+        /* Estilos do RelatÃ³rio Gerado */
+        .report-page-container {
+            width: 100%;
+            max-width: 210mm;
+            /* A4 width */
+            margin: 1rem auto;
+            page-break-after: always;
+        }
+
+        .report-page-container:last-of-type {
+            page-break-after: auto;
+        }
+
+        .report-page {
+            background: white;
+            width: 100%;
+            aspect-ratio: 210 / 297;
+            /* A4 aspect ratio */
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border: 1px solid #e5e7eb;
+            font-size: 11pt;
+        }
+
+        .report-header,
+        .report-footer {
+            padding: 8mm 10mm;
+            flex-shrink: 0;
+        }
+
+        .report-header {
+            border-bottom: 1px solid #d1d5db;
+        }
+
+        .report-footer {
+            margin-top: auto;
+            padding: 6mm 10mm;
+            flex-shrink: 0;
+        }
+
+        .report-content {
+            flex-grow: 1;
+            padding: 10mm;
+            overflow: hidden;
+        }
+
+        .report-section-title {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #111827;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.25rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .report-content p,
+        .report-content li {
+            text-align: justify;
+            line-height: 1.6;
+        }
+
+        .report-content table {
+            width: 100%;
+            font-size: 0.9em;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .report-content th,
+        .report-content td {
+            border: 1px solid #d1d5db;
+            padding: 6px 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .report-content th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+        }
+
+        @media print {
+            body {
+                background-color: #fff;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            #reportOutputContainer {
+                padding: 0;
+            }
+
+            .report-page-container {
+                margin: 0;
+                box-shadow: none;
+                border: none;
+            }
+
+            .report-page {
+                width: 210mm;
+                height: 297mm;
+                aspect-ratio: unset;
+                box-shadow: none;
+                border: none;
+                font-size: 11pt;
+            }
+        }
+
+        /* --- Patch de Responsividade --- */
+        @media (max-width: 1024px) {
+
+            .topbar-inner,
+            .cover-top,
+            .doc-head {
+                flex-direction: column !important;
+                display: flex !important;
+                gap: 15px !important;
+                text-align: center !important;
+                padding: 20px !important;
+                height: auto !important;
+                grid-template-columns: 1fr !important;
+            }
+
+            .brand,
+            .actions,
+            .tabs {
+                width: 100% !important;
+                justify-content: center !important;
+                min-width: unset !important;
+            }
+
+            .tabs {
+                overflow-x: auto;
+                padding: 10px 0;
+            }
+
+            .grid,
+            .row,
+            .row-3,
+            .equip-details-grid,
+            .grid-cols-2,
+            .grid-cols-3,
+            .grid-cols-4 {
+                grid-template-columns: 1fr !important;
+            }
+
+            .wrap,
+            .max-w-7xl,
+            .max-w-5xl,
+            .report-page-container {
+                padding: 10px !important;
+            }
+
+            .meta-strip {
+                grid-template-columns: 1fr 1fr !important;
+                display: grid !important;
+            }
+
+            .meta-strip .m {
+                border-right: none !important;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .meta-strip {
+                grid-template-columns: 1fr !important;
+            }
+
+            .sheet,
+            .report-page {
+                width: 210mm !important;
+            }
+
+            #reportOutput,
+            #previewPane,
+            .preview-shell {
+                overflow-x: auto !important;
+                display: block !important;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .cover-mid h1 {
+                font-size: 20pt !important;
+            }
+        }
+    </style>`n    <script>
+        // Protecao Anti-Copia ChameiApp
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || (e.ctrlKey && (e.keyCode == 85 || e.keyCode == 83))) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
+</head>
+
+<body class="text-gray-800">
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-4 md:p-8 h-screen">
+        <!-- Coluna do FormulÃ¡rio -->
+        <div id="formContainer" class="no-print overflow-y-auto pr-4">
+            <div class="max-w-2xl mx-auto">
+                <div class="text-center mb-10">
+                    <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Gerador de RelatÃ³rio de ManutenÃ§Ã£o ElÃ©trica
+                    </h1>
+                    <p class="text-gray-600 mt-2">Preencha os campos para gerar o relatÃ³rio de quadros e subestaÃ§Ãµes.
+                    </p>
+                </div>
+
+                <div class="form-section flex items-center justify-between flex-wrap gap-4">
+                    <h2 class="text-lg font-semibold mb-0 border-b-0 pb-0">AÃ§Ãµes de Dados</h2>
+                    <div class="flex gap-2 flex-wrap">
+                        <button type="button" id="importFileBtn"
+                            class="bg-teal-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-teal-700 transition-colors">Importar
+                            Dados</button>
+                        <button type="button" id="saveFileBtn"
+                            class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Baixar
+                            Dados</button>
+                        <input type="file" id="importFileInput" class="hidden" accept=".json,.txt">
+                        <button type="button" id="clearFormBtn"
+                            class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors">Limpar
+                            FormulÃ¡rio</button>
+                    </div>
+                </div>
+                <div id="statusMessage" class="text-center mb-4 h-6"></div>
+
+
+                <form id="reportForm">
+                    <div class="form-section">
+                        <h2 class="section-title">Dados Gerais</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div><label for="companyLogo" class="form-label">Logo da Sua Empresa</label><input
+                                    type="file" id="companyLogo" accept="image/*" class="form-input"></div>
+                            <div><label for="clientName" class="form-label">Nome do Cliente</label><input type="text"
+                                    id="clientName" class="form-input" placeholder="Digite o nome do cliente..."
+                                    required></div>
+                            <div class="md:col-span-2"><label for="clientAddress" class="form-label">EndereÃ§o do
+                                    Cliente</label><input type="text" id="clientAddress" class="form-input"
+                                    placeholder="Digite o endereÃ§o completo do cliente..." required></div>
+                            <div class="md:col-span-2"><label for="reportTitle" class="form-label">TÃ­tulo do
+                                    RelatÃ³rio</label><input type="text" id="reportTitle" class="form-input"
+                                    value="LAUDO TÃ‰CNICO DE AVALIAÃ‡ÃƒO DAS INSTALAÃ‡Ã•ES ELÃ‰TRICAS DE BAIXA TENSÃƒO (BT)"
+                                    required></div>
+                            <div><label for="reportNumber" class="form-label">NÂº do RelatÃ³rio</label><input type="text"
+                                    id="reportNumber" class="form-input" placeholder="Ex: 2025/001" required></div>
+                            <div><label for="reportDate" class="form-label">Data da ManutenÃ§Ã£o</label><input type="date"
+                                    id="reportDate" class="form-input" required></div>
+                            <div class="md:col-span-2"><label for="companyName" class="form-label">Nome da Sua Empresa
+                                    (RodapÃ©)</label><input type="text" id="companyName" class="form-input"
+                                    placeholder="Digite o Nome da Sua Empresa..." required></div>
+                            <div class="md:col-span-2"><label for="companyAddress" class="form-label">EndereÃ§o da Sua
+                                    Empresa (RodapÃ©)</label><input type="text" id="companyAddress" class="form-input"
+                                    placeholder="Digite o endereÃ§o completo da sua empresa..." required></div>
+                            <div><label for="companyPhone" class="form-label">Telefone (RodapÃ©)</label><input type="tel"
+                                    id="companyPhone" class="form-input" placeholder="Digite o telefone (xx) xxxxx-xxxx"
+                                    required></div>
+                            <div><label for="companyEmail" class="form-label">E-mail (RodapÃ©)</label><input type="email"
+                                    id="companyEmail" class="form-input" placeholder="Digite o e-mail comercial..."
+                                    required></div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2 class="section-title">Anexo da ART</h2>
+                        <div><label for="artPdf" class="form-label">ART (PDF ou Imagem)</label><input type="file"
+                                id="artPdf" accept="image/*,application/pdf" class="form-input"></div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2 class="section-title">Textos do RelatÃ³rio</h2>
+                        <div><label for="introText" class="form-label">1. IntroduÃ§Ã£o</label><textarea id="introText"
+                                rows="5"
+                                class="form-textarea">As instruÃ§Ãµes deste relatÃ³rio referente a [CLIENTE] foram elaboradas observando as normas da ABNT. Aplicam-se aos seguintes locais: SUBESTAÃ‡Ã•ES, QGBTS, QDCâ€™S, QDLâ€™S, BANCO DE CAPACITORES. Os casos omissos e outros de caracterÃ­sticas excepcionais deverÃ£o ser previamente submetidos a apreciaÃ§Ã£o da [SUA EMPRESA].</textarea>
+                        </div>
+                        <div class="mt-4"><label for="objectiveText" class="form-label">2. Objetivo</label><textarea
+                                id="objectiveText" rows="5"
+                                class="form-textarea">ElaboraÃ§Ã£o de Laudo TÃ©cnico de AvaliaÃ§Ã£o apresentando a situaÃ§Ã£o atual na qual se encontra as instalaÃ§Ãµes elÃ©tricas de baixa tensÃ£o do [CLIENTE], localizado no endereÃ§o [ENDERECO], realizado mediÃ§Ã£o das grandezas elÃ©tricas e detecÃ§Ã£o de problemas nos painÃ©is e quadros de distribuiÃ§Ã£o de energia elÃ©trica, apontando soluÃ§Ãµes tÃ©cnicas para os problemas elÃ©tricos encontrado, aferindo sua conformidade com as normas tÃ©cnicas aplicÃ¡veis.</textarea>
+                        </div>
+                        <div class="mt-4"><label for="methodologyText" class="form-label">4.
+                                Metodologia</label><textarea id="methodologyText" rows="5"
+                                class="form-textarea">O procedimento utilizado segue o plano de manutenÃ§Ã£o e na elaboraÃ§Ã£o deste RelatÃ³rio TÃ©cnico foi o de registrar atravÃ©s de imagens todos os componentes do sistema, bem como efetuar mediÃ§Ãµes de grandezas elÃ©tricas. No ato da vistoria, foram registrados todos os detalhes observados pelo TÃ©cnico Eletricista, identificando e qualificando todos os componentes e apontando as necessidades de correÃ§Ã£o das inconformidades apuradas. O RelatÃ³rio TÃ©cnico foi elaborado identificando cada componente atravÃ©s de imagem e comentando as inconformidades segundo as Normas TÃ©cnicas aplicÃ¡veis.</textarea>
+                        </div>
+                    </div>
+
+                    <!-- SeÃ§Ã£o de Itens Inspecionados -->
+                    <div class="form-section">
+                        <div class="flex justify-between items-center">
+                            <h2 class="section-title mb-0 pb-0 border-b-0">5. Itens Inspecionados</h2>
+                            <button type="button" id="addVisualItemBtn"
+                                class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">Adicionar
+                                Item</button>
+                        </div>
+                        <div id="visualItemsContainer" class="mt-6 space-y-4"></div>
+                    </div>
+
+                    <!-- SeÃ§Ã£o de Anexos FotogrÃ¡ficos -->
+                    <div class="form-section">
+                        <div class="flex justify-between items-center">
+                            <h2 class="section-title mb-0 pb-0 border-b-0">6. Anexos FotogrÃ¡ficos</h2>
+                            <button type="button" id="addPhotoBtn"
+                                class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">Adicionar
+                                Foto</button>
+                        </div>
+                        <div id="photosContainer" class="mt-6 space-y-6"></div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2 class="section-title">ConclusÃ£o e ResponsÃ¡vel</h2>
+                        <div class="mt-6"><label for="finalConclusion" class="form-label">ConclusÃ£o</label><textarea
+                                id="finalConclusion" rows="6"
+                                class="form-textarea">Foram analizados, SUBESTAÃ‡Ã•ES, QGBTâ€™S,QDCâ€™S,QDLâ€™S, BANCOS DE CAPACITORES,todos os quadros passaram por inspeÃ§Ã£o de criticidade. As irregularidades foram solucionadas. Detectamos presenÃ§a de poeira e alguns elementos nÃ£o prejudiciais ao funcionamento do sistema. AS INTALAÃ‡Ã•ES ELÃ‰TRICAS EM BAIXA TENSÃƒO (BT) estÃ£o em total conformidade com a norma NBR 5410, NBR-5419 E NR 10 e em perfeito estado de funcionamento.</textarea>
+                        </div>
+                        <div class="mt-6"><label for="closingRemarks" class="form-label">ObservaÃ§Ãµes
+                                Finais</label><textarea id="closingRemarks" rows="3"
+                                class="form-textarea">Segue o presente laudo impresso em [NÃšMERO] folhas escritas de um sÃ³ lado, todas rubricadas e a Ãºltima datada e assinada.</textarea>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                            <div><label for="engineerSignature" class="form-label">Upload da Assinatura</label><input
+                                    type="file" id="engineerSignature" accept="image/*" class="form-input"></div>
+                            <div><label for="engineerName" class="form-label">Nome do ResponsÃ¡vel TÃ©cnico</label><input
+                                    type="text" id="engineerName" class="form-input" value="Anderson Diniz" required>
+                            </div>
+                            <div><label for="creaNumber" class="form-label">CREA</label><input type="text"
+                                    id="creaNumber" class="form-input" value="254516/D" required></div>
+                            <div><label for="signatureCity" class="form-label">Cidade da Assinatura</label><input
+                                    type="text" id="signatureCity" class="form-input" value="Contagem" required></div>
+                            <div class="md:col-span-2"><label for="signatureDate" class="form-label">Data da
+                                    Assinatura</label><input type="date" id="signatureDate" class="form-input" required>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Coluna da PrÃ©-visualizaÃ§Ã£o -->
+        <div id="reportOutputContainer" class="flex flex-col h-full">
+            <div
+                class="no-print bg-gray-800 text-white p-4 flex justify-between items-center sticky top-0 z-50 shadow-lg rounded-t-lg flex-shrink-0">
+                <h3 class="font-bold text-lg">PrÃ©-visualizaÃ§Ã£o ao Vivo</h3>
+                <button id="downloadPdfBtn"
+                    class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-wait">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" x2="12" y1="15" y2="3" />
+                    </svg>
+                    <span id="downloadBtnText">Baixar PDF</span>
+                </button>
+            </div>
+            <div id="reportOutput" class="bg-gray-400 p-4 md:p-8 rounded-b-lg overflow-y-auto flex-grow"></div>
+        </div>
+    </div>
+
+    <!-- Template para Item Inspecionado -->
+    <template id="visualItemTemplate">
+        <div class="visual-item border p-4 rounded-lg bg-gray-50 relative">
+            <button type="button"
+                class="remove-visual-item-btn absolute -top-3 -right-3 bg-red-600 text-white rounded-full h-7 w-7 flex items-center justify-center font-bold text-lg hover:bg-red-700">&times;</button>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                <div class="md:col-span-2">
+                    <label class="form-label text-sm">Item Inspecionado</label>
+                    <input type="text" class="form-input item-description" placeholder="Ex: Limpeza interna do painel">
+                </div>
+                <div>
+                    <label class="form-label text-sm">Resultado</label>
+                    <select class="form-select item-status">
+                        <option value="Conforme">Conforme</option>
+                        <option value="NÃ£o Conforme">NÃ£o Conforme</option>
+                        <option value="NÃ£o se aplica">NÃ£o se aplica</option>
+                    </select>
+                </div>
+            </div>
+            <div class="reason-container hidden mt-3">
+                <label class="form-label text-sm text-red-600">ObservaÃ§Ã£o (se nÃ£o conforme):</label>
+                <textarea class="form-textarea item-reason" rows="2"
+                    placeholder="Descreva a anomalia encontrada..."></textarea>
+            </div>
+        </div>
+    </template>
+
+    <!-- Template para Anexo FotogrÃ¡fico -->
+    <template id="photoTemplate">
+        <div class="photo-item border p-4 rounded-lg">
+            <div class="flex justify-between items-center mb-4">
+                <label class="form-label mb-0">DescriÃ§Ã£o da Foto</label>
+                <button type="button"
+                    class="remove-photo-btn text-red-600 hover:text-red-800 text-sm font-semibold">Remover</button>
+            </div>
+            <input type="text" class="form-input photo-description" placeholder="Ex: Antes da limpeza">
+            <div class="mt-4"><label class="form-label">Arquivo de Imagem</label><input type="file"
+                    class="form-input photo-file" accept="image/*"></div>
+            <img class="mt-2 h-40 w-full object-contain rounded-md hidden bg-gray-100 p-1" src=""
+                alt="PrÃ©-visualizaÃ§Ã£o">
+        </div>
+    </template>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const { jsPDF } = window.jspdf;
+
+            // --- Elementos do DOM ---
+            const reportForm = document.getElementById('reportForm');
+            const reportOutput = document.getElementById('reportOutput');
+            const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+            const addVisualItemBtn = document.getElementById('addVisualItemBtn');
+            const visualItemsContainer = document.getElementById('visualItemsContainer');
+            const visualItemTemplate = document.getElementById('visualItemTemplate');
+            const addPhotoBtn = document.getElementById('addPhotoBtn');
+            const photosContainer = document.getElementById('photosContainer');
+            const photoTemplate = document.getElementById('photoTemplate');
+            const statusMessage = document.getElementById('statusMessage');
+            let debounceTimer;
+
+            // --- FunÃ§Ãµes ---
+
+            function addVisualItem(data = {}) {
+                const { description = '', status = 'Conforme', reason = '' } = data;
+                const templateContent = visualItemTemplate.content.cloneNode(true);
+                const visualItem = templateContent.querySelector('.visual-item');
+                const statusSelect = visualItem.querySelector('.item-status');
+                const reasonContainer = visualItem.querySelector('.reason-container');
+                const reasonTextarea = visualItem.querySelector('.item-reason');
+                const removeBtn = visualItem.querySelector('.remove-visual-item-btn');
+
+                visualItem.querySelector('.item-description').value = description;
+                statusSelect.value = status;
+                reasonTextarea.value = reason;
+
+                const toggleReasonField = () => {
+                    if (statusSelect.value === 'NÃ£o Conforme') {
+                        reasonContainer.classList.remove('hidden');
+                    } else {
+                        reasonContainer.classList.add('hidden');
+                    }
+                };
+
+                statusSelect.addEventListener('change', toggleReasonField);
+                removeBtn.addEventListener('click', () => {
+                    visualItem.remove();
+                    updateAndRender();
+                });
+
+                toggleReasonField();
+
+                visualItemsContainer.appendChild(visualItem);
+            }
+
+            function addPhoto(data = null) {
+                const templateContent = photoTemplate.content.cloneNode(true);
+                const photoItem = templateContent.querySelector('.photo-item');
+                const fileInput = photoItem.querySelector('.photo-file');
+                const imgPreview = photoItem.querySelector('img');
+                const removeBtn = photoItem.querySelector('.remove-photo-btn');
+                const descriptionInput = photoItem.querySelector('.photo-description');
+
+                if (data) {
+                    descriptionInput.value = data.description || '';
+                    if (data.src) {
+                        imgPreview.src = data.src;
+                        imgPreview.classList.remove('hidden');
+                        imgPreview.dataset.loadedSrc = data.src;
+                    }
+                }
+
+                fileInput.addEventListener('change', () => {
+                    const file = fileInput.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            imgPreview.src = e.target.result;
+                            imgPreview.dataset.loadedSrc = e.target.result;
+                            imgPreview.classList.remove('hidden');
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+
+                removeBtn.addEventListener('click', () => {
+                    photoItem.remove();
+                    updateAndRender();
+                });
+
+                photosContainer.appendChild(photoItem);
+            }
+
+            async function fileToDataURL(file) {
+                return new Promise((resolve) => {
+                    if (!file) { resolve(null); return; }
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = () => resolve(null);
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            async function pdfToDataURLs(file) {
+                return new Promise(async (resolve) => {
+                    if (!file) { resolve([]); return; }
+                    const fileReader = new FileReader();
+                    fileReader.onload = async function () {
+                        try {
+                            const typedarray = new Uint8Array(this.result);
+                            const pdfDoc = await pdfjsLib.getDocument(typedarray).promise;
+                            const pageDataUrls = [];
+                            for (let i = 1; i <= pdfDoc.numPages; i++) {
+                                const page = await pdfDoc.getPage(i);
+                                const viewport = page.getViewport({ scale: 2.0 });
+                                const canvas = document.createElement('canvas');
+                                const context = canvas.getContext('2d');
+                                canvas.height = viewport.height;
+                                canvas.width = viewport.width;
+                                await page.render({ canvasContext: context, viewport: viewport }).promise;
+                                pageDataUrls.push(canvas.toDataURL('image/png'));
+                            }
+                            resolve(pageDataUrls);
+                        } catch (error) {
+                            console.error("Erro ao processar PDF:", error);
+                            resolve([]);
+                        }
+                    };
+                    fileReader.readAsArrayBuffer(file);
+                });
+            }
+
+            async function processFile(file) {
+                if (!file) return [];
+                if (file.type.startsWith('image/')) {
+                    const dataUrl = await fileToDataURL(file);
+                    return dataUrl ? [dataUrl] : [];
+                }
+                if (file.type === 'application/pdf') {
+                    return pdfToDataURLs(file);
+                }
+                return [];
+            }
+
+            async function getFormData(forSave = false) {
+                const data = {};
+                [
+                    'clientName', 'clientAddress', 'reportTitle', 'reportNumber', 'reportDate',
+                    'introText', 'objectiveText', 'methodologyText', 'finalConclusion', 'closingRemarks',
+                    'engineerName', 'creaNumber', 'signatureCity', 'signatureDate',
+                    'companyName', 'companyAddress', 'companyPhone', 'companyEmail'
+                ].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) data[id] = el.value;
+                });
+
+                const companyLogoInput = document.getElementById('companyLogo');
+                data.companyLogoUrl = forSave ? (companyLogoInput.files[0] ? await fileToDataURL(companyLogoInput.files[0]) : companyLogoInput.__src) : (companyLogoInput.__src || await fileToDataURL(companyLogoInput.files[0]));
+
+                const engineerSignatureInput = document.getElementById('engineerSignature');
+                data.engineerSignatureUrl = forSave ? (engineerSignatureInput.files[0] ? await fileToDataURL(engineerSignatureInput.files[0]) : engineerSignatureInput.__src) : (engineerSignatureInput.__src || await fileToDataURL(engineerSignatureInput.files[0]));
+
+                const artPdfInput = document.getElementById('artPdf');
+                data.artUrls = forSave ? (artPdfInput.files[0] ? await processFile(artPdfInput.files[0]) : artPdfInput.__src) : (artPdfInput.__src || await processFile(artPdfInput.files[0]));
+
+
+                data.visualItems = Array.from(document.querySelectorAll('.visual-item')).map(item => ({
+                    description: item.querySelector('.item-description').value,
+                    status: item.querySelector('.item-status').value,
+                    reason: item.querySelector('.item-reason').value
+                }));
+
+                data.photos = [];
+                const photoItems = document.querySelectorAll('.photo-item');
+                for (const item of photoItems) {
+                    const fileInput = item.querySelector('.photo-file');
+                    const imgPreview = item.querySelector('img');
+                    data.photos.push({
+                        description: item.querySelector('.photo-description').value,
+                        src: forSave ? (fileInput.files[0] ? await fileToDataURL(fileInput.files[0]) : imgPreview.dataset.loadedSrc) : (imgPreview.dataset.loadedSrc || await fileToDataURL(fileInput.files[0]))
+                    });
+                }
+                return data;
+            }
+
+            function createReportPages(data) {
+                const pages = [];
+                let currentPage = 1;
+
+                // --- PÃ¡gina 1: Capa ---
+                const coverPage = document.createElement('div');
+                coverPage.className = 'report-page-container';
+                coverPage.innerHTML = `
+                <div class="report-page flex flex-col justify-between text-center p-10">
+                    <div class="flex-shrink-0">
+                        <img src="${data.companyLogoUrl || 'https://placehold.co/400x150/f0f0f0/CCCCCC?text=Sua+Empresa'}" alt="Logo da Empresa" class="h-32 mx-auto mb-16 object-contain">
+                    </div>
+                    <div class="flex-grow flex flex-col justify-center items-center">
+                        <h1 class="text-2xl font-bold">${data.reportTitle}</h1>
+                    </div>
+                    <div class="flex-shrink-0 mt-16">
+                        <p class="text-xl font-semibold">${data.clientName}</p>
+                        <p class="text-md mt-2">${new Date(data.reportDate + 'T00:00:00').toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }).toUpperCase()}</p>
+                    </div>
+                </div>`;
+                pages.push(coverPage);
+
+                // --- PÃ¡gina 2: Textos IntrodutÃ³rios ---
+                const introPage = document.createElement('div');
+                introPage.className = 'report-page-container';
+                const introTextWithClient = data.introText.replace(/\[CLIENTE\]/g, `<strong>${data.clientName}</strong>`);
+                const objectiveTextWithClient = data.objectiveText.replace(/\[CLIENTE\]/g, `<strong>${data.clientName}</strong>`).replace(/\[ENDERECO\]/g, `<strong>${data.clientAddress}</strong>`);
+
+                introPage.innerHTML = `
+                <div class="report-page">
+                    ${createHeader(data, currentPage++)}
+                    <div class="report-content">
+                        <h3 class="report-section-title">1. INTRODUÃ‡ÃƒO</h3>
+                        <p>${introTextWithClient}</p>
+                        <h3 class="report-section-title">2. OBJETIVO</h3>
+                        <p>${objectiveTextWithClient}</p>
+                        <h3 class="report-section-title">3. NORMAS E DOCUMENTOS COMPLEMENTARES</h3>
+                        <ul class="list-disc list-inside space-y-1 text-sm">
+                            <li>NBR 5410 - InstalaÃ§Ãµes elÃ©tricas de baixa tensÃ£o.</li>
+                            <li>NBR 5419 - ProteÃ§Ã£o de estruturas contra descargas atmosfÃ©ricas.</li>
+                            <li>NBR 14039 - InstalaÃ§Ãµes elÃ©tricas de mÃ©dia tensÃ£o de 1,0 kV a 36,2 kV.</li>
+                            <li>NR 10 - InstalaÃ§Ãµes e ServiÃ§os em Eletricidade.</li>
+                        </ul>
+                        <h3 class="report-section-title">4. METODOLOGIA</h3>
+                        <p>${data.methodologyText}</p>
+                    </div>
+                    ${createFooter(data)}
+                </div>`;
+                pages.push(introPage);
+
+                // --- PÃ¡gina 3: Itens Inspecionados ---
+                const visualResultsPage = document.createElement('div');
+                visualResultsPage.className = 'report-page-container';
+                visualResultsPage.innerHTML = `
+                <div class="report-page">
+                    ${createHeader(data, currentPage++)}
+                    <div class="report-content">
+                        <h3 class="report-section-title">5. ITENS INSPECIONADOS</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Item Verificado</th>
+                                    <th style="width: 120px;">Resultado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.visualItems.map(item => `
+                                    <tr>
+                                        <td>
+                                            ${item.description}
+                                            ${item.status === 'NÃ£o Conforme' && item.reason ? `<br><small style="color: #c53030; font-style: italic;"><strong>Obs:</strong> ${item.reason}</small>` : ''}
+                                        </td>
+                                        <td>${item.status}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                    ${createFooter(data)}
+                </div>`;
+                pages.push(visualResultsPage);
+
+                // --- PÃ¡ginas de Anexos FotogrÃ¡ficos ---
+                const photos = data.photos.filter(p => p.src);
+                for (let i = 0; i < photos.length; i += 4) {
+                    const photoChunk = photos.slice(i, i + 4);
+                    const photoPage = document.createElement('div');
+                    photoPage.className = 'report-page-container';
+
+                    let photoGridHtml = '<div class="grid grid-cols-2 gap-4">';
+                    photoChunk.forEach(photo => {
+                        photoGridHtml += `
+                        <div class="border p-1 rounded-md shadow-sm flex flex-col">
+                            <img src="${photo.src}" class="w-full h-40 object-cover rounded-sm">
+                            <p class="text-center text-xs italic mt-1 p-1">${photo.description || ''}</p>
+                        </div>
+                    `;
+                    });
+                    photoGridHtml += '</div>';
+
+                    photoPage.innerHTML = `
+                    <div class="report-page">
+                        ${createHeader(data, currentPage++)}
+                        <div class="report-content">
+                            <h3 class="report-section-title">6. ANEXO FOTOGRÃFICO</h3>
+                            ${photoGridHtml}
+                        </div>
+                        ${createFooter(data)}
+                    </div>`;
+                    pages.push(photoPage);
+                }
+
+                // --- PÃ¡ginas da ART ---
+                if (data.artUrls && data.artUrls.length > 0) {
+                    data.artUrls.forEach((url, index) => {
+                        const artPage = document.createElement('div');
+                        artPage.className = 'report-page-container';
+                        artPage.innerHTML = `
+                    <div class="report-page">
+                        ${createHeader(data, currentPage++)}
+                        <div class="report-content">
+                            <h3 class="report-section-title">7. ANEXO - ART</h3>
+                             <img src="${url}" class="w-full h-auto object-contain border rounded-md shadow-sm mt-4" style="max-height: 220mm;">
+                        </div>
+                        ${createFooter(data)}
+                    </div>`;
+                        pages.push(artPage);
+                    });
+                }
+
+                // --- PÃ¡gina Final: ConclusÃ£o ---
+                const conclusionPage = document.createElement('div');
+                conclusionPage.className = 'report-page-container';
+                const finalClosingRemarks = data.closingRemarks.replace('[NÃšMERO]', currentPage);
+                conclusionPage.innerHTML = `
+                <div class="report-page">
+                    ${createHeader(data, currentPage)}
+                    <div class="report-content">
+                        <h3 class="report-section-title">CONCLUSÃƒO</h3>
+                        <p>${data.finalConclusion}</p>
+                        <p class="mt-4 text-sm">${finalClosingRemarks}</p>
+                        <div class="mt-auto pt-12 text-center">
+                            <div class="inline-flex flex-col items-center">
+                                <img src="${data.engineerSignatureUrl || 'https://placehold.co/200x80/f0f0f0/CCCCCC?text=Assinatura'}" alt="Assinatura" class="h-24 mx-auto mb-2 object-contain">
+                                <p class="border-t border-slate-400 pt-2 mt-2 px-12">${data.engineerName}</p>
+                                <p class="text-sm">ResponsÃ¡vel TÃ©cnico</p>
+                                <p class="text-sm font-bold">CREA: ${data.creaNumber}</p>
+                            </div>
+                            <p class="text-center mt-8 text-sm">${data.signatureCity}, ${new Date(data.signatureDate + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}.</p>
+                        </div>
+                    </div>
+                    ${createFooter(data)}
+                </div>`;
+                pages.push(conclusionPage);
+
+                return pages;
+            }
+
+            function createHeader(data, pageNumber) {
+                return `
+                <div class="report-header text-[9px]">
+                    <table class="w-full border-2 border-gray-800">
+                        <tbody>
+                            <tr>
+                                <td class="w-1/4 p-2 border-r-2 border-gray-800 align-middle text-center" rowspan="4">
+                                    <img src="${data.companyLogoUrl || 'https://placehold.co/200x80/f0f0f0/CCCCCC?text=Logo'}" class="max-h-16 object-contain inline-block">
+                                </td>
+                                <td class="p-1 text-center font-bold" colspan="2">${data.reportTitle}</td>
+                            </tr>
+                            <tr>
+                                <td class="p-1 border-t-2 border-gray-800" colspan="2"><strong>CLIENTE:</strong> ${data.clientName}</td>
+                            </tr>
+                            <tr>
+                                <td class="p-1 border-t-2 border-gray-800" colspan="2"><strong>ENDEREÃ‡O:</strong> ${data.clientAddress}</td>
+                            </tr>
+                            <tr>
+                                <td class="p-1 border-t-2 border-gray-800"><strong>NÂº RELATÃ“RIO:</strong> ${data.reportNumber}</td>
+                                <td class="p-1 border-t-2 border-l-2 border-gray-800"><strong>DATA:</strong> ${new Date(data.reportDate + 'T00:00:00').toLocaleDateString('pt-BR')} | <strong>PÃGINA:</strong> ${pageNumber}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>`;
+            }
+
+            function createFooter(data) {
+                const phoneIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 inline-block mr-1.5" viewBox="0 0 20 20" fill="currentColor"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path></svg>`;
+                const emailIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 inline-block mr-1.5" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>`;
+                const addressIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 inline-block mr-1.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>`;
+
+                return `
+                <div class="report-footer text-[8pt] text-gray-600">
+                    <div class="w-full h-0.5 bg-gray-300 mb-3"></div>
+                    <div class="flex justify-between items-start">
+                        <div class="w-1/2 pr-4">
+                            <p class="font-bold text-gray-800 text-[9pt]">${data.companyName}</p>
+                            <p class="mt-1 flex items-start">${addressIcon} <span class="ml-1">${data.companyAddress}</span></p>
+                        </div>
+                        <div class="w-1/2 text-right">
+                            <p class="flex items-center justify-end">${phoneIcon} ${data.companyPhone}</p>
+                            <p class="mt-1 flex items-center justify-end">${emailIcon} ${data.companyEmail}</p>
+                        </div>
+                    </div>
+                </div>`;
+            }
+
+            async function updateAndRender() {
+                const formData = await getFormData();
+                const pages = createReportPages(formData);
+                reportOutput.innerHTML = '';
+                pages.forEach(page => reportOutput.appendChild(page));
+            }
+
+            async function downloadPDF() {
+                const downloadBtnText = document.getElementById('downloadBtnText');
+                const originalText = downloadBtnText.textContent;
+                downloadPdfBtn.disabled = true;
+                downloadBtnText.textContent = 'Processando...';
+
+                const pages = reportOutput.querySelectorAll('.report-page-container');
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pdfWidth = 210;
+                const pdfHeight = 297;
+
+                for (let i = 0; i < pages.length; i++) {
+                    const page = pages[i];
+                    try {
+                        const canvas = await html2canvas(page, { scale: 3, useCORS: true, logging: false });
+                        if (i > 0) pdf.addPage();
+                        const imgData = canvas.toDataURL('image/jpeg', 0.85);
+                        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+                    } catch (error) {
+                        console.error(`Erro ao renderizar a pÃ¡gina ${i + 1}:`, error);
+                        alert(`Ocorreu um erro ao gerar o PDF na pÃ¡gina ${i + 1}. Verifique o console para mais detalhes.`);
+                        downloadPdfBtn.disabled = false;
+                        downloadBtnText.textContent = originalText;
+                        return;
+                    }
+                }
+
+                const reportNumber = document.getElementById('reportNumber').value || 'relatorio-manutencao';
+                pdf.save(`${reportNumber}.pdf`);
+                downloadPdfBtn.disabled = false;
+                downloadBtnText.textContent = originalText;
+            }
+
+            function showStatus(message, isSuccess = true) {
+                const statusMessage = document.getElementById('statusMessage');
+                statusMessage.textContent = message;
+                statusMessage.className = `text-center mb-4 h-6 ${isSuccess ? 'text-green-600' : 'text-red-600'}`;
+                setTimeout(() => {
+                    statusMessage.textContent = '';
+                }, 3000);
+            }
+
+            async function saveDataToFile() {
+                try {
+                    const dataToSave = await getFormData(true);
+                    const dataString = JSON.stringify(dataToSave, null, 2);
+                    const blob = new Blob([dataString], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    const reportNumber = document.getElementById('reportNumber').value || 'dados-relatorio-manutencao';
+                    a.href = url;
+                    a.download = `${reportNumber}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    showStatus('Dados baixados com sucesso!', true);
+                } catch (error) {
+                    console.error("Erro ao baixar dados:", error);
+                    showStatus('Falha ao baixar os dados.', false);
+                }
+            }
+
+            function populateForm(data) {
+                clearForm(false);
+
+                Object.keys(data).forEach(key => {
+                    const el = document.getElementById(key);
+                    if (el && typeof data[key] === 'string' && !el.type.startsWith('file')) {
+                        el.value = data[key];
+                    }
+                });
+
+                if (data.companyLogoUrl) document.getElementById('companyLogo').__src = data.companyLogoUrl;
+                if (data.engineerSignatureUrl) document.getElementById('engineerSignature').__src = data.engineerSignatureUrl;
+                if (data.artUrls) document.getElementById('artPdf').__src = data.artUrls;
+
+                if (data.visualItems && Array.isArray(data.visualItems)) {
+                    data.visualItems.forEach(itemData => addVisualItem(itemData));
+                }
+                if (data.photos && Array.isArray(data.photos)) {
+                    data.photos.forEach(photoData => addPhoto(photoData));
+                }
+
+                showStatus('Dados importados com sucesso!', true);
+                updateAndRender();
+            }
+
+            function handleFileImport(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        populateForm(data);
+                    } catch (error) {
+                        console.error("Erro ao ler o arquivo JSON:", error);
+                        showStatus('Arquivo invÃ¡lido. Selecione um arquivo JSON gerado por esta aplicaÃ§Ã£o.', false);
+                    }
+                };
+                reader.readAsText(file);
+                event.target.value = '';
+            }
+
+            function addInitialItems() {
+                const initialItems = ["Limpeza geral do painel", "Reaperto de conexÃµes", "VerificaÃ§Ã£o de componentes", "IdentificaÃ§Ã£o de circuitos"];
+                initialItems.forEach(item => addVisualItem({ description: item }));
+                addPhoto();
+                document.getElementById('reportDate').valueAsDate = new Date();
+                document.getElementById('signatureDate').valueAsDate = new Date();
+            }
+
+            function clearForm(confirmFirst = true) {
+                if (confirmFirst && !confirm('Tem certeza que deseja limpar todo o formulÃ¡rio?')) {
+                    return;
+                }
+                reportForm.reset();
+                visualItemsContainer.innerHTML = '';
+                photosContainer.innerHTML = '';
+
+                // Limpa __src dos inputs de arquivo
+                document.querySelectorAll('input[type="file"]').forEach(input => input.__src = null);
+
+                addInitialItems();
+
+                updateAndRender();
+                if (confirmFirst) {
+                    showStatus('FormulÃ¡rio limpo.', true);
+                }
+            }
+
+            // --- InicializaÃ§Ã£o do script ---
+            addInitialItems();
+            updateAndRender();
+
+            // --- Event Listeners ---
+            reportForm.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(updateAndRender, 500);
+            });
+            reportForm.addEventListener('change', updateAndRender);
+            addVisualItemBtn.addEventListener('click', () => addVisualItem());
+            addPhotoBtn.addEventListener('click', () => addPhoto());
+            downloadPdfBtn.addEventListener('click', downloadPDF);
+
+            // Novos Listeners para Importar/Exportar
+            const saveFileBtn = document.createElement('button');
+            saveFileBtn.id = 'saveFileBtn'; // para compatibilidade com a busca
+            const importFileBtn = document.createElement('button');
+            importFileBtn.id = 'importFileBtn';
+            const importFileInput = document.createElement('input');
+            importFileInput.id = 'importFileInput';
+
+            const actionsContainer = document.querySelector('.form-section .flex.gap-2.flex-wrap');
+            if (actionsContainer) {
+                actionsContainer.innerHTML = `
+                <button type="button" id="importFileBtn" class="bg-teal-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-teal-700 transition-colors">Importar Dados</button>
+                <button type="button" id="saveFileBtn" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Baixar Dados</button>
+                <input type="file" id="importFileInput" class="hidden" accept=".json,.txt">
+                <button type="button" id="clearFormBtnNew" class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors">Limpar</button>
+            `;
+                document.getElementById('saveFileBtn').addEventListener('click', saveDataToFile);
+                document.getElementById('importFileBtn').addEventListener('click', () => document.getElementById('importFileInput').click());
+                document.getElementById('importFileInput').addEventListener('change', handleFileImport);
+                document.getElementById('clearFormBtnNew').addEventListener('click', () => clearForm(true));
+            }
+
+            // --- SincronizaÃ§Ã£o de Rolagem ---
+            const formScroller = document.getElementById('formContainer');
+            const previewScroller = document.getElementById('reportOutput');
+
+            formScroller.addEventListener('scroll', () => {
+                const formScrollableHeight = formScroller.scrollHeight - formScroller.clientHeight;
+                if (formScrollableHeight <= 0) return;
+
+                const scrollPercent = formScroller.scrollTop / formScrollableHeight;
+                const previewScrollableHeight = previewScroller.scrollHeight - previewScroller.clientHeight;
+
+                previewScroller.scrollTop = scrollPercent * previewScrollableHeight;
+            });
+        });
+    </script>
+</body>
+
+</html>
+

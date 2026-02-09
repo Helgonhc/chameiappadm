@@ -1,0 +1,1767 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Laudo de Termografia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Bibliotecas para geraÃ§Ã£o de PDF e renderizaÃ§Ã£o de PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .form-section {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        .form-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #111827;
+            border-bottom: 1px solid #d1d5db;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            color: #4b5563;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background-color: #f9fafb;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+        }
+
+        .correction-suggestion-container {
+            position: relative;
+        }
+
+        /* *** NOVO CSS: Para esconder visualmente sem usar display:none *** */
+        .visually-hidden {
+            position: absolute !important;
+            height: 1px;
+            width: 1px;
+            overflow: hidden;
+            clip: rect(1px, 1px, 1px, 1px);
+            white-space: nowrap;
+            /* Ajuda a evitar problemas de layout */
+            opacity: 0;
+            border: 0;
+            margin: -1px;
+            padding: 0;
+        }
+
+        /* Estilos do RelatÃ³rio Gerado */
+        .report-page-container {
+            width: 100%;
+            max-width: 210mm;
+            /* A4 width */
+            margin: 1rem auto;
+            page-break-after: always;
+        }
+
+        .report-page-container:last-of-type {
+            page-break-after: auto;
+        }
+
+        .report-page {
+            background: white;
+            width: 100%;
+            aspect-ratio: 210 / 297;
+            /* A4 aspect ratio */
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border: 1px solid #e5e7eb;
+            font-size: 12pt;
+        }
+
+        .report-header {
+            padding: 8mm 10mm;
+            border-bottom: 1px solid #d1d5db;
+            flex-shrink: 0;
+        }
+
+        .report-footer {
+            padding: 8mm 10mm;
+            border-top: 1px solid #d1d5db;
+            margin-top: auto;
+            flex-shrink: 0;
+        }
+
+        .report-content {
+            flex-grow: 1;
+            padding: 10mm;
+            overflow: hidden;
+            font-size: 0.9em;
+            /* Ajuste para o conteÃºdo principal ser um pouco menor que a base */
+            display: flex;
+            /* Adicionado para controle de layout interno */
+            flex-direction: column;
+            /* Adicionado para controle de layout interno */
+        }
+
+        .report-section-title {
+            font-size: 1.2em;
+            /* Relative to report content font size */
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 1rem;
+            padding-bottom: 0.25rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .report-content p,
+        .report-content li {
+            text-align: justify;
+            line-height: 1.6;
+        }
+
+        .report-content table {
+            width: 100%;
+            font-size: 0.9em;
+            border-collapse: collapse;
+        }
+
+        .report-content th,
+        .report-content td {
+            border: 1px solid #d1d5db;
+            padding: 6px 8px;
+            text-align: left;
+        }
+
+        .report-content th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+        }
+
+        @media print {
+            body {
+                background-color: #fff;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            #reportOutputContainer {
+                padding: 0;
+            }
+
+            .report-page-container {
+                margin: 0;
+                box-shadow: none;
+                border: none;
+            }
+
+            .report-page {
+                width: 210mm;
+                height: 297mm;
+                aspect-ratio: unset;
+                box-shadow: none;
+                border: none;
+                font-size: 12pt;
+            }
+
+            /* --- Patch de Responsividade ChameiApp --- */
+            @media (max-width: 1024px) {
+
+                .topbar-inner,
+                .cover-top,
+                .doc-head {
+                    flex-direction: column !important;
+                    display: flex !important;
+                    gap: 15px !important;
+                    text-align: center !important;
+                    padding: 20px !important;
+                    height: auto !important;
+                    grid-template-columns: 1fr !important;
+                }
+
+                .brand,
+                .actions,
+                .tabs {
+                    width: 100% !important;
+                    justify-content: center !important;
+                    min-width: unset !important;
+                }
+
+                .tabs {
+                    overflow-x: auto;
+                    padding: 10px 0;
+                }
+
+                .grid,
+                .row,
+                .row-3,
+                .equip-details-grid,
+                .grid-cols-2,
+                .grid-cols-3,
+                .grid-cols-4 {
+                    grid-template-columns: 1fr !important;
+                }
+
+                .wrap,
+                .max-w-7xl,
+                .max-w-5xl,
+                .report-page-container {
+                    padding: 10px !important;
+                }
+
+                .meta-strip {
+                    grid-template-columns: 1fr 1fr !important;
+                    display: grid !important;
+                }
+
+                .meta-strip .m {
+                    border-right: none !important;
+                    border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+                }
+            }
+
+            @media (max-width: 640px) {
+                .meta-strip {
+                    grid-template-columns: 1fr !important;
+                }
+
+                .sheet,
+                .report-page {
+                    width: 210mm !important;
+                }
+
+                #reportOutput,
+                #previewPane,
+                .preview-shell {
+                    overflow-x: auto !important;
+                    display: block !important;
+                    -webkit-overflow-scrolling: touch;
+                }
+
+                .cover-mid h1 {
+                    font-size: 20pt !important;
+                }
+            }
+    </style>`n    <script>
+        // Protecao Anti-Copia ChameiApp
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || (e.ctrlKey && (e.keyCode == 85 || e.keyCode == 83))) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
+</head>
+
+<body class="text-gray-800">
+
+    <div class="grid grid-cols-1 gap-8 p-4 md:p-8">
+
+        <!-- Coluna do FormulÃ¡rio -->
+        <div id="formContainer" class="no-print">
+            <div class="max-w-5xl mx-auto">
+                <div class="text-center mb-10">
+                    <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Gerador de Laudos</h1>
+                    <p class="text-gray-600 mt-2">Preencha os campos e clique em "Preview" para ver o laudo.</p>
+                </div>
+
+
+                <!-- BotÃµes de Salvar/Carregar/Limpar -->
+                <div class="form-section sticky top-4 z-20 flex items-center justify-between flex-wrap gap-4">
+                    <h2 class="text-lg font-semibold mb-0">AÃ§Ãµes do Projeto</h2>
+                    <div class="flex gap-2 flex-wrap">
+
+                        <!-- *** ALTERAÃ‡ÃƒO (HTML): BotÃµes de preview e download movidos para cÃ¡ *** -->
+                        <button id="openPreviewTabBtn" title="Abrir prÃ©-visualizaÃ§Ã£o em nova aba"
+                            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                                <polyline points="15 3 21 3 21 9" />
+                                <line x1="10" x2="21" y1="14" y2="3" />
+                            </svg>
+                            <span>Preview</span>
+                        </button>
+                        <button id="downloadPdfBtn"
+                            class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-wait">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="7 10 12 15 17 10" />
+                                <line x1="12" x2="12" y1="15" y2="3" />
+                            </svg>
+                            <span id="downloadBtnText">Baixar PDF</span>
+                        </button>
+                        <!-- *** FIM DA ALTERAÃ‡ÃƒO *** -->
+
+                        <!-- ALTERAÃ‡ÃƒO 1 (HTML): BotÃ£o Salvar JSON -->
+                        <button type="button" id="saveJsonBtn"
+                            class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Baixar
+                            JSON</button>
+
+
+                        <!-- ALTERAÃ‡ÃƒO 1 (HTML): BotÃ£o Carregar JSON -->
+                        <label for="loadJsonInput"
+                            class="bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer">Carregar
+                            JSON</label>
+                        <input type="file" id="loadJsonInput" class="hidden" accept="application/json, .json">
+
+                        <button type="button" id="clearFormBtn"
+                            class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors">Limpar</button>
+                    </div>
+                </div>
+                <div id="statusMessage" class="text-center mb-4 h-6"></div>
+
+
+                <form id="reportForm">
+                    <div class="form-section">
+                        <h2 class="section-title">Dados Gerais</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div><label for="companyLogo" class="form-label">Logo da Sua Empresa</label><input
+                                    type="file" id="companyLogo" accept="image/*" class="form-input"></div>
+                            <div>
+                                <label for="clientName" class="form-label">Nome do Cliente</label>
+                                <input type="text" id="clientName" class="form-input enable-correction"
+                                    value="CONDOMÃNIO LOG VIA EXPRESSA" required>
+                                <div class="correction-suggestion-container mt-2 text-sm" style="display: none;">
+                                    <p class="font-semibold text-gray-600">SugestÃ£o:</p>
+                                    <div
+                                        class="suggestion-text p-2 bg-blue-50 border border-blue-200 rounded-md my-1 text-gray-700">
+                                    </div><button type="button"
+                                        class="apply-correction-btn bg-blue-500 text-white text-xs font-semibold py-1 px-2 rounded-md hover:bg-blue-600">Aplicar</button><button
+                                        type="button"
+                                        class="dismiss-correction-btn text-gray-500 text-xs font-semibold py-1 px-2 hover:text-gray-700">Descartar</button>
+                                </div>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label for="clientAddress" class="form-label">EndereÃ§o do Cliente</label>
+                                <input type="text" id="clientAddress" class="form-input enable-correction"
+                                    value="AV. IMBIRUÃ‡U, 3201, VILA CRISTINA, BETIM, CEP 32675-515 â€“ MG" required>
+                                <div class="correction-suggestion-container mt-2 text-sm" style="display: none;">
+                                    <p class="font-semibold text-gray-600">SugestÃ£o:</p>
+                                    <div
+                                        class="suggestion-text p-2 bg-blue-50 border border-blue-200 rounded-md my-1 text-gray-700">
+                                    </div><button type="button"
+                                        class="apply-correction-btn bg-blue-500 text-white text-xs font-semibold py-1 px-2 rounded-md hover:bg-blue-600">Aplicar</button><button
+                                        type="button"
+                                        class="dismiss-correction-btn text-gray-500 text-xs font-semibold py-1 px-2 hover:text-gray-700">Descartar</button>
+                                </div>
+                            </div>
+                            <div><label for="reportNumber" class="form-label">NÂº do Laudo</label><input type="text"
+                                    id="reportNumber" class="form-input" placeholder="Ex: TERM_LOGVE_2024" required>
+                            </div>
+                            <div><label for="reportRevision" class="form-label">RevisÃ£o</label><input type="text"
+                                    id="reportRevision" class="form-input" value="00"></div>
+                            <div class="md:col-span-2"><label for="artPdf" class="form-label">Anexo da ART (PDF ou
+                                    Imagem)</label><input type="file" id="artPdf" accept="image/*,application/pdf"
+                                    class="form-input"></div>
+                            <div><label for="reportDate" class="form-label">Data da InspeÃ§Ã£o</label><input type="date"
+                                    id="reportDate" class="form-input" required></div>
+                            <div>
+                                <label for="companyAddress" class="form-label">EndereÃ§o da Sua Empresa</label>
+                                <input type="text" id="companyAddress" class="form-input enable-correction"
+                                    placeholder="Digite o endereÃ§o completo da sua empresa..." required>
+                                <div class="correction-suggestion-container mt-2 text-sm" style="display: none;">
+                                    <p class="font-semibold text-gray-600">SugestÃ£o:</p>
+                                    <div
+                                        class="suggestion-text p-2 bg-blue-50 border border-blue-200 rounded-md my-1 text-gray-700">
+                                    </div><button type="button"
+                                        class="apply-correction-btn bg-blue-500 text-white text-xs font-semibold py-1 px-2 rounded-md hover:bg-blue-600">Aplicar</button><button
+                                        type="button"
+                                        class="dismiss-correction-btn text-gray-500 text-xs font-semibold py-1 px-2 hover:text-gray-700">Descartar</button>
+                                </div>
+                            </div>
+                            <div><label for="companyPhone" class="form-label">Telefone da Sua Empresa</label><input
+                                    type="tel" id="companyPhone" class="form-input"
+                                    placeholder="Digite o telefone (xx) xxxxx-xxxx" required>
+                            </div>
+                            <div class="md:col-span-2"><label for="companyEmail" class="form-label">E-mail da Sua
+                                    Empresa</label><input type="email" id="companyEmail" class="form-input"
+                                    placeholder="Digite o e-mail comercial..." required></div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2 class="section-title">Equipamento e CalibraÃ§Ã£o</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="equipmentUsed" class="form-label">Equipamento Utilizado</label>
+                                <input type="text" id="equipmentUsed" class="form-input enable-correction"
+                                    placeholder="Digite o modelo e serial do equipamento..." required>
+                                <div class="correction-suggestion-container mt-2 text-sm" style="display: none;">
+                                    <p class="font-semibold text-gray-600">SugestÃ£o:</p>
+                                    <div
+                                        class="suggestion-text p-2 bg-blue-50 border border-blue-200 rounded-md my-1 text-gray-700">
+                                    </div><button type="button"
+                                        class="apply-correction-btn bg-blue-500 text-white text-xs font-semibold py-1 px-2 rounded-md hover:bg-blue-600">Aplicar</button><button
+                                        type="button"
+                                        class="dismiss-correction-btn text-gray-500 text-xs font-semibold py-1 px-2 hover:text-gray-700">Descartar</button>
+                                </div>
+                            </div>
+                            <div><label for="calibrationCertificate" class="form-label">Certificado (PDF ou
+                                    Imagem)</label><input type="file" id="calibrationCertificate"
+                                    accept="image/*,application/pdf" class="form-input"></div>
+                        </div>
+                    </div>
+
+                    <!-- SeÃ§Ã£o de Pontos de InspeÃ§Ã£o -->
+                    <div class="form-section">
+
+                        <!-- ALTERAÃ‡ÃƒO 2 (HTML): BotÃ£o Adicionar por Imagens -->
+                        <div class="sticky top-28 z-10 bg-white py-4 border-b mb-6 -mx-6 px-6">
+                            <div class="flex justify-between items-center flex-wrap gap-4">
+                                <h2 class="section-title mb-0 pb-0 border-b-0">Pontos de InspeÃ§Ã£o</h2>
+                                <div class="flex gap-2 flex-wrap">
+
+                                    <!-- BotÃ£o para carregar mÃºltiplas imagens -->
+                                    <label for="batchAddImagesInput"
+                                        class="bg-green-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-700 transition-colors cursor-pointer">Adicionar
+                                        por Imagens</label>
+                                    <input type="file" id="batchAddImagesInput" class="hidden" accept="image/*"
+                                        multiple>
+
+
+                                    <!-- BotÃ£o original renomeado -->
+                                    <button type="button" id="addInspectionPointBtn"
+                                        class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">Adicionar
+                                        Ponto Manual</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="inspectionPointsContainer" class="mt-6 space-y-6"></div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2 class="section-title">ConclusÃ£o e ResponsÃ¡vel</h2>
+                        <div class="mt-6">
+                            <label for="finalConclusion" class="form-label">Texto da ConclusÃ£o Geral</label>
+                            <textarea id="finalConclusion" rows="6" class="form-textarea enable-correction"
+                                placeholder="Descreva a conclusÃ£o geral do laudo..."></textarea>
+                            <div class="correction-suggestion-container mt-2 text-sm" style="display: none;">
+                                <p class="font-semibold text-gray-600">SugestÃ£o de correÃ§Ã£o:</p>
+                                <div
+                                    class="suggestion-text p-2 bg-blue-50 border border-blue-200 rounded-md my-1 text-gray-700">
+                                </div>
+                                <button type="button"
+                                    class="apply-correction-btn bg-blue-500 text-white text-xs font-semibold py-1 px-2 rounded-md hover:bg-blue-600">Aplicar</button>
+                                <button type="button"
+                                    class="dismiss-correction-btn text-gray-500 text-xs font-semibold py-1 px-2 hover:text-gray-700">Descartar</button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                            <div><label for="engineerSignature" class="form-label">Upload da Assinatura</label><input
+                                    type="file" id="engineerSignature" accept="image/*" class="form-input"></div>
+                            <div>
+                                <label for="engineerName" class="form-label">Nome do Engenheiro</label>
+                                <input type="text" id="engineerName" class="form-input enable-correction"
+                                    placeholder="Digite o nome do responsÃ¡vel tÃ©cnico..." required>
+                                <div class="correction-suggestion-container mt-2 text-sm" style="display: none;">
+                                    <p class="font-semibold text-gray-600">SugestÃ£o:</p>
+                                    <div
+                                        class="suggestion-text p-2 bg-blue-50 border border-blue-200 rounded-md my-1 text-gray-700">
+                                    </div><button type="button"
+                                        class="apply-correction-btn bg-blue-500 text-white text-xs font-semibold py-1 px-2 rounded-md hover:bg-blue-600">Aplicar</button><button
+                                        type="button"
+                                        class="dismiss-correction-btn text-gray-500 text-xs font-semibold py-1 px-2 hover:text-gray-700">Descartar</button>
+                                </div>
+                            </div>
+                            <div><label for="creaNumber" class="form-label">CREA</label><input type="text"
+                                    id="creaNumber" class="form-input" placeholder="Digite o nÃºmero do CREA/CFT..."
+                                    required></div>
+                            <div>
+                                <label for="signatureCity" class="form-label">Cidade da Assinatura</label>
+                                <input type="text" id="signatureCity" class="form-input enable-correction"
+                                    placeholder="Cidade/UF" required>
+                                <div class="correction-suggestion-container mt-2 text-sm" style="display: none;">
+                                    <p class="font-semibold text-gray-600">SugestÃ£o:</p>
+                                    <div
+                                        class="suggestion-text p-2 bg-blue-50 border border-blue-200 rounded-md my-1 text-gray-700">
+                                    </div><button type="button"
+                                        class="apply-correction-btn bg-blue-500 text-white text-xs font-semibold py-1 px-2 rounded-md hover:bg-blue-600">Aplicar</button><button
+                                        type="button"
+                                        class="dismiss-correction-btn text-gray-500 text-xs font-semibold py-1 px-2 hover:text-gray-700">Descartar</button>
+                                </div>
+                            </div>
+                            <div class="md:col-span-2"><label for="signatureDate" class="form-label">Data da
+                                    Assinatura</label><input type="date" id="signatureDate" class="form-input" required>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+        <!-- Coluna da PrÃ©-visualizaÃ§Ã£o -->
+        <!-- *** CORREÃ‡ÃƒO (HTML): Usa 'visually-hidden' em vez de 'hidden' *** -->
+        <div id="reportOutputContainer" class="visually-hidden">
+            <div
+                class="no-print bg-gray-800 text-white p-4 flex justify-between items-center sticky top-0 z-50 shadow-lg rounded-t-lg">
+                <h3 class="font-bold text-lg">PrÃ©-visualizaÃ§Ã£o ao Vivo</h3>
+                <!-- BotÃµes movidos para a seÃ§Ã£o 'AÃ§Ãµes do Projeto' -->
+            </div>
+            <div id="reportOutput" class="bg-gray-400 p-4 md:p-8 rounded-b-lg overflow-y-auto max-h-[90vh]"></div>
+        </div>
+    </div>
+
+    <!-- Template para Ponto de InspeÃ§Ã£o -->
+    <template id="inspectionPointTemplate">
+        <div class="inspection-point border border-gray-300 p-4 rounded-lg bg-white shadow-sm">
+            <h3 class="font-semibold text-lg mb-4 border-b pb-2 flex justify-between items-center">
+                <span class="point-title">Novo Ponto de InspeÃ§Ã£o</span>
+                <button type="button"
+                    class="remove-point-btn text-red-600 hover:text-red-800 text-sm font-semibold">Remover</button>
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="form-label">Local / Ãrea</label>
+                    <input type="text" class="form-input point-location enable-correction"
+                        placeholder="Ex: SubestaÃ§Ã£o PrimÃ¡ria">
+                    <div class="correction-suggestion-container mt-2 text-sm" style="display: none;">
+                        <p class="font-semibold text-gray-600">SugestÃ£o:</p>
+                        <div
+                            class="suggestion-text p-2 bg-blue-50 border border-blue-200 rounded-md my-1 text-gray-700">
+                        </div><button type="button"
+                            class="apply-correction-btn bg-blue-500 text-white text-xs font-semibold py-1 px-2 rounded-md hover:bg-blue-600">Aplicar</button><button
+                            type="button"
+                            class="dismiss-correction-btn text-gray-500 text-xs font-semibold py-1 px-2 hover:text-gray-700">Descartar</button>
+                    </div>
+                </div>
+                <div>
+                    <label class="form-label">Componente</label>
+                    <input type="text" class="form-input point-component enable-correction"
+                        placeholder="Ex: Mufla de Entrada">
+                    <div class="correction-suggestion-container mt-2 text-sm" style="display: none;">
+                        <p class="font-semibold text-gray-600">SugestÃ£o:</p>
+                        <div
+                            class="suggestion-text p-2 bg-blue-50 border border-blue-200 rounded-md my-1 text-gray-700">
+                        </div><button type="button"
+                            class="apply-correction-btn bg-blue-500 text-white text-xs font-semibold py-1 px-2 rounded-md hover:bg-blue-600">Aplicar</button><button
+                            type="button"
+                            class="dismiss-correction-btn text-gray-500 text-xs font-semibold py-1 px-2 hover:text-gray-700">Descartar</button>
+                    </div>
+                </div>
+
+                <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    <!-- *** ALTERAÃ‡ÃƒO (HTML): Ordem das fotos invertida *** -->
+                    <div>
+                        <label class="form-label">Foto TermogrÃ¡fica</label>
+                        <input type="file" class="form-input point-photo-thermal" accept="image/*">
+                        <img class="mt-2 h-40 w-full object-contain rounded-md hidden bg-gray-100 p-1" src=""
+                            alt="PrÃ©-visualizaÃ§Ã£o da foto termogrÃ¡fica">
+                        <div class="thermal-analysis-status text-xs text-center mt-1 h-4"></div>
+                    </div>
+                    <div>
+                        <label class="form-label">Foto Normal (VisÃ­vel)</label>
+                        <input type="file" class="form-input point-photo-normal" accept="image/*">
+                        <img class="mt-2 h-40 w-full object-contain rounded-md hidden bg-gray-100 p-1" src=""
+                            alt="PrÃ©-visualizaÃ§Ã£o da foto normal">
+                    </div>
+                </div>
+
+                <div class="md:col-span-2">
+                    <hr class="my-2">
+                </div>
+                <h4 class="md:col-span-2 font-semibold text-md">ParÃ¢metros de AnÃ¡lise</h4>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:col-span-2">
+                    <div><label class="form-label">DistÃ¢ncia (m)</label><input type="number" step="0.1"
+                            class="form-input point-distance" placeholder="1.5"></div>
+                    <div><label class="form-label">Temp. Max (Â°C)</label><input type="number" step="0.1"
+                            class="form-input point-temp-max" placeholder="45.5"></div>
+                    <div><label class="form-label">Temp. MÃ­n (Â°C)</label><input type="number" step="0.1"
+                            class="form-input point-temp-min" placeholder="22.3"></div>
+                    <div><label class="form-label">Temp. Corr. (Â°C)</label><input type="number" step="0.1"
+                            class="form-input point-temp-corrected" placeholder="42.0"></div>
+                    <div><label class="form-label">MTA (Â°C)</label><input type="number" class="form-input point-mta"
+                            placeholder="70"></div>
+                    <div><label class="form-label">Carga Nom. (%)</label><input type="number"
+                            class="form-input point-load-nominal" value="100"></div>
+                    <div><label class="form-label">Carga Med. (%)</label><input type="number"
+                            class="form-input point-load-measured" placeholder="80"></div>
+                    <div><label class="form-label">FCC</label><input type="number" step="0.01"
+                            class="form-input point-fcc" value="1.00"></div>
+                    <div>
+                        <label class="form-label">ClassificaÃ§Ã£o</label>
+                        <select class="form-select point-classification">
+                            <option value="NORMAL">Normal</option>
+                            <option value="OBSERVACAO">ObservaÃ§Ã£o</option>
+                            <option value="PROGRAMADO">Programado</option>
+                            <option value="IMEDIATO">Imediato</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="form-label">DiagnÃ³stico e RecomendaÃ§Ãµes</label>
+                    <textarea class="form-textarea point-diagnosis enable-correction" rows="3"
+                        placeholder="Descrever anomalia e aÃ§Ãµes recomendadas..."></textarea>
+                    <div class="correction-suggestion-container mt-2 text-sm" style="display: none;">
+                        <p class="font-semibold text-gray-600">SugestÃ£o de correÃ§Ã£o:</p>
+                        <div
+                            class="suggestion-text p-2 bg-blue-50 border border-blue-200 rounded-md my-1 text-gray-700">
+                        </div>
+                        <button type="button"
+                            class="apply-correction-btn bg-blue-500 text-white text-xs font-semibold py-1 px-2 rounded-md hover:bg-blue-600">Aplicar</button>
+                        <button type="button"
+                            class="dismiss-correction-btn text-gray-500 text-xs font-semibold py-1 px-2 hover:text-gray-700">Descartar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        // --- FunÃ§Ãµes Globais ---
+        const { jsPDF } = window.jspdf;
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js`;
+
+        let uploadedFileNames = new Set();
+        let debounceTimer;
+        let previewTab = null; // *** ALTERAÃ‡ÃƒO (JS): VariÃ¡vel global para a nova aba ***
+
+        function addInspectionPoint(data = null) {
+            const inspectionPointTemplate = document.getElementById('inspectionPointTemplate');
+            const inspectionPointsContainer = document.getElementById('inspectionPointsContainer');
+            const templateContent = inspectionPointTemplate.content.cloneNode(true);
+            const pointDiv = templateContent.querySelector('.inspection-point');
+
+            const setupImagePreview = (inputClass, imgElement, base64Data, fileName, analyzeThermal = false) => { // Adicionado analyzeThermal
+                const input = pointDiv.querySelector(inputClass);
+                if (base64Data) {
+                    imgElement.src = base64Data;
+                    imgElement.classList.remove('hidden');
+                    imgElement.dataset.loadedSrc = base64Data;
+                    if (fileName) {
+                        uploadedFileNames.add(fileName);
+                        input.dataset.fileName = fileName;
+                    }
+                }
+                input.addEventListener('change', (event) => {
+                    const file = event.target.files[0];
+                    if (file) {
+                        if (uploadedFileNames.has(file.name)) {
+                            // *** ALTERAÃ‡ÃƒO: Trocado alert() por showStatus() ***
+                            showStatus('Esta imagem jÃ¡ foi carregada. Escolha outra.', false);
+                            event.target.value = null;
+                            return;
+                        }
+                        if (input.dataset.fileName) {
+                            uploadedFileNames.delete(input.dataset.fileName);
+                        }
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            imgElement.src = e.target.result;
+                            imgElement.dataset.loadedSrc = e.target.result;
+                            imgElement.classList.remove('hidden');
+                            uploadedFileNames.add(file.name);
+                            input.dataset.fileName = file.name;
+                            // *** ALTERAÃ‡ÃƒO (JS): Chamar analyzeThermalImage baseado no parÃ¢metro analyzeThermal ***
+                            if (analyzeThermal) {
+                                // *** NOVO: Tenta analisar apenas se a foto visÃ­vel jÃ¡ estiver carregada ***
+                                const visivelImg = pointDiv.querySelector('.point-photo-normal + img');
+                                analyzeThermalImage(file, pointDiv);
+                            }
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        imgElement.classList.add('hidden');
+                        delete imgElement.dataset.loadedSrc;
+                        if (input.dataset.fileName) {
+                            uploadedFileNames.delete(input.dataset.fileName);
+                            delete input.dataset.fileName;
+                        }
+                    }
+                });
+            };
+
+            if (data) {
+                pointDiv.querySelector('.point-location').value = data.location || '';
+                pointDiv.querySelector('.point-component').value = data.component || '';
+                pointDiv.querySelector('.point-distance').value = data.distance || '';
+                pointDiv.querySelector('.point-temp-max').value = data.tempMax || '';
+                pointDiv.querySelector('.point-temp-min').value = data.tempMin || '';
+                pointDiv.querySelector('.point-temp-corrected').value = data.tempCorrected || '';
+                pointDiv.querySelector('.point-mta').value = data.mta || '';
+                pointDiv.querySelector('.point-load-nominal').value = data.loadNominal || '100';
+                pointDiv.querySelector('.point-load-measured').value = data.loadMeasured || '';
+                pointDiv.querySelector('.point-fcc').value = data.fcc || '1.00';
+                pointDiv.querySelector('.point-classification').value = data.classification || 'NORMAL';
+                pointDiv.querySelector('.point-diagnosis').value = data.diagnosis || '';
+                // *** ALTERAÃ‡ÃƒO (JS): Invertendo a ordem de setup das fotos, e passando analyzeThermal=true para a termogrÃ¡fica ***
+                setupImagePreview('.point-photo-thermal', pointDiv.querySelector('.point-photo-thermal + img'), data.photoThermalUrl, data.photoThermalName, true);
+                setupImagePreview('.point-photo-normal', pointDiv.querySelector('.point-photo-normal + img'), data.photoNormalUrl, data.photoNormalName, false);
+            } else {
+                // *** ALTERAÃ‡ÃƒO (JS): Invertendo a ordem de setup das fotos, e passando analyzeThermal=true para a termogrÃ¡fica ***
+                setupImagePreview('.point-photo-thermal', pointDiv.querySelector('.point-photo-thermal + img'), null, null, true);
+                setupImagePreview('.point-photo-normal', pointDiv.querySelector('.point-photo-normal + img'), null, null, false);
+            }
+
+            pointDiv.querySelector('.remove-point-btn').onclick = () => {
+                const normalInput = pointDiv.querySelector('.point-photo-normal');
+                const thermalInput = pointDiv.querySelector('.point-photo-thermal');
+                if (normalInput.dataset.fileName) {
+                    uploadedFileNames.delete(normalInput.dataset.fileName);
+                }
+                if (thermalInput.dataset.fileName) {
+                    uploadedFileNames.delete(thermalInput.dataset.fileName);
+                }
+                pointDiv.remove();
+                updatePointTitles();
+                updatePreview();
+            };
+
+            // Setup text correction listener for all correctable fields inside the new point
+            pointDiv.querySelectorAll('.enable-correction').forEach(field => {
+                const suggestionContainer = field.nextElementSibling;
+                if (suggestionContainer && suggestionContainer.classList.contains('correction-suggestion-container')) {
+                    setupCorrectionListener(field, suggestionContainer);
+                }
+            });
+
+            inspectionPointsContainer.appendChild(pointDiv);
+            updatePointTitles();
+        }
+
+        function updatePointTitles() {
+            const points = document.querySelectorAll('.inspection-point');
+            points.forEach((point, index) => {
+                point.querySelector('.point-title').textContent = `Ponto de InspeÃ§Ã£o ${index + 1}`;
+            });
+        }
+
+        async function downloadPDF() {
+            // Primeiro, forÃ§a a atualizaÃ§Ã£o do preview oculto
+            await updatePreview();
+
+            const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+            const downloadBtnText = document.getElementById('downloadBtnText');
+            const originalText = downloadBtnText.textContent;
+            downloadPdfBtn.disabled = true;
+            downloadBtnText.textContent = 'Processando...';
+
+            const pages = document.getElementById('reportOutput').querySelectorAll('.report-page');
+            if (pages.length === 0) {
+                showStatus("Nada para baixar. Preencha o laudo primeiro.", false);
+                downloadPdfBtn.disabled = false;
+                downloadBtnText.textContent = originalText;
+                return;
+            }
+
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pdfWidth = 210;
+            const pdfHeight = 297;
+
+            for (let i = 0; i < pages.length; i++) {
+                const page = pages[i];
+                try {
+                    // *** CORREÃ‡ÃƒO: Garante que o elemento pai (reportOutputContainer) nÃ£o esteja com display:none ***
+                    // A classe visually-hidden jÃ¡ resolve isso, mas adicionamos um failsafe
+                    const container = document.getElementById('reportOutputContainer');
+                    const originalStyle = container.style.display;
+                    container.classList.remove('visually-hidden'); // Remove a classe que esconde
+                    container.style.display = 'block'; // ForÃ§a a exibiÃ§Ã£o temporÃ¡ria
+
+                    const canvas = await html2canvas(page, { scale: 3, useCORS: true, logging: false });
+
+                    // Restaura o estilo original
+                    container.style.display = originalStyle;
+                    container.classList.add('visually-hidden');
+
+                    if (i > 0) pdf.addPage();
+                    const imgData = canvas.toDataURL('image/jpeg', 0.85);
+                    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+                } catch (error) {
+                    console.error(`Erro ao renderizar a pÃ¡gina ${i + 1}:`, error);
+                    // *** ALTERAÃ‡ÃƒO: Trocado alert() por showStatus() ***
+                    showStatus(`Erro ao renderizar a pÃ¡gina ${i + 1}.`, false);
+                    downloadPdfBtn.disabled = false;
+                    downloadBtnText.textContent = originalText;
+
+                    // Restaura o estilo original em caso de erro
+                    const container = document.getElementById('reportOutputContainer');
+                    container.classList.add('visually-hidden');
+
+                    return;
+                }
+            }
+
+            const reportNumber = document.getElementById('reportNumber').value || 'laudo-termografico';
+            pdf.save(`${reportNumber}.pdf`);
+            downloadPdfBtn.disabled = false;
+            downloadBtnText.textContent = originalText;
+        }
+
+        async function fileToDataURL(file) {
+            return new Promise((resolve, reject) => {
+                if (!file) { resolve(null); return; }
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = (error) => reject(error);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function pdfToDataURLs(file) {
+            return new Promise(async (resolve) => {
+                if (!file) { resolve([]); return; }
+                const fileReader = new FileReader();
+                fileReader.onload = async function () {
+                    try {
+                        const typedarray = new Uint8Array(this.result);
+                        const pdfDoc = await pdfjsLib.getDocument(typedarray).promise;
+                        const pageDataUrls = [];
+                        for (let i = 1; i <= pdfDoc.numPages; i++) {
+                            const page = await pdfDoc.getPage(i);
+                            const viewport = page.getViewport({ scale: 2.0 });
+                            const canvas = document.createElement('canvas');
+                            const context = canvas.getContext('2d');
+                            canvas.height = viewport.height;
+                            canvas.width = viewport.width;
+                            await page.render({ canvasContext: context, viewport: viewport }).promise;
+                            pageDataUrls.push(canvas.toDataURL('image/png'));
+                        }
+                        resolve(pageDataUrls);
+                    } catch (error) {
+                        console.error("Erro ao processar PDF:", error);
+                        resolve([]);
+                    }
+                };
+                fileReader.readAsArrayBuffer(file);
+            });
+        }
+
+        async function processFile(file) {
+            if (!file) return [];
+            if (file.type.startsWith('image/')) {
+                const dataUrl = await fileToDataURL(file);
+                return dataUrl ? [dataUrl] : [];
+            }
+            if (file.type === 'application/pdf') {
+                return pdfToDataURLs(file);
+            }
+            return [];
+        }
+
+        async function updatePreview() {
+            try {
+                const formData = await getFormData();
+                const pages = createReportPages(formData);
+                const reportOutput = document.getElementById('reportOutput');
+                reportOutput.innerHTML = '';
+                pages.forEach(page => reportOutput.appendChild(page));
+
+                // *** ALTERAÃ‡ÃƒO (JS): Atualiza a aba externa, se estiver aberta ***
+                if (previewTab && !previewTab.closed) {
+                    try {
+                        const previewBody = previewTab.document.getElementById('previewBody');
+                        if (previewBody) {
+                            previewBody.innerHTML = reportOutput.innerHTML; // reportOutput Ã© o container
+                        } else {
+                            // Failsafe caso o body nÃ£o tenha o ID
+                            previewTab.document.body.innerHTML = reportOutput.innerHTML;
+                        }
+                    } catch (e) {
+                        console.warn("Erro ao atualizar a aba de prÃ©-visualizaÃ§Ã£o. Pode ter sido fechada.", e);
+                        previewTab = null; // Limpa a referÃªncia
+                    }
+                }
+                // *** FIM DA ADIÃ‡ÃƒO ***
+
+            } catch (error) {
+                console.error("Erro ao atualizar a prÃ©-visualizaÃ§Ã£o:", error);
+                document.getElementById('reportOutput').innerHTML = `<div class="p-4 text-red-600 bg-red-100 rounded-lg">Ocorreu um erro ao gerar a prÃ©-visualizaÃ§Ã£o. Verifique os dados e tente novamente.</div>`;
+            }
+        }
+
+        async function getFormData(forSave = false) {
+            const data = {};
+            const formIds = ['clientName', 'clientAddress', 'reportDate', 'reportNumber', 'reportRevision', 'companyAddress', 'companyPhone', 'companyEmail', 'equipmentUsed', 'finalConclusion', 'engineerName', 'creaNumber', 'signatureCity', 'signatureDate'];
+            formIds.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) data[id] = element.value;
+            });
+
+            if (forSave) {
+                // Para salvar em JSON, pegamos o DataURL que jÃ¡ estÃ¡ carregado ou lemos o arquivo
+                data.companyLogoUrl = document.getElementById('companyLogo').__src || (document.getElementById('companyLogo').files[0] ? await fileToDataURL(document.getElementById('companyLogo').files[0]) : null);
+                data.engineerSignatureUrl = document.getElementById('engineerSignature').__src || (document.getElementById('engineerSignature').files[0] ? await fileToDataURL(document.getElementById('engineerSignature').files[0]) : null);
+
+                // Para arquivos PDF, processamos de forma diferente
+                const certFile = document.getElementById('calibrationCertificate');
+                data.calibrationCertificateUrls = certFile.__src || (certFile.files[0] ? await processFile(certFile.files[0]) : []);
+
+                const artFile = document.getElementById('artPdf');
+                data.artUrls = artFile.__src || (artFile.files[0] ? await processFile(artFile.files[0]) : []);
+
+            } else {
+                // Para renderizar o preview, usamos a mesma lÃ³gica
+                data.companyLogoUrl = document.getElementById('companyLogo').__src || await fileToDataURL(document.getElementById('companyLogo').files[0]);
+                data.engineerSignatureUrl = document.getElementById('engineerSignature').__src || await fileToDataURL(document.getElementById('engineerSignature').files[0]);
+
+                const certFile = document.getElementById('calibrationCertificate');
+                data.calibrationCertificateUrls = certFile.__src || (certFile.files[0] ? await processFile(certFile.files[0]) : []);
+
+                const artFile = document.getElementById('artPdf');
+                data.artUrls = artFile.__src || (artFile.files[0] ? await processFile(artFile.files[0]) : []);
+            }
+
+            data.inspectionPoints = [];
+            const pointElements = document.querySelectorAll('.inspection-point');
+            for (const el of pointElements) {
+                const normalInput = el.querySelector('.point-photo-normal');
+                const thermalInput = el.querySelector('.point-photo-thermal');
+                const pointData = {
+                    location: el.querySelector('.point-location').value,
+                    component: el.querySelector('.point-component').value,
+                    distance: el.querySelector('.point-distance').value,
+                    tempMax: el.querySelector('.point-temp-max').value,
+                    tempMin: el.querySelector('.point-temp-min').value,
+                    tempCorrected: el.querySelector('.point-temp-corrected').value,
+                    mta: el.querySelector('.point-mta').value,
+                    loadNominal: el.querySelector('.point-load-nominal').value,
+                    loadMeasured: el.querySelector('.point-load-measured').value,
+                    fcc: el.querySelector('.point-fcc').value,
+                    diagnosis: el.querySelector('.point-diagnosis').value,
+                    classification: el.querySelector('.point-classification').value,
+                    // LÃ³gica para pegar a imagem correta para salvar ou renderizar
+                    photoNormalUrl: normalInput.nextElementSibling.dataset.loadedSrc || (normalInput.files[0] ? await fileToDataURL(normalInput.files[0]) : null),
+                    photoThermalUrl: thermalInput.nextElementSibling.dataset.loadedSrc || (thermalInput.files[0] ? await fileToDataURL(thermalInput.files[0]) : null),
+                    photoNormalName: normalInput.dataset.fileName,
+                    photoThermalName: thermalInput.dataset.fileName,
+                };
+                data.inspectionPoints.push(pointData);
+            }
+            return data;
+        }
+
+        function createReportPages(data) {
+            const contents = [];
+            const companyLogoUrl = data.companyLogoUrl || 'https://placehold.co/400x150/f0f0f0/CCCCCC?text=Sua+Empresa';
+
+            // --- PÃGINA 1: Capa ---
+            contents.push({
+                isCover: true, content: `
+            <div class="report-content flex flex-col justify-between text-center p-10 h-full" style="font-size: 1.2em;">
+                <div class="flex-shrink-0">
+                    <!-- *** ALTERAÃ‡ÃƒO (JS): Logo maior (h-48) e margem ajustada (mb-12) *** -->
+                    <img src="${companyLogoUrl}" alt="Logo da Empresa" class="h-48 mx-auto mb-12 object-contain">
+                </div>
+                <div class="flex-grow flex flex-col justify-center items-center text-center">
+                    <h1 class="text-4xl font-bold tracking-wide text-gray-800">LAUDO DE INSPEÃ‡ÃƒO TERMOGRÃFICA</h1>
+                    <p class="text-2xl mt-4 text-gray-600">LAUDO DE ENGENHARIA</p>
+                </div>
+                <div class="flex-shrink-0 mt-16">
+                    <div class="border-t border-gray-300 pt-6 w-full max-w-lg mx-auto text-center">
+                        <p class="text-xl font-semibold text-gray-800">${data.clientName || '(Nome do Cliente)'}</p>
+                        <p class="text-lg text-gray-600 mt-1">${data.reportDate ? new Date(data.reportDate + 'T00:00:00').toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' }) : '(Data da InspeÃ§Ã£o)'}</p>
+                    </div>
+                </div>
+            </div>`
+            });
+
+            // --- PÃGINA 2: IntroduÃ§Ã£o e Objetivo ---
+            contents.push({
+                content: `
+            <div class="mb-12">
+                <h3 class="report-section-title">1. INTRODUÃ‡ÃƒO</h3>
+                <p>O presente Laudo TÃ©cnico consolida os resultados da InspeÃ§Ã£o TermogrÃ¡fica realizada nas instalaÃ§Ãµes elÃ©tricas do cliente <strong>${data.clientName || '(Cliente nÃ£o informado)'}</strong>, localizado em ${data.clientAddress || '(EndereÃ§o nÃ£o informado)'}. O serviÃ§o foi executado em conformidade com um plano de manutenÃ§Ã£o preditiva preestabelecido, com o propÃ³sito de detectar, quantificar e diagnosticar anomalias tÃ©rmicas em componentes e sistemas energizados.</p>
+            </div>
+            <div>
+                <h3 class="report-section-title">2. OBJETIVO</h3>
+                <p>A Termografia de Infravermelho Ã© uma tÃ©cnica de ensaio nÃ£o destrutivo que permite medir e registrar padrÃµes de temperatura em superfÃ­cies de equipamentos, utilizando a radiaÃ§Ã£o infravermelha emitida por eles. O objetivo central desta inspeÃ§Ã£o Ã© identificar precocemente pontos de sobreaquecimento, que sÃ£o indicativos de falhas iminentes, visando:</p>
+                <ul class="list-disc list-inside mt-4 space-y-2 pl-4">
+                    <li>Reduzir a ocorrÃªncia de manutenÃ§Ãµes corretivas nÃ£o planejadas.</li>
+                    <li>Otimizar os custos associados Ã  manutenÃ§Ã£o e operaÃ§Ã£o.</li>
+                    <li>Aumentar a eficiÃªncia energÃ©tica atravÃ©s da eliminaÃ§Ã£o de perdas por efeito Joule.</li>
+                    <li>Garantir a continuidade operacional, permitindo a programaÃ§Ã£o de intervenÃ§Ãµes sem interromper o processo produtivo.</li>
+                </ul>
+            </div>`
+            });
+
+            // --- PÃGINA 3: Desenvolvimento e Metodologia ---
+            contents.push({
+                content: `
+            <h3 class="report-section-title">3. DESENVOLVIMENTO E METODOLOGIA</h3>
+            <p class="mb-4">O planejamento e a execuÃ§Ã£o das atividades seguiram as melhores prÃ¡ticas de mercado e normas tÃ©cnicas aplicÃ¡veis. Todas as medidas de seguranÃ§a e proteÃ§Ã£o individual e coletiva foram adotadas para garantir a integridade da equipe e dos ativos inspecionados.</p>
+            <h4 class="font-semibold text-lg mb-2 mt-6">3.1. CritÃ©rio de ClassificaÃ§Ã£o de Criticidade</h4>
+            <p>Para a anÃ¡lise e classificaÃ§Ã£o das anomalias tÃ©rmicas, foi adotado o CritÃ©rio FlexÃ­vel de ClassificaÃ§Ã£o de Aquecimentos (CFCA), fundamentado nas normas <strong>N-2475 (PetrobrÃ¡s)</strong> e <strong>PN-T12 (Eletronuclear)</strong>. Este mÃ©todo considera nÃ£o apenas a temperatura do componente, mas tambÃ©m variÃ¡veis como a MÃ¡xima Temperatura AdmissÃ­vel (MTA), a temperatura ambiente, a carga elÃ©trica no momento da mediÃ§Ã£o e a velocidade do vento.</p>
+            <p class="mt-4">O <strong>Aquecimento Corrigido (AC)</strong> Ã© calculado pela diferenÃ§a entre a Temperatura Corrigida (TC) e a Temperatura Ambiente (TA):</p>
+            <div class="text-center my-4 p-2 bg-gray-100 rounded-md font-mono">AC = TC â€“ TA</div>
+            <p>A criticidade Ã© determinada comparando-se o Aquecimento Corrigido (AC) com o <strong>MÃ¡ximo Aquecimento AdmissÃ­vel (MAA)</strong>, que Ã© definido como:</p>
+            <div class="text-center my-4 p-2 bg-gray-100 rounded-md font-mono">MAA = MTA â€“ TA</div>
+            <p>Os valores de MTA sÃ£o obtidos a partir das especificaÃ§Ãµes tÃ©cnicas dos fabricantes ou, na ausÃªncia destes, adotando-se valores de referÃªncia consolidados pela prÃ¡tica de engenharia.</p>
+            `
+            });
+
+            // --- PÃGINA 4: Fatores de CorreÃ§Ã£o e ClassificaÃ§Ã£o ---
+            contents.push({
+                content: `
+            <h4 class="font-semibold text-lg mb-2">3.2. Fatores de CorreÃ§Ã£o</h4>
+            <p class="mb-4">Para garantir a precisÃ£o da anÃ¡lise, as temperaturas medidas sÃ£o ajustadas por fatores de correÃ§Ã£o.</p>
+            <p class="font-medium mb-2"><strong>Fator de CorreÃ§Ã£o de Carga (FCC):</strong></p>
+            <p>O aquecimento em um componente elÃ©trico Ã© proporcional ao quadrado da corrente (IÂ²R). Portanto, as mediÃ§Ãµes realizadas com carga inferior Ã  nominal sÃ£o corrigidas para simular a condiÃ§Ã£o de plena carga. InspeÃ§Ãµes nÃ£o sÃ£o recomendadas para cargas inferiores a 50% da nominal.</p>
+            <p class="font-medium mt-4 mb-2"><strong>Fator de CorreÃ§Ã£o da Velocidade do Vento (FCVV):</strong></p>
+            <p>A convecÃ§Ã£o forÃ§ada pelo vento dissipa calor, mascarando a real temperatura do componente. Em inspeÃ§Ãµes externas, aplica-se um fator para corrigir este efeito e estimar a temperatura em uma condiÃ§Ã£o sem vento.</p>
+            
+            <h4 class="font-semibold text-lg mb-2 mt-8">3.3. CritÃ©rios de ClassificaÃ§Ã£o de NÃ­veis de Criticidade</h4>
+            <p class="mb-4">As ocorrÃªncias sÃ£o classificadas em quatro nÃ­veis, conforme a tabela abaixo, que orienta a prioridade da aÃ§Ã£o corretiva.</p>
+            <table class="text-center">
+                <thead>
+                    <tr>
+                        <th>CritÃ©rio de ClassificaÃ§Ã£o</th>
+                        <th>NÃ­vel de Criticidade</th>
+                        <th>Cor de ReferÃªncia</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>AC < 0,3 MAA</td><td class="font-semibold">NORMAL</td><td style="background-color:#22c55e; color:white;">Verde</td></tr>
+                    <tr><td>0,3 MAA â‰¤ AC < 0,6 MAA</td><td class="font-semibold">OBSERVAÃ‡ÃƒO</td><td style="background-color:#3b82f6; color:white;">Azul</td></tr>
+                    <tr><td>0,6 MAA â‰¤ AC < 0,9 MAA</td><td class="font-semibold">PROGRAMADO</td><td style="background-color:#f59e0b; color:white;">Amarelo</td></tr>
+                    <tr><td>AC â‰¥ 0,9 MAA</td><td class="font-semibold">IMEDIATO</td><td style="background-color:#ef4444; color:white;">Vermelho</td></tr>
+                </tbody>
+            </table>
+            `
+            });
+
+            // --- PÃGINA 5: Detalhamento dos NÃ­veis, RecomendaÃ§Ãµes e Tabela MTA ---
+            contents.push({
+                content: `
+            <h4 class="font-semibold text-lg mb-2">3.4. Detalhamento dos NÃ­veis de Criticidade</h4>
+            <ul class="space-y-3">
+                <li><strong>NÃ­vel I â€“ Normal:</strong> Indica um leve sobreaquecimento que nÃ£o requer aÃ§Ã£o imediata. Recomenda-se, contudo, a verificaÃ§Ã£o de contatos e conexÃµes na prÃ³xima manutenÃ§Ã£o preventiva para limpeza e reaperto.</li>
+                <li><strong>NÃ­vel II â€“ ObservaÃ§Ã£o:</strong> O sobreaquecimento nÃ£o justifica uma intervenÃ§Ã£o imediata, mas o componente deve ser monitorado periodicamente para avaliar a evoluÃ§Ã£o tÃ©rmica. A correÃ§Ã£o pode ser agendada para uma parada geral da unidade.</li>
+                <li><strong>NÃ­vel III â€“ Programado:</strong> Indica um sobreaquecimento elevado. A intervenÃ§Ã£o corretiva deve ser programada para a data mais breve possÃ­vel, a fim de evitar a degradaÃ§Ã£o do componente e uma possÃ­vel falha.</li>
+                <li><strong>NÃ­vel IV â€“ Imediato:</strong> Representa um sobreaquecimento extremamente elevado, com risco iminente de falha. A intervenÃ§Ã£o deve ser realizada com a mÃ¡xima urgÃªncia.</li>
+            </ul>
+            <h4 class="font-semibold text-lg mb-2 mt-6">3.5. RecomendaÃ§Ãµes Gerais de IntervenÃ§Ã£o</h4>
+             <p>Para a correÃ§Ã£o eficaz das anomalias identificadas em conexÃµes, Ã© fundamental nÃ£o apenas o reaperto, mas tambÃ©m a limpeza completa das superfÃ­cies de contato. A oxidaÃ§Ã£o e a contaminaÃ§Ã£o criam resistÃªncia elÃ©trica, e a sua remoÃ§Ã£o Ã© crucial para a eliminaÃ§Ã£o definitiva do ponto quente.</p>
+             <p class="mt-2">Em casos de sobreaquecimento em componentes como contatores, disjuntores ou buchas de transformadores, onde o ponto de origem pode ser interno, recomenda-se a desmontagem do equipamento por um profissional qualificado para uma inspeÃ§Ã£o detalhada.</p>
+            `
+            });
+
+            // --- PÃGINA 6: Tabela MTA e Anexo de Equipamento ---
+            contents.push({
+                content: `
+            <h4 class="font-semibold text-lg mb-2">3.6. Tabela de ReferÃªncia - MÃ¡xima Temperatura AdmissÃ­vel (MTA)</h4>
+            <p class="mb-4">A tabela a seguir apresenta valores de MTA de referÃªncia para diversos componentes elÃ©tricos.</p>
+            <table>
+                <thead><tr><th>Componente</th><th>MTA (Â°C)</th></tr></thead>
+                <tbody>
+                    <tr><td>Cabos e Fios Isolados</td><td>Conforme Classe de IsolaÃ§Ã£o (70Â°C, 90Â°C)</td></tr>
+                    <tr><td>ConexÃµes aparafusadas e barramentos em Baixa TensÃ£o</td><td>80Â°C</td></tr>
+                    <tr><td>RÃ©gua de Bornes</td><td>70Â°C</td></tr>
+                    <tr><td>ConexÃµes em Linhas AÃ©reas</td><td>70Â°C</td></tr>
+                    <tr><td>Corpo de FusÃ­veis</td><td>80Â°C</td></tr>
+                    <tr><td>ConexÃµes e Seccionadoras em Alta TensÃ£o</td><td>50Â°C</td></tr>
+                    <tr><td>Corpo de Transformador a Ã“leo</td><td>80Â°C</td></tr>
+                    <tr><td>Corpo de Transformador a Seco</td><td>Conforme Classe de IsolaÃ§Ã£o</td></tr>
+                    <tr><td>CarcaÃ§a de Motores</td><td>Conforme Classe de IsolaÃ§Ã£o</td></tr>
+                    <tr><td>Mancais</td><td>70Â°C</td></tr>
+                </tbody>
+            </table>
+            <h3 class="report-section-title mt-8">4. ANEXO I: EQUIPAMENTO E CALIBRAÃ‡ÃƒO</h3>
+            <p class="mt-4"><strong>Equipamento Utilizado:</strong> ${data.equipmentUsed || 'NÃ£o especificado'}</p>
+            ${data.calibrationCertificateUrls && data.calibrationCertificateUrls.length > 0
+                        ? '' // Apenas o tÃ­tulo aqui, as imagens vÃªm a seguir
+                        : '<p class="text-sm text-gray-500 mt-4">Nenhum certificado de calibraÃ§Ã£o foi fornecido.</p>'
+                    }`
+            });
+
+            // --- PÃ¡ginas do Certificado ---
+            if (data.calibrationCertificateUrls && data.calibrationCertificateUrls.length > 0) {
+                data.calibrationCertificateUrls.forEach((url, index) => {
+                    contents.push({
+                        content: `
+                    <h3 class="report-section-title">ANEXO I: EQUIPAMENTO E CALIBRAÃ‡ÃƒO (continuaÃ§Ã£o)</h3>
+                    <p class="mt-6"><strong>Certificado de CalibraÃ§Ã£o (PÃ¡gina ${index + 1} de ${data.calibrationCertificateUrls.length}):</strong></p>
+                    <img src="${url}" class="w-full h-auto object-contain border rounded-md shadow-sm mt-2" style="max-height: 220mm;">`
+                    });
+                });
+            }
+
+            // --- PÃ¡ginas da ART ---
+            if (data.artUrls && data.artUrls.length > 0) {
+                data.artUrls.forEach((url, index) => {
+                    contents.push({
+                        content: `
+                    <h3 class="report-section-title">ANEXO III: ANOTAÃ‡ÃƒO DE RESPONSABILIDADE TÃ‰CNICA (ART)</h3>
+                    <p class="mt-6"><strong>ART (PÃ¡gina ${index + 1} de ${data.artUrls.length}):</strong></p>
+                    <img src="${url}" class="w-full h-auto object-contain border rounded-md shadow-sm mt-2" style="max-height: 220mm;">`
+                    });
+                });
+            }
+
+            // --- PÃ¡ginas dos Pontos de InspeÃ§Ã£o (Anexo II) ---
+            data.inspectionPoints.forEach((point, index) => {
+                const classificationColors = { NORMAL: 'bg-green-100 text-green-800', OBSERVACAO: 'bg-blue-100 text-blue-800', PROGRAMADO: 'bg-yellow-100 text-yellow-800', IMEDIATO: 'bg-red-100 text-red-800' };
+                const colorClass = classificationColors[point.classification] || 'bg-gray-100 text-gray-800';
+
+                contents.push({
+                    content: `
+                <h3 class="report-section-title">ANEXO II: PONTO DE INSPEÃ‡ÃƒO ${index + 1}</h3>
+                <p class="mb-4 -mt-3 font-semibold">${point.location || ''} - ${point.component || ''}</p>
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                    
+                    <!-- *** ALTERAÃ‡ÃƒO (HTML): Ordem das fotos invertida no PDF *** -->
+                    <div class="border p-1 rounded-md shadow-sm flex flex-col"><img src="${point.photoThermalUrl || 'https://placehold.co/600x400/f0f0f0/CCCCCC?text=Foto+TermogrÃ¡fica'}" class="w-full h-auto object-cover rounded-sm flex-grow"><p class="text-center text-xs italic mt-1 p-1">Imagem TermogrÃ¡fica</p></div>
+                    <div class="border p-1 rounded-md shadow-sm flex flex-col"><img src="${point.photoNormalUrl || 'https://placehold.co/600x400/f0f0f0/CCCCCC?text=Foto+Normal'}" class="w-full h-auto object-cover rounded-sm flex-grow"><p class="text-center text-xs italic mt-1 p-1">Imagem VisÃ­vel</p></div>
+                </div>
+                <div class="mt-4 border-t pt-4">
+                    <h4 class="font-semibold text-lg mb-2">ParÃ¢metros de AnÃ¡lise</h4>
+                    <table class="w-full text-sm border-collapse">
+                        <tbody>
+                            <tr class="border-b"><td class="py-1 pr-4 font-medium text-gray-600">DistÃ¢ncia do objeto:</td><td>${point.distance || 'N/A'} m</td><td class="py-1 px-4 font-medium text-gray-600">Temp. Max. Ãrea:</td><td>${point.tempMax || 'N/A'} Â°C</td></tr>
+                            <tr class="border-b"><td class="py-1 pr-4 font-medium text-gray-600">Temp. MÃ­n. Ãrea:</td><td>${point.tempMin || 'N/A'} Â°C</td><td class="py-1 px-4 font-medium text-gray-600">Temp. Corrigida:</td><td>${point.tempCorrected || 'N/A'} Â°C</td></tr>
+                            <tr class="border-b"><td class="py-1 pr-4 font-medium text-gray-600">MTA:</td><td>${point.mta || 'N/A'} Â°C</td><td class="py-1 px-4 font-medium text-gray-600">Carga Nominal:</td><td>${point.loadNominal || 'N/A'} %</td></tr>
+                            <tr class="border-b"><td class="py-1 pr-4 font-medium text-gray-600">Carga Medida:</td><td>${point.loadMeasured || 'N/A'} %</td><td class="py-1 px-4 font-medium text-gray-600">FCC CorreÃ§Ã£o:</td><td>${point.fcc || 'N/A'}</td></tr>
+                            <tr><td class="py-1 pr-4 font-medium text-gray-600">ClassificaÃ§Ã£o:</td><td colspan="3"><span class="px-2 py-1 text-xs font-semibold rounded-full ${colorClass}">${point.classification}</span></td></tr>
+                        </tbody>
+                    </table>
+                    <h5 class="font-semibold mt-4">DiagnÃ³stico e RecomendaÃ§Ãµes:</h5>
+                    <p class="text-sm mt-1 p-2 bg-gray-50 rounded-md">${point.diagnosis || 'Nenhuma anormalidade tÃ©rmica detectada no momento da inspeÃ§Ã£o.'}</p>
+
+                </div>`});
+            });
+
+            // --- PÃ¡gina Final: ConclusÃ£o ---
+            const signatureImg = data.engineerSignatureUrl ? `<img src="${data.engineerSignatureUrl}" alt="Assinatura" class="h-24 mx-auto mb-2 object-contain">` : '<div class="h-24 flex items-center justify-center text-gray-400">(Assinatura nÃ£o carregada)</div>';
+            const signatureDate = data.signatureDate ? new Date(data.signatureDate + 'T00:00:00').toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' }) : '(Data da Assinatura)';
+            contents.push({
+                content: `
+            <div class="flex flex-col h-full">
+                <div>
+                    <h3 class="report-section-title">5. CONCLUSÃƒO</h3>
+                    <p>${data.finalConclusion || 'A inspeÃ§Ã£o termogrÃ¡fica foi concluÃ­da em todos os pontos planejados. Recomenda-se que as aÃ§Ãµes corretivas para os pontos classificados como "Programado" ou "Imediato" sejam priorizadas.'}</p>
+                </div>
+                <div class="mt-auto pt-12 text-center">
+                    <div class="inline-flex flex-col items-center">
+                        ${signatureImg}
+                        <p class="border-t border-slate-400 pt-2 mt-2 px-12">${data.engineerName}</p>
+                        <p class="text-sm">Engenheiro Eletricista</p>
+                        <p class="text-sm font-bold">CREA ${data.creaNumber}</p>
+                    </div>
+                    <p class="text-center mt-8 text-sm">${data.signatureCity}, ${signatureDate}.</p>
+                </div>
+            </div>`
+            });
+
+            return contents.map((pageData, index) => {
+                const pageContainer = document.createElement('div');
+                pageContainer.className = 'report-page-container';
+                const pageElement = document.createElement('div');
+                pageElement.className = 'report-page';
+
+                if (pageData.isCover) {
+                    pageElement.innerHTML = pageData.content;
+                } else {
+                    const totalPages = contents.length; // Ajustado para total de pÃ¡ginas de conteÃºdo
+                    const header = createHeader(data, index + 1, totalPages);
+                    const footer = createFooter(data);
+                    const content = document.createElement('div');
+                    content.className = 'report-content';
+                    content.innerHTML = pageData.content;
+
+                    pageElement.appendChild(header);
+                    pageElement.appendChild(content);
+                    pageElement.appendChild(footer);
+                }
+                pageContainer.appendChild(pageElement);
+                return pageContainer;
+            });
+        }
+
+        function createHeader(data, currentPage, totalPages) {
+            const header = document.createElement('header');
+            header.className = 'report-header';
+            const companyLogoUrl = data.companyLogoUrl || 'https://placehold.co/200x80/f0f0f0/CCCCCC?text=Sua+Logo';
+            const reportDate = data.reportDate ? new Date(data.reportDate + 'T00:00:00').toLocaleDateString('pt-BR') : 'N/A';
+
+            header.innerHTML = `
+            <div class="flex border-2 border-gray-800 text-[10px]">
+                <div class="w-1/4 p-2 flex items-center justify-center border-r-2 border-gray-800">
+                    <img src="${companyLogoUrl}" alt="Logo da Empresa" class="max-h-16 object-contain">
+                </div>
+                <div class="w-3/4 flex flex-col">
+                    <div class="flex-grow flex border-b-2 border-gray-800">
+                        <div class="w-2/3 p-2 border-r-2 border-gray-800">
+                            <p class="font-bold">CLIENTE:</p>
+                            <p class="font-semibold text-[12px]">${data.clientName}</p>
+                            <p>${data.clientAddress}</p>
+                        </div>
+                        <div class="w-1/3 p-2 text-center flex flex-col justify-center">
+                            <p class="font-bold">TÃTULO:</p>
+                            <p class="font-bold text-[12px]">LAUDO DE TERMOGRAFIA</p>
+                        </div>
+                    </div>
+                    <div class="flex text-center">
+                        <div class="flex-1 p-1"><p class="font-bold">NÂº LAUDO</p><p>${data.reportNumber}</p></div>
+                        <div class="flex-1 p-1 border-l border-gray-400"><p class="font-bold">REVISÃƒO</p><p>${data.reportRevision || '00'}</p></div>
+                        <div class="flex-1 p-1 border-l border-gray-400"><p class="font-bold">DATA</p><p>${reportDate}</p></div>
+                        <div class="flex-1 p-1 border-l border-gray-400"><p class="font-bold">FOLHA</p><p>${currentPage} de ${totalPages}</p></div>
+                    </div>
+                </div>`;
+            return header;
+        }
+
+        function createFooter(data) {
+            const footer = document.createElement('footer');
+            // *** ALTERAÃ‡ÃƒO (JS): RodapÃ© com fonte maior (text-xs) e endereÃ§o em negrito ***
+            footer.className = 'report-footer text-center text-xs';
+            footer.innerHTML = `<p class="font-semibold">${data.companyAddress}</p><p class="text-gray-600">TEL: ${data.companyPhone} | E-MAIL: ${data.companyEmail}</p>`;
+            return footer;
+        }
+
+        function showStatus(message, isSuccess = true) {
+            document.getElementById('statusMessage').textContent = message;
+            document.getElementById('statusMessage').className = `text-center mb-4 h-6 ${isSuccess ? 'text-green-600' : 'text-red-600'}`;
+            setTimeout(() => {
+                document.getElementById('statusMessage').textContent = '';
+            }, 3000);
+        }
+
+        // *** ALTERAÃ‡ÃƒO (JS): Nova funÃ§Ã£o para abrir a prÃ©-visualizaÃ§Ã£o em nova aba ***
+        function openPreviewInNewTab() {
+            // ForÃ§a a atualizaÃ§Ã£o do conteÃºdo antes de abrir
+            updatePreview();
+
+            if (previewTab && !previewTab.closed) {
+                previewTab.focus();
+                return;
+            }
+
+            previewTab = window.open('', 'LaudoTermograficoPreview');
+            if (!previewTab) {
+                showStatus("Por favor, habilite pop-ups para abrir a prÃ©-visualizaÃ§Ã£o.", false);
+                return;
+            }
+
+            const headContent = document.head.innerHTML;
+            const previewContent = document.getElementById('reportOutput').innerHTML;
+
+            previewTab.document.write('<html><head><title>PrÃ©-visualizaÃ§Ã£o do Laudo</title>' + headContent + '`n    <script>
+        // Protecao Anti-Copia ChameiApp
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || (e.ctrlKey && (e.keyCode == 85 || e.keyCode == 83))) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
+</head>');
+            // Adiciona um ID ao body para ser mais fÃ¡cil de encontrar
+            previewTab.document.write('<body class="bg-gray-400 p-4 md:p-8" id="previewBody">' + previewContent + '</body></html>');
+            previewTab.document.close();
+
+            // Limpa a variÃ¡vel se a aba for fechada
+            previewTab.addEventListener('beforeunload', () => {
+                previewTab = null;
+            });
+        }
+
+        // *** ALTERAÃ‡ÃƒO 1 (JS): FunÃ§Ã£o saveProgress trocada por saveJson ***
+        async function saveJson() {
+            // ForÃ§a a atualizaÃ§Ã£o dos dados antes de salvar
+            await updatePreview();
+
+            try {
+                const dataToSave = await getFormData(true);
+                const jsonString = JSON.stringify(dataToSave, null, 2); // FormataÃ§Ã£o com 2 espaÃ§os
+                const blob = new Blob([jsonString], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+
+                const a = document.createElement('a');
+                a.href = url;
+                const reportNumber = document.getElementById('reportNumber').value || 'laudo-termografico';
+                a.download = `${reportNumber}.json`;
+
+                document.body.appendChild(a);
+                a.click();
+
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                showStatus('Projeto salvo em JSON com sucesso!', true);
+            } catch (error) {
+                console.error("Erro ao salvar JSON:", error);
+                showStatus('Falha ao salvar o projeto em JSON.', false);
+            }
+        }
+
+        // *** ALTERAÃ‡ÃƒO 1 (JS): FunÃ§Ã£o loadProgress trocada por loadJson ***
+        function loadJson(event) {
+            const file = event.target.files[0];
+            if (!file) {
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const jsonString = e.target.result;
+                    const savedData = JSON.parse(jsonString);
+
+                    // Limpa o formulÃ¡rio antes de carregar
+                    clearForm(false);
+
+                    // Preenche os campos de texto
+                    Object.keys(savedData).forEach(key => {
+                        const el = document.getElementById(key);
+                        if (el && typeof savedData[key] === 'string' && !el.type.startsWith('file')) {
+                            el.value = savedData[key];
+                        }
+                    });
+
+                    // Armazena os DataURLs dos arquivos para o preview
+                    // A funÃ§Ã£o `processFile` e `getFormData` agora usam `__src` como fallback
+                    document.getElementById('companyLogo').__src = savedData.companyLogoUrl;
+                    document.getElementById('engineerSignature').__src = savedData.engineerSignatureUrl;
+                    document.getElementById('calibrationCertificate').__src = savedData.calibrationCertificateUrls;
+                    document.getElementById('artPdf').__src = savedData.artUrls;
+
+                    // Limpa e recria os pontos de inspeÃ§Ã£o
+                    document.getElementById('inspectionPointsContainer').innerHTML = '';
+                    if (savedData.inspectionPoints && savedData.inspectionPoints.length > 0) {
+                        savedData.inspectionPoints.forEach(pointData => addInspectionPoint(pointData));
+                    } else {
+                        addInspectionPoint(); // Adiciona um ponto em branco se nÃ£o houver nenhum
+                    }
+
+                    showStatus('Projeto JSON carregado com sucesso!', true);
+                    updatePreview();
+                } catch (error) {
+                    console.error("Erro ao carregar ou processar o arquivo JSON:", error);
+                    showStatus('Falha ao carregar o arquivo JSON.', false);
+                } finally {
+                    // Limpa o valor do input para permitir carregar o mesmo arquivo novamente
+                    event.target.value = null;
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function clearForm(confirmFirst = true) {
+            // *** ALTERAÃ‡ÃƒO: Removido confirm() ***
+            if (confirmFirst) {
+                // O confirm() original foi removido pois pode nÃ£o funcionar no ambiente.
+                console.log("Limpeza do formulÃ¡rio solicitada.");
+            }
+            document.getElementById('reportForm').reset();
+
+            document.querySelectorAll('input[type="file"]').forEach(input => {
+                input.value = '';
+                input.__src = null; // Limpa a fonte carregada do JSON
+                const imgPreview = input.nextElementSibling;
+                if (imgPreview && imgPreview.tagName === 'IMG') {
+                    imgPreview.src = '';
+                    imgPreview.classList.add('hidden');
+                    delete imgPreview.dataset.loadedSrc;
+                }
+            });
+
+            // Limpa nomes de arquivos Ãºnicos
+            uploadedFileNames.clear();
+
+            document.getElementById('inspectionPointsContainer').innerHTML = '';
+            addInspectionPoint();
+
+            document.getElementById('reportDate').valueAsDate = new Date();
+            document.getElementById('signatureDate').valueAsDate = new Date();
+
+            updatePreview();
+            if (confirmFirst) {
+                showStatus('FormulÃ¡rio limpo.', true);
+            }
+        }
+
+        // *** CORREÃ‡ÃƒO: Adicionando a funÃ§Ã£o loadFileIntoSlot que estava faltando ***
+        async function loadFileIntoSlot(file, inputElement, analyze = false, pointDiv = null) {
+            if (!file || !inputElement) return;
+
+            if (uploadedFileNames.has(file.name)) {
+                console.warn(`Imagem ${file.name} jÃ¡ carregada, pulando.`);
+                // Mesmo que jÃ¡ carregada, mostra na tela
+                const existingSrc = Array.from(document.querySelectorAll('img[data-loaded-src]'))
+                    .find(img => img.dataset.fileName === file.name)?.src;
+                if (existingSrc) {
+                    const imgPreview = inputElement.nextElementSibling;
+                    imgPreview.src = existingSrc;
+                    imgPreview.dataset.loadedSrc = existingSrc;
+                    imgPreview.classList.remove('hidden');
+                    inputElement.dataset.fileName = file.name;
+                }
+                return; // NÃ£o processa novamente
+            }
+
+            const imgPreview = inputElement.nextElementSibling;
+            const dataUrl = await fileToDataURL(file);
+
+            imgPreview.src = dataUrl;
+            imgPreview.dataset.loadedSrc = dataUrl;
+            imgPreview.classList.remove('hidden');
+
+            uploadedFileNames.add(file.name);
+            inputElement.dataset.fileName = file.name;
+
+            if (analyze && pointDiv) {
+                analyzeThermalImage(file, pointDiv);
+            }
+        }
+
+        // *** ALTERAÃ‡ÃƒO 2 (JS): FunÃ§Ã£o para upload de mÃºltiplas imagens ***
+        // *** REESCRITA para lÃ³gica sequencial (TermogrÃ¡fica 1, VisÃ­vel 1, ...) ***
+        async function handleBatchImageUpload(event) {
+            const files = Array.from(event.target.files);
+            if (files.length === 0) return;
+
+            showStatus(`Processando ${files.length} imagens...`, true);
+
+            let pointsAdded = 0;
+
+            // Itera pelos arquivos de 2 em 2
+            for (let i = 0; i < files.length; i += 2) {
+                // *** ALTERAÃ‡ÃƒO (JS): Invertendo a lÃ³gica de qual arquivo Ã© qual ***
+                const fileTermografica = files[i];
+                const fileVisivel = files[i + 1]; // Pode ser undefined se for um nÃºmero Ã­mpar
+
+                if (!fileTermografica || !fileTermografica.type.startsWith('image/')) continue;
+
+                // Verifica se a foto termogrÃ¡fica jÃ¡ foi carregada
+                if (uploadedFileNames.has(fileTermografica.name)) {
+                    console.warn(`Imagem ${fileTermografica.name} jÃ¡ carregada, pulando par.`);
+                    if (fileVisivel) i++;
+                    continue;
+                }
+
+                try {
+                    // 1. Adiciona um novo ponto de inspeÃ§Ã£o em branco
+                    addInspectionPoint();
+                    pointsAdded++;
+                    const newPointDiv = document.getElementById('inspectionPointsContainer').lastElementChild;
+
+                    // Tenta preencher Local/Componente pelo nome da foto termogrÃ¡fica (que Ã© a primeira agora)
+                    const fileName = fileTermografica.name.split('.').slice(0, -1).join('.');
+                    const parts = fileName.split(/[-_â€“\s]+/);
+                    if (parts.length > 0) newPointDiv.querySelector('.point-location').value = parts[0].trim().toUpperCase();
+                    if (parts.length > 1) newPointDiv.querySelector('.point-component').value = parts.slice(1).join(' ').trim();
+
+                    // 2. Se houver uma segunda imagem (fileVisivel), carrega no slot "Foto Normal" PRIMEIRO
+                    // Isso Ã© crucial para a IA ter as duas imagens para analisar
+                    if (fileVisivel && fileVisivel.type.startsWith('image/')) {
+                        if (uploadedFileNames.has(fileVisivel.name)) {
+                            console.warn(`Imagem visÃ­vel ${fileVisivel.name} jÃ¡ carregada, pulando slot.`);
+                        } else {
+                            await loadFileIntoSlot(
+                                fileVisivel,
+                                newPointDiv.querySelector('.point-photo-normal'),
+                                false, // NÃ£o analisa a foto normal ainda
+                                null
+                            );
+                        }
+                    }
+
+                    // 3. Carrega a primeira imagem (fileTermografica) no slot "Foto TermogrÃ¡fica" e analisa
+                    // Agora ela vai encontrar a foto visÃ­vel jÃ¡ carregada
+                    await loadFileIntoSlot(
+                        fileTermografica,
+                        newPointDiv.querySelector('.point-photo-thermal'),
+                        true, // Analisa a foto termogrÃ¡fica
+                        newPointDiv
+                    );
+
+                } catch (error) {
+                    console.error(`Erro ao processar o par de arquivos comeÃ§ando com ${fileTermografica.name}:`, error);
+                    showStatus(`Erro ao processar ${fileTermografica.name}.`, false);
+                }
+            } // Fim do loop
+
+            // ApÃ³s o loop
+            event.target.value = null; // Limpa o seletor de arquivos
+            updatePointTitles(); // Renumera os pontos
+            updatePreview(); // Atualiza a prÃ©-visualizaÃ§Ã£o
+            showStatus(`${pointsAdded} pontos de inspeÃ§Ã£o adicionados.`, true);
+        }
+
+        // *** ALTERAÃ‡ÃƒO (JS): IA agora usa a foto visÃ­vel para identificar o componente ***
+        async function analyzeThermalImage(fileThermal, pointDiv) {
+            const statusDiv = pointDiv.querySelector('.thermal-analysis-status');
+            statusDiv.textContent = 'Analisando imagens...'; // Alterado para "imagens"
+            statusDiv.classList.add('text-blue-600');
+
+            // Converte a imagem termogrÃ¡fica (obrigatÃ³ria)
+            const thermalBase64ImageData = await fileToDataURL(fileThermal);
+            const thermalBase64Data = thermalBase64ImageData.split(',')[1];
+
+            // *** NOVO: Procura pela imagem visÃ­vel (opcional) ***
+            const visivelImg = pointDiv.querySelector('.point-photo-normal + img');
+            const visivelDataUrl = visivelImg.dataset.loadedSrc; // Pode ser null
+
+            let visivelBase64Data = null;
+            let visivelMimeType = 'image/jpeg'; // PadrÃ£o
+            if (visivelDataUrl) {
+                try {
+                    visivelBase64Data = visivelDataUrl.split(',')[1];
+                    visivelMimeType = visivelDataUrl.match(/data:(image\/[a-z]+);/)[1] || 'image/jpeg';
+                } catch (e) {
+                    console.warn("NÃ£o foi possÃ­vel processar a imagem visÃ­vel, analisando apenas com a termogrÃ¡fica.");
+                    visivelBase64Data = null;
+                }
+            }
+            // *** Fim da adiÃ§Ã£o ***
+
+
+            // *** ALTERAÃ‡ÃƒO (JS): Prompt da IA atualizado para usar AMBAS as imagens ***
+            const prompt = `Analise as imagens fornecidas. A primeira imagem Ã© a termogrÃ¡fica. A segunda (se existir) Ã© a foto visÃ­vel normal.
+1.  Use a **foto visÃ­vel** (se disponÃ­vel) para identificar o principal componente elÃ©trico mostrado. Use termos tÃ©cnicos como 'Disjuntor', 'Contator', 'Mufla', 'Barramento', 'ConexÃ£o', 'Transformador', 'Isolador', 'Motor'. Se nÃ£o houver foto visÃ­vel ou nÃ£o conseguir identificar, retorne "Componente nÃ£o identificado".
+2.  Use a **foto termogrÃ¡fica** para extrair os valores numÃ©ricos: 'tempMax' (temperatura mais alta na escala de cores), 'tempMin' (temperatura mais baixa na escala de cores), 'tempCorrigida' (temperatura principal mostrada, geralmente no canto superior esquerdo ou centro).
+3.  Retorne tudo em um formato JSON Ãºnico com as chaves: "tempMax", "tempMin", "tempCorrigida", "componente".`;
+
+            let chatHistory = [];
+            // *** NOVO: Monta as 'parts' da API dinamicamente ***
+            let apiParts = [
+                { text: prompt },
+                { inlineData: { mimeType: fileThermal.type, data: thermalBase64Data } }
+            ];
+
+            if (visivelBase64Data) {
+                // Adiciona a imagem visÃ­vel Ã  chamada da API
+                apiParts.push({ inlineData: { mimeType: visivelMimeType, data: visivelBase64Data } });
+            }
+
+            chatHistory.push({ role: "user", parts: apiParts });
+            // *** Fim da alteraÃ§Ã£o ***
+
+            // *** ALTERAÃ‡ÃƒO (JS): Definindo um schema JSON para forÃ§ar a resposta da IA ***
+            const generationConfig = {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: "OBJECT",
+                    properties: {
+                        "tempMax": { "type": "NUMBER" },
+                        "tempMin": { "type": "NUMBER" },
+                        "tempCorrigida": { "type": "NUMBER" },
+                        "componente": { "type": "STRING" }
+                    },
+                    required: ["componente"] // Apenas componente Ã© obrigatÃ³rio, temps podem falhar
+                }
+            };
+
+            // *** ALTERAÃ‡ÃƒO (JS): Adicionando o generationConfig ao payload ***
+            const payload = {
+                contents: chatHistory,
+                generationConfig: generationConfig // Adicionado
+            };
+            const apiKey = ""; // A API Key serÃ¡ injetada pelo ambiente
+            // *** ALTERAÃ‡ÃƒO (JS): Corrigindo o nome do modelo para o mais recente ***
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorBody = await response.text();
+                    console.error("API Error:", response.status, errorBody);
+                    throw new Error(`A API de anÃ¡lise de imagem retornou um erro: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (result.promptFeedback && result.promptFeedback.blockReason) {
+                    throw new Error(`API bloqueou o prompt de anÃ¡lise de imagem: ${result.promptFeedback.blockReason}`);
+                }
+
+                if (result.candidates && result.candidates[0]?.content?.parts[0]?.text) {
+                    // *** ALTERAÃ‡ÃƒO (JS): O texto agora Ã© garantido como JSON, nÃ£o precisa limpar ```json ***
+                    const jsonText = result.candidates[0].content.parts[0].text;
+                    const parsedJson = JSON.parse(jsonText);
+
+                    // *** ALTERAÃ‡ÃƒO (JS): Usando '??' para fallback e garantindo que '0' seja um valor vÃ¡lido ***
+                    pointDiv.querySelector('.point-temp-max').value = parsedJson.tempMax ?? '';
+                    pointDiv.querySelector('.point-temp-min').value = parsedJson.tempMin ?? '';
+                    pointDiv.querySelector('.point-temp-corrected').value = parsedJson.tempCorrigida ?? '';
+
+                    // *** ALTERAÃ‡ÃƒO (JS): LÃ³gica para preencher o componente se estiver vazio ***
+                    const componentField = pointDiv.querySelector('.point-component');
+                    if (parsedJson.componente && parsedJson.componente.toLowerCase() !== "componente nÃ£o identificado" && componentField.value.trim() === '') {
+                        componentField.value = parsedJson.componente;
+                    }
+                    // *** Fim da alteraÃ§Ã£o ***
+
+                    statusDiv.textContent = 'AnÃ¡lise concluÃ­da!';
+                    statusDiv.classList.remove('text-blue-600');
+                    statusDiv.classList.add('text-green-600');
+                } else {
+                    throw new Error("Resposta da API de anÃ¡lise de imagem invÃ¡lida ou vazia.");
+                }
+            } catch (error) {
+                console.error("Erro ao analisar a imagem:", error);
+                statusDiv.textContent = 'Falha na anÃ¡lise.';
+                statusDiv.classList.remove('text-blue-600');
+                statusDiv.classList.add('text-red-600');
+            } finally {
+                setTimeout(() => {
+                    statusDiv.textContent = '';
+                }, 4000);
+            }
+        }
+
+        async function getCorrectionFromAPI(textToCorrect) {
+            if (!textToCorrect || textToCorrect.trim().length < 10) { // Check for minimum length
+                return null;
+            }
+            const prompt = `Por favor, corrija o seguinte texto em portuguÃªs do Brasil, focando em erros de gramÃ¡tica, ortografia e pontuaÃ§Ã£o. Mantenha o tom tÃ©cnico e profissional original. Retorne APENAS o texto corrigido, sem nenhuma introduÃ§Ã£o, explicaÃ§Ã£o ou formataÃ§Ã£o extra. Texto original: "${textToCorrect}"`;
+            const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
+            const apiKey = ""; // A API Key serÃ¡ injetada pelo ambiente
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorBody = await response.text();
+                    console.error("API Error:", response.status, errorBody);
+                    throw new Error(`A API de correÃ§Ã£o retornou um erro: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (result.promptFeedback && result.promptFeedback.blockReason) {
+                    console.warn(`API bloqueou o prompt de correÃ§Ã£o: ${result.promptFeedback.blockReason}`);
+                    return null;
+                }
+
+                if (result.candidates && result.candidates[0]?.content?.parts[0]?.text) {
+                    const correctedText = result.candidates[0].content.parts[0].text.trim();
+                    // Only return if the corrected text is actually different
+                    if (correctedText.toLowerCase() !== textToCorrect.toLowerCase()) {
+                        return correctedText;
+                    }
+                }
+                return null;
+            } catch (error) {
+                console.error("Erro ao obter correÃ§Ã£o da API:", error);
+                return null;
+            }
+        }
+
+        function setupCorrectionListener(field, suggestionContainer) {
+            let correctionDebounceTimer;
+            field.addEventListener('input', () => {
+                clearTimeout(correctionDebounceTimer);
+                suggestionContainer.style.display = 'none';
+                correctionDebounceTimer = setTimeout(async () => {
+                    const originalText = field.value;
+                    const correctedText = await getCorrectionFromAPI(originalText);
+                    if (correctedText && correctedText !== originalText) {
+                        const suggestionTextDiv = suggestionContainer.querySelector('.suggestion-text');
+                        const applyBtn = suggestionContainer.querySelector('.apply-correction-btn');
+                        const dismissBtn = suggestionContainer.querySelector('.dismiss-correction-btn');
+
+                        suggestionTextDiv.textContent = correctedText;
+                        suggestionContainer.style.display = 'block';
+
+                        applyBtn.onclick = () => {
+                            field.value = correctedText;
+                            suggestionContainer.style.display = 'none';
+                            updatePreview(); // Atualiza a prÃ©-visualizaÃ§Ã£o apÃ³s aplicar a correÃ§Ã£o
+                        };
+                        dismissBtn.onclick = () => {
+                            suggestionContainer.style.display = 'none';
+                        };
+                    }
+                }, 2000); // Aguarda 2 segundos de inatividade
+            });
+        }
+
+        // --- InicializaÃ§Ã£o do script ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // AtribuiÃ§Ã£o de elementos do DOM Ã s variÃ¡veis globais
+            let reportForm = document.getElementById('reportForm');
+            let downloadPdfBtn = document.getElementById('downloadPdfBtn');
+            let addInspectionPointBtn = document.getElementById('addInspectionPointBtn');
+            let finalConclusionTextarea = document.getElementById('finalConclusion');
+            let clearFormBtn = document.getElementById('clearFormBtn');
+
+            // *** ALTERAÃ‡ÃƒO 1 e 2 (JS): Novos listeners ***
+            let saveJsonBtn = document.getElementById('saveJsonBtn');
+            let loadJsonInput = document.getElementById('loadJsonInput');
+            let batchAddImagesInput = document.getElementById('batchAddImagesInput');
+            let openPreviewTabBtn = document.getElementById('openPreviewTabBtn'); // *** ALTERAÃ‡ÃƒO (JS): Novo botÃ£o ***
+
+
+            // ConfiguraÃ§Ã£o inicial e listeners
+            document.getElementById('reportDate').valueAsDate = new Date();
+            document.getElementById('signatureDate').valueAsDate = new Date();
+            finalConclusionTextarea.value = `O planejamento e a execuÃ§Ã£o dos serviÃ§os de inspeÃ§Ã£o termogrÃ¡fica apresentaram excelentes resultados. As anomalias identificadas foram devidamente documentadas e classificadas para orientar as aÃ§Ãµes de manutenÃ§Ã£o.\n\nRecomenda-se que as intervenÃ§Ãµes para os pontos classificados como "Programado" ou "Imediato" sejam priorizadas para garantir a confiabilidade e seguranÃ§a das instalaÃ§Ãµes. As informaÃ§Ãµes detalhadas sobre localizaÃ§Ã£o, identificaÃ§Ã£o e roteiro de inspeÃ§Ã£o foram fornecidas pela equipe tÃ©cnica responsÃ¡vel.`;
+            addInspectionPoint();
+            updatePreview();
+
+            // Setup text correction for all designated fields
+            document.querySelectorAll('.enable-correction').forEach(field => {
+                const suggestionContainer = field.nextElementSibling;
+                if (suggestionContainer && suggestionContainer.classList.contains('correction-suggestion-container')) {
+                    setupCorrectionListener(field, suggestionContainer);
+                }
+            });
+
+            reportForm.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(updatePreview, 500);
+            });
+            reportForm.addEventListener('change', updatePreview);
+            downloadPdfBtn.addEventListener('click', () => downloadPDF());
+            addInspectionPointBtn.addEventListener('click', () => addInspectionPoint());
+            clearFormBtn.addEventListener('click', () => clearForm(true));
+
+            // *** ALTERAÃ‡ÃƒO 1 e 2 (JS): Eventos para as novas funÃ§Ãµes ***
+            saveJsonBtn.addEventListener('click', saveJson);
+            loadJsonInput.addEventListener('change', loadJson);
+            batchAddImagesInput.addEventListener('change', handleBatchImageUpload);
+            openPreviewTabBtn.addEventListener('click', openPreviewInNewTab); // *** ALTERAÃ‡ÃƒO (JS): Novo listener ***
+        });
+    </script>
+</body>
+
+</html>
+

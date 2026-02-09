@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Parecer Técnico</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Bibliotecas PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #312e81;
+            --light-gray: #f3f4f6;
+            --dark-gray: #1f2937;
+            --a4-width: 210mm;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-gray);
+        }
+
+        /* Formulário */
+        .form-section {
+            background: #fff;
+            border-radius: 0.5rem;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-section h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--dark-gray);
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 0.25rem;
+            font-size: 0.85rem;
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            background-color: #f9fafb;
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background-color: #fff;
+        }
+
+        /* Relatório - Estrutura A4 */
+        .report-page-container {
+            width: 100%;
+            max-width: var(--a4-width);
+            margin: 0 auto 1.5rem auto;
+            background: white;
+        }
+
+        .report-page {
+            background: white;
+            width: 100%;
+            aspect-ratio: 210 / 297;
+            margin: 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border: 1px solid #e5e7eb;
+            color: #000;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        /* Cabeçalho e Rodapé */
+        .report-header {
+            padding: 10mm 12mm 0 12mm;
+            flex-shrink: 0;
+        }
+
+        .report-footer {
+            padding: 0 12mm 8mm 12mm;
+            flex-shrink: 0;
+            margin-top: auto;
+        }
+
+        /* Área de Conteúdo */
+        .report-content {
+            flex-grow: 1;
+            padding: 8mm 12mm;
+            overflow: hidden;
+            font-family: 'Merriweather', serif;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Tipografia */
+        .report-section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 10.5pt;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-top: 1.2rem;
+            margin-bottom: 0.6rem;
+            padding-bottom: 0.2rem;
+            border-bottom: 1.5px solid var(--primary-color);
+            text-transform: uppercase;
+            text-align: left;
+        }
+
+        .report-section-title:first-child {
+            margin-top: 0;
+        }
+
+        /* Parágrafos com Recuo */
+        .report-p {
+            text-align: left;
+            text-indent: 1.25cm;
+            /* Recuo ABNT */
+            line-height: 1.5;
+            margin-bottom: 0.8rem;
+            font-size: 9pt;
+            hyphens: none;
+        }
+
+        /* Fotos */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .photo-item-preview {
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            padding: 4px;
+            background: #fff;
+            text-align: center;
+        }
+
+        .photo-img-container {
+            width: 100%;
+            height: 145px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8fafc;
+            margin-bottom: 4px;
+            border: 1px solid #f1f5f9;
+            overflow: hidden;
+        }
+
+        .photo-img-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .photo-description-preview {
+            font-size: 7.5pt;
+            font-style: italic;
+            color: #475569;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Assinatura */
+        .signature-container {
+            margin-top: 2rem;
+            text-align: center;
+            width: 100%;
+        }
+
+        .signature-image {
+            max-height: 70px;
+            margin-bottom: 2px;
+            display: inline-block;
+        }
+
+        .signature-line {
+            border-top: 1px solid #333;
+            width: 240px;
+            margin: 0 auto 4px auto;
+        }
+
+        .signature-text p {
+            margin: 0;
+            line-height: 1.3;
+            font-size: 9pt;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Capa */
+        .cover-container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20mm;
+        }
+
+        .cover-logo {
+            max-height: 180px;
+            max-width: 90%;
+            object-fit: contain;
+            margin-bottom: 2rem;
+        }
+
+        .cover-title-box {
+            border-top: 2px solid var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        .cover-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 22pt;
+            font-weight: 900;
+            color: var(--primary-color);
+            text-transform: uppercase;
+        }
+
+        .cover-subtitle {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 11pt;
+            font-weight: 600;
+            color: #6b7280;
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .cover-info {
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .cover-client-label {
+            font-size: 9pt;
+            color: #9ca3af;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+
+        .cover-client-name {
+            font-size: 13pt;
+            font-weight: 800;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .cover-client-address {
+            font-size: 10pt;
+            color: #4b5563;
+            max-width: 80%;
+            margin: 0 auto;
+        }
+
+        .cover-date {
+            margin-top: 3rem;
+            font-size: 10pt;
+            font-weight: 600;
+            color: #374151;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 1rem;
+            width: 50%;
+            margin: 0 auto;
+        }
+
+        /* Loader */
+        #pdf-loader {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* PDF Mode */
+        .pdf-render-mode .report-page-container {
+            width: 794px !important;
+            height: 1123px !important;
+            margin: 0 !important;
+            box-shadow: none !important;
+            border: none !important;
+        }
+
+        .pdf-render-mode .report-page {
+            border: none !important;
+        }
+    </style>
+</head>
+
+<body class="text-gray-800 bg-gray-100 h-screen flex flex-col overflow-hidden">
+
+    <div id="pdf-loader">
+        <div class="spinner"></div>
+        <p class="text-sm font-bold tracking-wider">GERANDO PDF...</p>
+    </div>
+
+    <div class="flex flex-col lg:flex-row h-full w-full">
+        <!-- Painel Esquerdo -->
+        <div
+            class="w-full lg:w-[40%] h-full overflow-y-auto bg-white border-r border-gray-200 p-6 shadow-xl z-10 no-print">
+            <div class="max-w-lg mx-auto pb-10">
+                <div class="text-center mb-6">
+                    <h1 class="text-2xl font-bold text-gray-800 font-montserrat">Gerador de Parecer</h1>
+                    <p class="text-xs text-gray-500 uppercase font-bold">Versão Final</p>
+                </div>
+
+                <div class="flex gap-2 mb-6 justify-center">
+                    <button onclick="document.getElementById('importFileInput').click()"
+                        class="bg-gray-100 text-gray-700 px-3 py-1.5 rounded text-xs font-bold border hover:bg-gray-200">Importar</button>
+                    <button id="saveFileBtn"
+                        class="bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded text-xs font-bold border border-indigo-100 hover:bg-indigo-100">Backup</button>
+                    <button id="clearFormBtn"
+                        class="bg-red-50 text-red-700 px-3 py-1.5 rounded text-xs font-bold border border-red-100 hover:bg-red-100">Limpar</button>
+                    <input type="file" id="importFileInput" class="hidden" accept=".json">
+                </div>
+                <div id="statusMessage" class="text-center text-xs h-4 mb-2 font-semibold text-green-600"></div>
+
+                <form id="reportForm" class="space-y-5">
+                    <!-- Campos do Formulário -->
+                    <div class="form-section">
+                        <h2>1. Identidade</h2>
+                        <div class="space-y-2">
+                            <div><label class="form-label">Logo</label><input type="file" id="companyLogo"
+                                    accept="image/*" class="form-input text-xs"></div>
+                            <div><label class="form-label">Empresa</label><input type="text" id="companyName"
+                                    class="form-input" placeholder="Nome da Sua Empresa"></div>
+                            <div><label class="form-label">Endereço</label><input type="text" id="companyAddress"
+                                    class="form-input" placeholder="Endereço Completo da Empresa" required>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div><label class="form-label">Telefone</label><input type="text" id="companyPhone"
+                                        class="form-input" placeholder="(xx) xxxxx-xxxx" required>
+                                </div>
+                                <div><label class="form-label">Email</label><input type="text" id="companyEmail"
+                                        class="form-input" placeholder="seu@email.com"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2>2. Dados</h2>
+                        <div class="space-y-2">
+                            <div><label class="form-label">Título</label><input type="text" id="reportTitle"
+                                    class="form-input" value="PARECER TÉCNICO DE ENGENHARIA ELÉTRICA"></div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div><label class="form-label">Nº</label><input type="text" id="reportNumber"
+                                        class="form-input" value="001/2024"></div>
+                                <div><label class="form-label">Data</label><input type="date" id="reportDate"
+                                        class="form-input"></div>
+                            </div>
+                            <div><label class="form-label">Cliente</label><input type="text" id="clientName"
+                                    class="form-input"></div>
+                            <div><label class="form-label">Endereço Cliente</label><input type="text" id="clientAddress"
+                                    class="form-input"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2>3. Conteúdo</h2>
+                        <div class="space-y-3">
+                            <div><label class="form-label">Objeto</label><textarea id="textObjeto" rows="3"
+                                    class="form-textarea"></textarea></div>
+                            <div><label class="form-label">Análise</label><textarea id="textAnalise" rows="6"
+                                    class="form-textarea"></textarea></div>
+                            <div><label class="form-label">Diagnóstico</label><textarea id="textDiagnostico" rows="6"
+                                    class="form-textarea"></textarea></div>
+                            <div><label class="form-label">Conclusão</label><textarea id="finalConclusion" rows="6"
+                                    class="form-textarea"></textarea></div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="flex justify-between items-center mb-2">
+                            <h2>4. Fotos</h2>
+                            <button type="button" id="addPhotoBtn"
+                                class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold hover:bg-blue-700">+
+                                Foto</button>
+                        </div>
+                        <div id="photosContainer" class="space-y-3"></div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2>5. Responsável</h2>
+                        <div class="space-y-2">
+                            <div><label class="form-label">Assinatura</label><input type="file" id="engineerSignature"
+                                    accept="image/*" class="form-input text-xs"></div>
+                            <div><label class="form-label">Nome</label><input type="text" id="engineerName"
+                                    class="form-input" placeholder="Nome do Responsável"></div>
+                            <div><label class="form-label">CREA</label><input type="text" id="creaNumber"
+                                    class="form-input" placeholder="Número do CREA"></div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div><label class="form-label">Cidade</label><input type="text" id="signatureCity"
+                                        class="form-input" placeholder="Cidade/UF"></div>
+                                <div><label class="form-label">Data Ass.</label><input type="date" id="signatureDate"
+                                        class="form-input"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2>6. Anexos</h2>
+                        <div><label class="form-label">PDF/Imagem Extra</label><input type="file" id="artPdf"
+                                accept="application/pdf,image/*" class="form-input text-xs"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Painel Direito -->
+        <div class="flex-grow h-full bg-gray-600 flex flex-col relative">
+            <div class="bg-gray-800 text-white p-3 shadow-md z-20 flex justify-between items-center sticky top-0">
+                <span class="text-xs font-bold uppercase tracking-wide px-4 text-gray-300">Pré-visualização A4</span>
+                <button id="downloadPdfBtn"
+                    class="bg-green-600 hover:bg-green-700 text-white px-5 py-1.5 rounded font-bold text-sm flex items-center gap-2 transition shadow-lg">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                    Baixar PDF
+                </button>
+            </div>
+            <div id="reportOutputContainer"
+                class="flex-grow overflow-y-auto p-8 flex flex-col items-center gap-8 bg-gray-500 scroll-smooth"></div>
+        </div>
+    </div>
+
+    <!-- Templates e Ghost -->
+    <template id="photoTemplate">
+        <div
+            class="photo-item border border-gray-200 p-3 rounded bg-gray-50 relative group hover:border-blue-300 transition">
+            <button type="button"
+                class="remove-photo-btn absolute top-2 right-2 text-gray-400 hover:text-red-600 font-bold p-1"><svg
+                    class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg></button>
+            <div class="flex gap-3 items-center">
+                <div
+                    class="w-12 h-12 bg-white border rounded flex items-center justify-center overflow-hidden flex-shrink-0">
+                    <img class="max-w-full max-h-full object-contain hidden" src="">
+                </div>
+                <div class="flex-grow">
+                    <input type="file" class="photo-file text-[10px] w-full mb-1">
+                    <input type="text" class="photo-description form-input text-xs py-1" placeholder="Legenda...">
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Ghost width = 210mm para simular pagina real -->
+    <div id="ghostDiv" class="report-content"
+        style="position:fixed; top:-9999px; left:-9999px; width:210mm; height:auto; visibility:hidden; pointer-events:none; background:white; z-index:99999;">
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const { jsPDF } = window.jspdf;
+            pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js`;
+
+            let isGeneratingPDF = false;
+            document.getElementById('pdf-loader').style.display = 'none';
+
+            function fileToDataURL(file) {
+                return new Promise((r) => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(file); });
+            }
+
+            async function pdfToDataURLs(file) {
+                try {
+                    const ab = await file.arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument(new Uint8Array(ab)).promise;
+                    const urls = [];
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const p = await pdf.getPage(i);
+                        const v = p.getViewport({ scale: 2.0 });
+                        const c = document.createElement('canvas'); c.height = v.height; c.width = v.width;
+                        await p.render({ canvasContext: c.getContext('2d'), viewport: v }).promise;
+                        urls.push(c.toDataURL('image/png'));
+                    }
+                    return urls;
+                } catch { return []; }
+            }
+
+            async function getFormData() {
+                const v = (id) => document.getElementById(id).value;
+
+                // As chaves aqui correspondem exatamente aos IDs do HTML para facilitar import/export
+                const data = {
+                    companyName: v('companyName'), companyAddress: v('companyAddress'),
+                    companyPhone: v('companyPhone'), companyEmail: v('companyEmail'),
+                    reportTitle: v('reportTitle'), reportNumber: v('reportNumber'), reportDate: v('reportDate'),
+                    clientName: v('clientName'), clientAddress: v('clientAddress'),
+                    textObjeto: v('textObjeto'), textAnalise: v('textAnalise'),
+                    textDiagnostico: v('textDiagnostico'), finalConclusion: v('finalConclusion'),
+                    engineerName: v('engineerName'), creaNumber: v('creaNumber'),
+                    signatureCity: v('signatureCity'), signatureDate: v('signatureDate'),
+                    companyLogoUrl: '', engineerSignatureUrl: '', photos: [], artUrls: []
+                };
+
+                const getFile = async (id) => {
+                    const el = document.getElementById(id);
+                    if (el && el.files[0]) return await fileToDataURL(el.files[0]);
+                    return el?.dataset.src || null;
+                };
+
+                data.companyLogoUrl = await getFile('companyLogo') || 'https://placehold.co/200x80/f0f0f0/CCCCCC?text=LOGO';
+                data.engineerSignatureUrl = await getFile('engineerSignature');
+
+                const pItems = document.querySelectorAll('.photo-item');
+                for (const item of pItems) {
+                    const img = item.querySelector('img');
+                    const descInput = item.querySelector('.photo-description');
+                    const src = img.src;
+                    if (src && !src.includes('data:,')) {
+                        // Salva com chave 'description' para consistência
+                        data.photos.push({ description: descInput.value, src });
+                    }
+                }
+
+                const artEl = document.getElementById('artPdf');
+                if (artEl && artEl.files[0]) {
+                    data.artUrls = artEl.files[0].type === 'application/pdf' ? await pdfToDataURLs(artEl.files[0]) : [await fileToDataURL(artEl.files[0])];
+                } else if (artEl && artEl.dataset.artUrls) {
+                    data.artUrls = JSON.parse(artEl.dataset.artUrls);
+                }
+                return data;
+            }
+
+            // --- MOTOR DE RENDERIZAÇÃO ---
+            async function updateAndRender() {
+                if (isGeneratingPDF) return;
+                const data = await getFormData();
+                const container = document.getElementById('reportOutputContainer');
+                container.innerHTML = '';
+
+                // CAPA
+                const cover = createPage();
+                cover.firstElementChild.innerHTML = `
+                <div class="cover-container">
+                    <div style="flex-grow:1; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                        <img src="${data.companyLogoUrl}" class="cover-logo">
+                        <div class="cover-title-box">
+                            <h1 class="cover-title">${data.reportTitle}</h1>
+                            <p class="cover-subtitle">REF: ${data.reportNumber}</p>
+                        </div>
+                    </div>
+                    <div class="cover-info">
+                        <div style="margin-bottom:30px;">
+                            <p class="cover-client-label">PREPARADO PARA:</p>
+                            <p class="cover-client-name">${data.clientName || 'Cliente'}</p>
+                            <p class="cover-client-address">${data.clientAddress || ''}</p>
+                        </div>
+                        <p class="cover-date">${data.signatureCity}, ${formatDateExt(data.reportDate)}</p>
+                    </div>
+                </div>`;
+                container.appendChild(cover);
+
+                // CONTEÚDO
+                let pgNum = 1;
+                let pgWrapper = createPage();
+                let contentDiv = document.createElement('div');
+                contentDiv.className = 'report-content';
+
+                let pg = pgWrapper.firstElementChild;
+                pg.appendChild(createHeader(data, pgNum));
+                pg.appendChild(contentDiv);
+                pg.appendChild(createFooter(data));
+                container.appendChild(pgWrapper);
+
+                const ghost = document.getElementById('ghostDiv');
+                const MAX_H = 830; // Limite seguro
+
+                const addSafe = (html) => {
+                    ghost.innerHTML = contentDiv.innerHTML + html;
+                    if (ghost.offsetHeight > MAX_H) {
+                        pgNum++;
+                        pgWrapper = createPage();
+                        pg = pgWrapper.firstElementChild;
+                        pg.appendChild(createHeader(data, pgNum));
+                        contentDiv = document.createElement('div');
+                        contentDiv.className = 'report-content';
+                        contentDiv.innerHTML = html;
+                        pg.appendChild(contentDiv);
+                        pg.appendChild(createFooter(data));
+                        container.appendChild(pgWrapper);
+                        ghost.innerHTML = html;
+                    } else {
+                        contentDiv.innerHTML += html;
+                    }
+                };
+
+                // TEXTOS
+                const addSection = (t, txt, n) => {
+                    if (!txt) return;
+                    const ps = txt.split('\n').filter(p => p.trim());
+                    if (ps.length > 0) {
+                        addSafe(`<h3 class="report-section-title">${n}. ${t}</h3><p class="report-p">${ps[0]}</p>`);
+                        for (let i = 1; i < ps.length; i++) addSafe(`<p class="report-p">${ps[i]}</p>`);
+                    } else addSafe(`<h3 class="report-section-title">${n}. ${t}</h3>`);
+                };
+
+                addSection('OBJETO', data.textObjeto, '1');
+                addSection('ANÁLISE TÉCNICA / VISTORIA', data.textAnalise, '2');
+                addSection('DIAGNÓSTICO', data.textDiagnostico, '3');
+
+                // FOTOS
+                if (data.photos.length > 0) {
+                    let html = `<h3 class="report-section-title">4. ANEXO FOTOGRÁFICO</h3>`;
+                    if (data.photos[0]) html += photoRow(data.photos[0], data.photos[1]);
+                    addSafe(html);
+                    for (let i = 2; i < data.photos.length; i += 2) addSafe(photoRow(data.photos[i], data.photos[i + 1]));
+                }
+
+                // --- FORÇAR NOVA PÁGINA PARA CONCLUSÃO ---
+                pgNum++;
+                pgWrapper = createPage();
+                pg = pgWrapper.firstElementChild;
+                pg.appendChild(createHeader(data, pgNum));
+                contentDiv = document.createElement('div');
+                contentDiv.className = 'report-content';
+                pg.appendChild(contentDiv);
+                pg.appendChild(createFooter(data));
+                container.appendChild(pgWrapper);
+                ghost.innerHTML = ''; // Reset
+
+                // CONCLUSÃO
+                if (data.finalConclusion) {
+                    addSafe(`<h3 class="report-section-title">5. PARECER FINAL (CONCLUSÃO)</h3>`);
+                    data.finalConclusion.split('\n').filter(p => p.trim()).forEach(p => addSafe(`<p class="report-p">${p}</p>`));
+                }
+
+                // ASSINATURA (Sempre na página da conclusão ou nova se estourar)
+                const sig = `
+                <div class="signature-container">
+                    ${data.engineerSignatureUrl ? `<img src="${data.engineerSignatureUrl}" class="signature-image">` : '<div style="height:60px"></div>'}
+                    <div class="signature-line"></div>
+                    <div class="signature-text">
+                        <p class="font-bold uppercase text-gray-900">${data.engineerName}</p>
+                        <p class="font-bold text-gray-600">${data.creaNumber}</p>
+                        <p class="text-gray-500 mt-1">${data.signatureCity}, ${formatDate(data.signatureDate)}</p>
+                    </div>
+                </div>`;
+                addSafe(sig);
+
+                // ANEXOS
+                if (data.artUrls.length > 0) {
+                    data.artUrls.forEach(url => {
+                        pgNum++;
+                        const w = createPage();
+                        const p = w.firstElementChild;
+                        p.appendChild(createHeader(data, pgNum));
+                        const c = document.createElement('div');
+                        c.className = 'report-content flex flex-col items-center justify-center';
+                        c.innerHTML = `<h3 class="report-section-title w-full text-center mb-4">ANEXO</h3><img src="${url}" style="max-width:100%; max-height:220mm; object-fit:contain;">`;
+                        p.appendChild(c);
+                        p.appendChild(createFooter(data));
+                        container.appendChild(w);
+                    });
+                }
+
+                document.querySelectorAll('.total-pages').forEach(e => e.innerText = pgNum);
+            }
+
+            function createPage() {
+                const d = document.createElement('div'); d.className = 'report-page-container';
+                d.innerHTML = `<div class="report-page"></div>`; return d;
+            }
+            function createHeader(d, n) {
+                const h = document.createElement('header'); h.className = 'report-header';
+                h.innerHTML = `<table class="w-full h-full" style="border-collapse:collapse; border:1.5px solid #333; font-family:'Inter',sans-serif;">
+                <tr><td class="w-[25%] p-1 align-middle text-center border-r border-gray-400" rowspan="4"><img src="${d.companyLogoUrl}" style="max-height:100px; max-width:100%; object-fit:contain;"></td><td class="p-1 text-center font-bold text-[9pt] bg-gray-50" colspan="2" style="font-family:'Montserrat';">${d.reportTitle}</td></tr>
+                <tr><td class="p-1 pl-2 text-[7.5pt] border-t border-gray-300" colspan="2"><strong>CLIENTE:</strong> ${d.clientName}</td></tr>
+                <tr><td class="p-1 pl-2 text-[7.5pt] border-t border-gray-300" colspan="2"><strong>ENDEREÇO:</strong> ${d.clientAddress}</td></tr>
+                <tr><td class="p-1 pl-2 text-[7.5pt] border-t border-gray-300 w-[50%]"><strong>REF:</strong> ${d.reportNumber}</td><td class="p-1 pl-2 text-[7.5pt] border-t border-gray-300 border-l border-gray-300 w-[25%]"><strong>PÁGINA:</strong> ${n} / <span class="total-pages">--</span></td></tr>
+            </table>`; return h;
+            }
+            function createFooter(d) {
+                const f = document.createElement('footer'); f.className = 'report-footer';
+                f.innerHTML = `<div class="w-full h-px bg-gray-300 mb-2"></div><div class="flex justify-between items-end"><div class="w-2/3 pr-2"><p class="font-bold text-indigo-900 uppercase text-[7pt]">${d.companyName}</p><p class="text-[6.5pt] text-gray-500">${d.companyAddress}</p></div><div class="w-1/3 text-right"><p class="text-[7pt] text-gray-600">${d.companyPhone}</p><p class="text-[7pt] text-gray-600">${d.companyEmail}</p></div></div>`; return f;
+            }
+            function photoRow(p1, p2) {
+                return `<div class="photo-grid"><div class="photo-item-preview"><div class="photo-img-container"><img src="${p1.src}"></div><p class="photo-description-preview">${p1.description || ''}</p></div>${p2 ? `<div class="photo-item-preview"><div class="photo-img-container"><img src="${p2.src}"></div><p class="photo-description-preview">${p2.description || ''}</p></div>` : ''}</div>`;
+            }
+            function formatDate(d) { if (!d) return ''; const [y, m, day] = d.split('-'); return `${day}/${m}/${y}`; }
+            function formatDateExt(d) { if (!d) return ''; const dt = new Date(d + 'T00:00:00'); return dt.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }); }
+
+            document.getElementById('downloadPdfBtn').addEventListener('click', async () => {
+                const l = document.getElementById('pdf-loader'); l.style.display = 'flex';
+                await updateAndRender(); await new Promise(r => setTimeout(r, 500));
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pages = document.querySelectorAll('.report-page-container');
+                document.body.classList.add('pdf-render-mode');
+                for (let i = 0; i < pages.length; i++) {
+                    if (i > 0) pdf.addPage();
+                    const c = await html2canvas(pages[i], { scale: 3, useCORS: true });
+                    pdf.addImage(c.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297);
+                }
+                pdf.save(`PARECER_${document.getElementById('reportNumber').value.replace('/', '-')}.pdf`);
+                document.body.classList.remove('pdf-render-mode'); l.style.display = 'none';
+            });
+
+            let t; const trig = () => { clearTimeout(t); t = setTimeout(updateAndRender, 600); };
+            document.getElementById('reportForm').addEventListener('input', trig);
+            document.getElementById('addPhotoBtn').addEventListener('click', () => {
+                const el = document.getElementById('photoTemplate').content.cloneNode(true).querySelector('.photo-item');
+                el.querySelector('.photo-file').addEventListener('change', async (e) => { if (e.target.files[0]) { const s = await fileToDataURL(e.target.files[0]); el.querySelector('img').src = s; el.querySelector('img').classList.remove('hidden'); el.querySelector('.w-12').classList.add('hidden'); trig(); } });
+                el.querySelector('.remove-photo-btn').addEventListener('click', () => { el.remove(); trig(); });
+                el.querySelector('.photo-description').addEventListener('input', trig);
+                document.getElementById('photosContainer').appendChild(el);
+            });
+            ['companyLogo', 'engineerSignature', 'artPdf'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('change', () => { if (el.files[0]) fileToDataURL(el.files[0]).then(s => el.dataset.src = s).then(trig); });
+            });
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('reportDate').value = today; document.getElementById('signatureDate').value = today;
+            trig();
+
+            // Import/Backup Logic
+            document.getElementById('saveFileBtn').addEventListener('click', async () => {
+                const data = await getFormData();
+                const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+                const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'backup.json'; a.click();
+            });
+            document.getElementById('importFileInput').addEventListener('change', (e) => {
+                const fr = new FileReader();
+                fr.onload = (ev) => {
+                    const d = JSON.parse(ev.target.result);
+                    // Restaura campos pelo ID
+                    Object.keys(d).forEach(k => {
+                        const el = document.getElementById(k);
+                        if (el && el.type !== 'file') el.value = d[k];
+                    });
+                    // Restaura imagens
+                    if (d.companyLogoUrl) document.getElementById('companyLogo').dataset.src = d.companyLogoUrl;
+                    if (d.engineerSignatureUrl) document.getElementById('engineerSignature').dataset.src = d.engineerSignatureUrl;
+                    // Restaura fotos
+                    document.getElementById('photosContainer').innerHTML = '';
+                    if (d.photos) d.photos.forEach(p => {
+                        document.getElementById('addPhotoBtn').click();
+                        const last = document.getElementById('photosContainer').lastElementChild;
+                        last.querySelector('img').src = p.src;
+                        last.querySelector('img').classList.remove('hidden');
+                        last.querySelector('.w-12').classList.add('hidden');
+                        last.querySelector('.photo-description').value = p.description; // Restaura descrição
+                    });
+                    // Restaura anexos (se houver URL salva)
+                    if (d.artUrls && document.getElementById('artPdf')) {
+                        document.getElementById('artPdf').dataset.artUrls = JSON.stringify(d.artUrls);
+                    }
+                    trig();
+                    document.getElementById('statusMessage').innerText = 'Dados restaurados com sucesso!';
+                };
+                fr.readAsText(e.target.files[0]);
+            });
+            document.getElementById('clearFormBtn').addEventListener('click', () => location.reload());
+        });
+    </script>
+</body>
+
+</html>

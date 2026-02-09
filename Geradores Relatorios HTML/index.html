@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Engenharia | Sistema de Relatórios</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@700;800;900&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #020617;
+            --accent-blue: #3b82fb;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-deep);
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        .font-display {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* Premium Background Effect */
+        .bg-glow {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100vw;
+            height: 100vh;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 40%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .tool-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+        }
+
+        .tool-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(59, 130, 246, 0.4);
+            background: rgba(30, 41, 59, 0.8);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6), 0 0 20px -5px rgba(59, 130, 246, 0.3);
+        }
+
+        .category-badge {
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .status-dot {
+            height: 6px;
+            width: 6px;
+            background-color: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+            box-shadow: 0 0 8px #10b981;
+        }
+
+        /* Glassmorphism Sidebar/Nav */
+        .glass-nav {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .grid-mesh {
+            background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 0);
+            background-size: 40px 40px;
+        }
+    </style>
+</head>
+
+<body class="grid-mesh min-h-screen">
+    <div class="bg-glow"></div>
+
+    <!-- Top Navigation -->
+    <nav class="glass-nav sticky top-0 z-50 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="font-display text-xl font-black text-white tracking-tighter uppercase leading-none">
+                        Report Hub</h1>
+                    <span class="text-[10px] text-blue-400 font-bold tracking-[0.2em] uppercase">Engineering
+                        Suite</span>
+                </div>
+            </div>
+
+            <div class="relative w-full md:w-96">
+                <input type="text" id="searchInput" placeholder="Filtrar técnica ou relatório..."
+                    class="w-full bg-slate-900/50 border border-slate-800 text-white text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all placeholder-slate-600">
+                <div class="absolute right-4 top-2.5">
+                    <kbd
+                        class="hidden md:inline-flex items-center px-1.5 py-0.5 border border-slate-700 rounded text-[10px] font-medium bg-slate-800 text-slate-400">ESC</kbd>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-12">
+
+        <!-- Welcome Section -->
+        <section class="mb-12">
+            <div class="flex items-center gap-2 mb-2 text-blue-400 font-bold text-xs uppercase tracking-widest">
+                <span class="status-dot"></span> Online Systems
+            </div>
+            <h2 class="font-display text-4xl md:text-5xl font-black text-white mb-4">Central de Relatórios</h2>
+            <p class="text-slate-400 max-w-2xl text-lg">Selecione o módulo de inspeção técnica abaixo. Todos os
+                geradores estão prontos para emissão profissional.</p>
+        </section>
+
+        <!-- Categories & Grid -->
+        <div class="space-y-16">
+
+            <!-- Category: Elétrica & Potência -->
+            <div>
+                <div class="flex items-center gap-4 mb-8">
+                    <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.3em]">Elétrica & Inspeção de
+                        Campo</h3>
+                    <div class="h-px flex-1 bg-gradient-to-r from-slate-800 to-transparent"></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                    <!-- Card: Termografia -->
+                    <a href="GERADOR TERMOGRAFIA ATUALIZADO.HTML"
+                        class="tool-card group rounded-2xl p-6 flex flex-col gap-5">
+                        <div class="flex justify-between items-start">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-red-500/10 text-red-400 flex items-center justify-center group-hover:bg-red-500 group-hover:text-white transition-all duration-300">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.99 7.99 0 0121 13a8.144 8.144 0 01-3.343 5.657z">
+                                    </path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                            </div>
+                            <span class="category-badge">NR-10</span>
+                        </div>
+                        <div>
+                            <h4 class="font-display text-lg font-bold text-white mb-1">Termografia Infravermelha</h4>
+                            <p class="text-slate-500 text-sm leading-relaxed">Mapeamento de calor em sistemas sob carga
+                                com análise CFCA.</p>
+                        </div>
+                        <div class="mt-auto flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase">
+                            <span>Relatório de Inspeção</span>
+                            <span class="text-slate-700">•</span>
+                            <span>v5.0</span>
+                        </div>
+                    </a>
+
+                    <!-- Card: Cabine Primária -->
+                    <a href="Gerador Cabine Primaria.HTML" class="tool-card group rounded-2xl p-6 flex flex-col gap-5">
+                        <div class="flex justify-between items-start">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-orange-500/10 text-orange-400 flex items-center justify-center group-hover:bg-orange-500 group-hover:text-white transition-all duration-300">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                            </div>
+                            <span class="category-badge">Alta Tensão</span>
+                        </div>
+                        <div>
+                            <h4 class="font-display text-lg font-bold text-white mb-1">Cabine Primária</h4>
+                            <p class="text-slate-500 text-sm leading-relaxed">Checklist de manutenção preventiva em
+                                subestações de 13.8kV.</p>
+                        </div>
+                        <div class="mt-auto flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase">
+                            <span>Manutenção</span>
+                            <span class="text-slate-700">•</span>
+                            <span>v1.2</span>
+                        </div>
+                    </a>
+
+                    <!-- Card: SPDA -->
+                    <a href="Gerador SPDA.html" class="tool-card group rounded-2xl p-6 flex flex-col gap-5">
+                        <div class="flex justify-between items-start">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center group-hover:bg-sky-500 group-hover:text-white transition-all duration-300">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                            </div>
+                            <span class="category-badge">NBR 5419</span>
+                        </div>
+                        <div>
+                            <h4 class="font-display text-lg font-bold text-white mb-1">Laudo de SPDA</h4>
+                            <p class="text-slate-500 text-sm leading-relaxed">Para-raios e aterramento com medições
+                                ôhmicas de inspeção.</p>
+                        </div>
+                        <div class="mt-auto flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase">
+                            <span>Normativo</span>
+                            <span class="text-slate-700">•</span>
+                            <span>v1.0</span>
+                        </div>
+                    </a>
+
+                </div>
+            </div>
+
+            <!-- Category: Climatização & Engenharia -->
+            <div>
+                <div class="flex items-center gap-4 mb-8">
+                    <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.3em]">Climatização & Engenharia
+                    </h3>
+                    <div class="h-px flex-1 bg-gradient-to-r from-slate-800 to-transparent"></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                    <!-- Card: PMOC -->
+                    <a href="Gerador PMOC.html" class="tool-card group rounded-2xl p-6 flex flex-col gap-5">
+                        <div class="flex justify-between items-start">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-all duration-300">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                    </path>
+                                </svg>
+                            </div>
+                            <span class="category-badge">Sanitário</span>
+                        </div>
+                        <div>
+                            <h4 class="font-display text-lg font-bold text-white mb-1">PMOC</h4>
+                            <p class="text-slate-500 text-sm leading-relaxed">Plano de Manutenção, Operação e Controle
+                                (Lei 13.589/18).</p>
+                        </div>
+                        <div class="mt-auto flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase">
+                            <span>HVAC</span>
+                            <span class="text-slate-700">•</span>
+                            <span>v4.0</span>
+                        </div>
+                    </a>
+
+                    <!-- Card: Coleta Óleo -->
+                    <a href="Gerador de Coleta Oleo Transformador.html"
+                        class="tool-card group rounded-2xl p-6 flex flex-col gap-5">
+                        <div class="flex justify-between items-start">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-yellow-500/10 text-yellow-500 flex items-center justify-center group-hover:bg-yellow-500 group-hover:text-white transition-all duration-300">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z">
+                                    </path>
+                                </svg>
+                            </div>
+                            <span class="category-badge">Laborat.</span>
+                        </div>
+                        <div>
+                            <h4 class="font-display text-lg font-bold text-white mb-1">Coleta de Óleo</h4>
+                            <p class="text-slate-500 text-sm leading-relaxed">Registro de amostragem dielétrica para
+                                transformadores.</p>
+                        </div>
+                        <div class="mt-auto flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase">
+                            <span>Transf.</span>
+                            <span class="text-slate-700">•</span>
+                            <span>v1.0</span>
+                        </div>
+                    </a>
+
+                    <!-- Card: Parecer Técnico -->
+                    <a href="Gerador de Parecer Tecnico.html"
+                        class="tool-card group rounded-2xl p-6 flex flex-col gap-5">
+                        <div class="flex justify-between items-start">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center group-hover:bg-purple-500 group-hover:text-white transition-all duration-300">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4">
+                                    </path>
+                                </svg>
+                            </div>
+                            <span class="category-badge">Expertise</span>
+                        </div>
+                        <div>
+                            <h4 class="font-display text-lg font-bold text-white mb-1">Parecer de Engenharia</h4>
+                            <p class="text-slate-500 text-sm leading-relaxed">Avaliações técnicas pontuais com
+                                diagnósticos especializados.</p>
+                        </div>
+                        <div class="mt-auto flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase">
+                            <span>Laudo</span>
+                            <span class="text-slate-700">•</span>
+                            <span>v3.1</span>
+                        </div>
+                    </a>
+
+                </div>
+            </div>
+
+            <!-- Category: Gestão & Documentação -->
+            <div>
+                <div class="flex items-center gap-4 mb-8">
+                    <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.3em]">Gestão & Comercial</h3>
+                    <div class="h-px flex-1 bg-gradient-to-r from-slate-800 to-transparent"></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                    <!-- Card: Orçamentos -->
+                    <a href="Gerador de Orçamentos.html" class="tool-card group rounded-2xl p-6 flex flex-col gap-5">
+                        <div class="flex justify-between items-start">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                                    </path>
+                                </svg>
+                            </div>
+                            <span class="category-badge">Financeiro</span>
+                        </div>
+                        <div>
+                            <h4 class="font-display text-lg font-bold text-white mb-1">Gerador de Orçamentos</h4>
+                            <p class="text-slate-500 text-sm leading-relaxed">Propostas comerciais com layout premium e
+                                cálculo automático.</p>
+                        </div>
+                        <div class="mt-auto flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase">
+                            <span>Vendas</span>
+                            <span class="text-slate-700">•</span>
+                            <span>v2.5</span>
+                        </div>
+                    </a>
+
+                    <!-- Card: Relatórios Técnicos -->
+                    <a href="GERADOR DE RELATORIOS TECNICOS.html"
+                        class="tool-card group rounded-2xl p-6 flex flex-col gap-5">
+                        <div class="flex justify-between items-start">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                    </path>
+                                </svg>
+                            </div>
+                            <span class="category-badge">Padrão</span>
+                        </div>
+                        <div>
+                            <h4 class="font-display text-lg font-bold text-white mb-1">Geral de Engenharia</h4>
+                            <p class="text-slate-500 text-sm leading-relaxed">Relatório multifuncional para qualquer
+                                demanda técnica.</p>
+                        </div>
+                        <div class="mt-auto flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase">
+                            <span>Docs</span>
+                            <span class="text-slate-700">•</span>
+                            <span>v2.0</span>
+                        </div>
+                    </a>
+
+                    <!-- Card: Ver Tudo -->
+                    <div
+                        class="relative group rounded-2xl p-6 border-2 border-dashed border-slate-800 flex flex-col items-center justify-center text-center gap-2 opacity-50 hover:opacity-100 transition-all cursor-pointer">
+                        <span class="text-slate-500 text-xs font-bold uppercase tracking-widest">Mais Módulos</span>
+                        <p class="text-slate-600 text-[10px] leading-tight max-w-[120px]">Novos geradores em
+                            desenvolvimento.</p>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <footer
+            class="mt-32 pt-12 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="text-slate-600 text-[11px] font-bold uppercase tracking-widest">
+                &copy; 2025 Engineering Suite • Industrial Grade Solutions
+            </div>
+            <div class="flex gap-6">
+                <a href="#" class="text-slate-500 hover:text-white text-xs transition-colors">Documentação</a>
+                <a href="#" class="text-slate-500 hover:text-white text-xs transition-colors">Suporte</a>
+                <a href="#" class="text-slate-500 hover:text-white text-xs transition-colors">Termos</a>
+            </div>
+        </footer>
+
+    </main>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const cards = document.querySelectorAll('.tool-card');
+        const categories = document.querySelectorAll('.space-y-16 > div');
+
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+
+            cards.forEach(card => {
+                const title = card.querySelector('h4').innerText.toLowerCase();
+                const desc = card.querySelector('p').innerText.toLowerCase();
+                const tags = card.querySelector('.category-badge').innerText.toLowerCase();
+
+                if (title.includes(term) || desc.includes(term) || tags.includes(term)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Hide categories if all children are hidden
+            categories.forEach(cat => {
+                const visibleCards = cat.querySelectorAll('.tool-card[style="display: flex;"]');
+                const allCards = cat.querySelectorAll('.tool-card');
+
+                if (term === '') {
+                    cat.style.display = 'block';
+                    allCards.forEach(c => c.style.display = 'flex');
+                } else if (visibleCards.length === 0) {
+                    cat.style.display = 'none';
+                } else {
+                    cat.style.display = 'block';
+                }
+            });
+        });
+
+        // ESC to clear search
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                searchInput.value = '';
+                searchInput.dispatchEvent(new Event('input'));
+            }
+        });
+    </script>
+</body>
+
+</html>

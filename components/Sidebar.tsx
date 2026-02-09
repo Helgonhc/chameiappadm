@@ -42,6 +42,7 @@ import { ChameiLogo } from './Logo';
 const menuItems = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, permission: null, color: 'text-indigo-500' },
   { name: 'Insights & BI', href: '/dashboard/performance', icon: TrendingUp, permission: 'can_view_reports', color: 'text-purple-500' },
+  { name: 'Geradores', href: '/dashboard/reports', icon: Zap, permission: null, color: 'text-emerald-400' },
   { name: 'Clientes', href: '/dashboard/clients', icon: Building2, permission: 'can_view_all_clients', color: 'text-blue-500' },
   { name: 'Documentos', href: '/dashboard/documents', icon: FolderOpen, permission: null, color: 'text-amber-500' },
   { name: 'Equipamentos', href: '/dashboard/equipments', icon: Wrench, permission: 'can_create_equipments', color: 'text-emerald-500' },
