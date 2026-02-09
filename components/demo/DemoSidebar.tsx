@@ -2,11 +2,12 @@
 
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 import {
     LayoutDashboard, Building2, Wrench, ClipboardList, FileText,
     MessageSquare, Bell, Package, Calendar, Clock, Settings,
     LogOut, ChevronLeft, ChevronRight, Menu, X, Ticket, Calculator,
-    UserCog, Download, FileCheck, TrendingUp, Search, FolderOpen, Zap, Droplets
+    UserCog, Download, FileCheck, TrendingUp, Search, FolderOpen, Zap
 } from 'lucide-react';
 import { ChameiLogo } from '../Logo';
 import toast from 'react-hot-toast';
@@ -32,162 +33,137 @@ export default function DemoSidebar({ onSearchClick, unreadCount = 3, collapsed,
         { name: 'Ordens de Serviço', href: '/demo/orders', icon: ClipboardList, color: 'text-cyan-500' },
         { name: 'Chamados', href: '/demo/tickets', icon: Ticket, color: 'text-red-500' },
         { name: 'Orçamentos', href: '/demo/quotes', icon: Calculator, color: 'text-green-500' },
-        { name: 'Manutenções Periódicas', href: '/demo/maintenance', icon: Calendar, color: 'text-pink-500' },
-        { name: 'Solicitações Manutenção', href: '/demo/maintenance-requests', icon: FileCheck, color: 'text-orange-500' },
+        { name: 'Manutenções', href: '/demo/maintenance', icon: Calendar, color: 'text-pink-500' },
+        { name: 'Solicitações', href: '/demo/maintenance-requests', icon: FileCheck, color: 'text-orange-500' },
         { name: 'Agenda', href: '/demo/agenda', icon: Calendar, color: 'text-violet-500' },
         { name: 'Banco de Horas', href: '/demo/overtime', icon: Clock, color: 'text-teal-500' },
         { name: 'Estoque', href: '/demo/inventory', icon: Package, color: 'text-rose-500' },
         { name: 'Chat', href: '/demo/chat', icon: MessageSquare, color: 'text-sky-500' },
         { name: 'Notificações', href: '/demo/notifications', icon: Bell, hasBadge: true, color: 'text-yellow-500' },
-        { name: 'Levantamento de Cargas', href: '/demo/load-survey', icon: Zap, color: 'text-amber-600' },
+        { name: 'Levantamento', href: '/demo/load-survey', icon: Zap, color: 'text-amber-600' },
     ];
 
     const adminItems = [
-        { name: 'Usuários', href: '/demo/users', icon: UserCog },
-        { name: 'Faturamento', href: '/demo/billing', icon: FileText },
+        { name: 'Usuários', href: '/demo/users', icon: UserCog, color: 'text-purple-400' },
+        { name: 'Faturamento', href: '/demo/billing', icon: FileText, color: 'text-green-400' },
     ];
 
-    const masterItems = [
-        { name: 'Leads & Vendas', href: '/demo/leads', icon: Zap },
-        { name: 'Gestão SaaS', href: '/demo/settings', icon: Settings },
-    ];
 
     const SidebarContent = () => (
-        <div className="flex flex-col h-full bg-slate-900 border-r border-white/5 overflow-hidden">
-            {/* Header: Logo */}
-            <div className={`${collapsed ? 'p-1.5' : 'p-4'} border-b border-white/5 bg-slate-950/20 flex-shrink-0`}>
-                <div className="flex flex-col items-center">
-                    <div className={`${collapsed ? 'py-4' : 'mb-4'}`}>
-                        <ChameiLogo className={collapsed ? "h-6" : "h-8"} color="#10B981" textColor={collapsed ? "transparent" : "#FFFFFF"} />
-                    </div>
-
-                    {!collapsed && (
-                        <div className="text-center px-4">
-                            <p className="text-[9px] font-black uppercase tracking-[3px] text-emerald-500/80">Sistema Operacional</p>
-                            <div className="h-px w-6 bg-emerald-500/20 mx-auto my-3"></div>
-                        </div>
-                    )}
-
-                    {!collapsed && (
-                        <div className="flex flex-col items-center mt-2 group cursor-pointer" onClick={() => handleAction('Perfil')}>
-                            <div className="relative mb-3">
-                                <div className="absolute inset-0 bg-emerald-500/20 rounded-full blur-md group-hover:bg-emerald-500/40 transition-all"></div>
-                                <div className="w-14 h-14 bg-slate-800 rounded-full flex items-center justify-center border border-white/10 relative z-10 text-emerald-500 font-black italic shadow-2xl">
-                                    D
-                                </div>
-                                <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-slate-900 z-20 shadow-lg"></div>
-                            </div>
-                            <p className="font-black text-white text-[11px] uppercase tracking-tighter truncate max-w-[140px]">Usuário Demo</p>
-                            <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Administrador</span>
-                        </div>
-                    )}
+        <div className="flex flex-col h-full bg-white dark:bg-slate-950 border-r border-gray-200 dark:border-white/10">
+            {/* Premium Header */}
+            <div className={`${collapsed ? 'p-3' : 'p-5'} border-b border-gray-200 dark:border-white/10`}>
+                <div className="flex items-center justify-between">
+                    <ChameiLogo className={collapsed ? "h-7" : "h-9"} color="#10B981" textColor={collapsed ? "transparent" : undefined} />
                 </div>
+
+                {!collapsed && (
+                    <div className="mt-4 flex items-center gap-3 p-3 bg-gray-50 dark:bg-white/5 rounded-xl border border-gray-200 dark:border-white/10 cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10 transition-colors" onClick={() => handleAction('Perfil')}>
+                        <div className="relative">
+                            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                D
+                            </div>
+                            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-950"></div>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="font-bold text-sm text-gray-900 dark:text-white truncate">Usuário Demo</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">Administrador</p>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Search */}
-            <div className={`px-2 py-4 ${collapsed ? 'flex justify-center' : ''} flex-shrink-0`}>
+            <div className={`px-3 py-4 ${collapsed ? 'flex justify-center' : ''}`}>
                 <button
                     onClick={onSearchClick}
-                    className={`group flex items-center gap-3 w-full p-2.5 rounded-xl border border-white/5 bg-white/5 text-slate-400 hover:text-emerald-400 hover:bg-white/10 transition-all ${collapsed ? 'justify-center w-10 h-10 p-0' : ''}`}
+                    className={`group flex items-center gap-3 w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-300 dark:hover:border-indigo-500/30 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-all ${collapsed ? 'justify-center' : ''}`}
                 >
-                    <Search size={16} />
-                    {!collapsed && <span className="text-[10px] font-black uppercase tracking-widest flex-1 text-left">Busca Rápida</span>}
-                    {!collapsed && <span className="text-[8px] opacity-30">CTRL K</span>}
+                    <Search size={18} className="shrink-0" />
+                    {!collapsed && <span className="text-xs font-semibold flex-1 text-left">Busca Rápida</span>}
+                    {!collapsed && <span className="text-[10px] text-gray-400">⌘K</span>}
                 </button>
             </div>
 
             {/* Nav */}
-            <nav className="flex-1 px-2 space-y-1 overflow-y-auto overflow-x-hidden pt-2 scrollbar-none pb-12">
+            <nav className="flex-1 px-3 space-y-0.5 overflow-y-auto overflow-x-hidden scrollbar-none">
                 {menuItems.map((item) => {
-                    const isActive = pathname === item.href || (item.href !== '/demo' && pathname.startsWith(item.href));
+                    const isActive = pathname === item.href || (item.href !== '/demo' && pathname.startsWith(item.href + '/'));
                     return (
-                        <a
+                        <Link
                             key={item.href}
                             href={item.href}
-                            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group relative ${isActive ? 'bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20' : 'text-slate-400 hover:bg-white/5 hover:text-white'} ${collapsed ? 'justify-center' : ''}`}
+                            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group relative ${isActive
+                                ? 'bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white font-semibold shadow-sm'
+                                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white'
+                                } ${collapsed ? 'justify-center' : ''}`}
                         >
-                            {isActive && <div className="absolute left-0 w-1 h-4 bg-emerald-500 rounded-r-full" />}
-                            <div className={`flex-shrink-0 ${item.color}`}>
-                                <item.icon size={18} />
-                            </div>
-                            {!collapsed && <span className="text-[11px] uppercase tracking-wider">{item.name}</span>}
+                            {isActive && <div className="absolute left-0 w-1 h-6 bg-emerald-500 rounded-r-full" />}
+                            <item.icon size={20} className={`shrink-0 ${item.color}`} strokeWidth={isActive ? 2.5 : 2} />
+                            {!collapsed && <span className="text-sm">{item.name}</span>}
                             {!collapsed && item.hasBadge && unreadCount > 0 && (
-                                <span className="ml-auto bg-emerald-500 text-slate-900 text-[9px] font-black px-1.5 rounded-full">{unreadCount}</span>
+                                <span className="ml-auto bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{unreadCount}</span>
                             )}
-                        </a>
+                        </Link>
                     );
                 })}
 
-                {!collapsed && <div className="h-px bg-white/5 mx-4 my-4" />}
-                {adminItems.map((item) => (
-                    <button key={item.href} onClick={() => handleAction(item.name)} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-slate-500 hover:text-white hover:bg-white/5 w-full text-left ${collapsed ? 'justify-center' : ''}`}>
-                        <div className="flex-shrink-0">
-                            <item.icon size={18} />
-                        </div>
-                        {!collapsed && <span className="text-[11px] uppercase tracking-wider">{item.name}</span>}
-                    </button>
-                ))}
+                {!collapsed && <div className="h-px bg-gray-200 dark:bg-white/10 my-4" />}
+                {!collapsed && <p className="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Admin</p>}
+                {adminItems.map((item) => {
+                    return (
+                        <button
+                            key={item.href}
+                            onClick={() => handleAction(item.name)}
+                            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all w-full text-left text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5 ${collapsed ? 'justify-center' : ''}`}
+                        >
+                            <item.icon size={20} className={`shrink-0 ${item.color}`} />
+                            {!collapsed && <span className="text-sm">{item.name}</span>}
+                        </button>
+                    );
+                })}
 
-                {!collapsed && (
-                    <div className="mt-6 mb-2 px-4">
-                        <p className="text-[8px] font-black uppercase tracking-[3px] text-indigo-500/80">Gestão Plataforma</p>
-                    </div>
-                )}
-
-                {masterItems.map((item) => (
-                    <button key={item.href} onClick={() => handleAction(item.name)} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-slate-500 hover:text-indigo-400 hover:bg-white/5 w-full text-left ${collapsed ? 'justify-center' : ''}`}>
-                        <div className="flex-shrink-0">
-                            <item.icon size={18} />
-                        </div>
-                        {!collapsed && <span className="text-[11px] font-bold uppercase tracking-wider">{item.name}</span>}
-                    </button>
-                ))}
             </nav>
 
             {/* Footer */}
-            <div className="p-3 border-t border-white/5 bg-slate-950/40 flex-shrink-0">
-                <button onClick={() => handleAction('Sair')} className={`flex items-center gap-3 w-full py-2 rounded-xl text-red-400/70 hover:text-red-400 hover:bg-red-400/5 transition-all ${collapsed ? 'justify-center' : 'px-3'}`}>
-                    <LogOut size={16} />
-                    {!collapsed && <span className="text-[11px] font-black uppercase">Sair</span>}
+            <div className="p-3 border-t border-gray-200 dark:border-white/10">
+                <button
+                    onClick={() => handleAction('Sair')}
+                    className={`flex items-center gap-3 w-full py-2.5 px-3 rounded-xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all ${collapsed ? 'justify-center' : ''}`}
+                >
+                    <LogOut size={18} />
+                    {!collapsed && <span className="text-sm font-semibold">Sair</span>}
                 </button>
-                {!collapsed && (
-                    <div className="mt-4 text-center">
-                        <p className="text-[8px] font-black text-slate-600 uppercase tracking-[2px]">
-                            © 2026 CHAMEIAPP <br />
-                            <span className="text-emerald-500/40 block mt-1">POR HELGON HENRIQUE</span>
-                        </p>
-                    </div>
-                )}
             </div>
         </div>
     );
 
     return (
         <>
-            <button onClick={() => setMobileOpen(true)} className="md:hidden fixed top-3 left-3 z-[100] p-2.5 bg-emerald-600 text-white rounded-lg shadow-lg">
+            <button onClick={() => setMobileOpen(true)} className="lg:hidden fixed top-3 left-3 z-[100] p-2.5 bg-emerald-600 text-white rounded-lg shadow-lg">
                 <Menu size={22} />
             </button>
 
             {mobileOpen && (
-                <div className="md:hidden absolute inset-0 z-[1000] flex w-full h-full overflow-hidden">
-                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-                    <div className="relative w-64 h-full shadow-2xl flex flex-col animate-slideIn">
-                        <button onClick={() => setMobileOpen(false)} className="absolute top-4 right-4 p-1 text-white hover:bg-white/10 rounded z-50">
+                <div className="lg:hidden fixed inset-0 z-[1000]">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300" onClick={() => setMobileOpen(false)} />
+                    <div className="absolute left-0 top-0 bottom-0 w-72 shadow-2xl flex flex-col animate-slideIn">
+                        <button
+                            onClick={() => setMobileOpen(false)}
+                            className="absolute top-4 -right-12 p-2 bg-white/10 backdrop-blur-xl text-white hover:bg-white/20 rounded-xl border border-white/10 transition-all active:scale-90"
+                        >
                             <X size={20} />
                         </button>
-                        <div className="w-full h-full flex flex-col">
-                            <SidebarContent />
-                        </div>
+                        <SidebarContent />
                     </div>
                 </div>
             )}
 
-            {/* Desktop Sidebar - Fixed Dark Background to match Real System */}
-            <aside className={`hidden md:flex flex-col bg-slate-900 transition-all duration-300 relative ${collapsed ? 'w-16' : 'w-64'} h-full flex-shrink-0 z-40`}>
+            <aside className={`hidden lg:flex flex-col transition-all duration-300 relative ${collapsed ? 'w-16' : 'w-64'} h-full flex-shrink-0 z-40`}>
                 <SidebarContent />
                 <button
                     onClick={() => onToggle(!collapsed)}
-                    className="absolute top-10 -right-3.5 w-7 h-7 bg-slate-900 border border-white/10 rounded-full flex items-center justify-center shadow-lg hover:border-emerald-500/50 transition-colors z-20 text-slate-400 hover:text-emerald-500"
+                    className="absolute top-20 -right-3 w-6 h-6 bg-white dark:bg-slate-900 border border-gray-300 dark:border-white/20 rounded-full flex items-center justify-center shadow-lg hover:border-emerald-500 dark:hover:border-emerald-500 transition-colors z-50 text-gray-600 dark:text-gray-400 hover:text-emerald-500"
                 >
                     {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
                 </button>
