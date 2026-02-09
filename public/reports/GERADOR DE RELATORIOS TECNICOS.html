@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Parecer TÃ©cnico</title>
+    <title>Gerador de Parecer Técnico</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Bibliotecas para geraÃ§Ã£o de PDF -->
+    <!-- Bibliotecas para geração de PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
@@ -75,7 +75,7 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
         }
 
-        /* --- Estilos do RelatÃ³rio Gerado --- */
+        /* --- Estilos do Relatório Gerado --- */
         .report-page-container {
             width: 100%;
             max-width: var(--a4-width);
@@ -128,7 +128,7 @@
         .report-section-title {
             font-family: 'Montserrat', sans-serif;
             font-size: 12pt;
-            /* Fonte do tÃ­tulo de seÃ§Ã£o reduzida */
+            /* Fonte do tÃ­tulo de seção reduzida */
             font-weight: 700;
             color: var(--primary-color);
             margin-top: 1.2rem;
@@ -338,7 +338,8 @@
                 font-size: 20pt !important;
             }
         }
-    </style>`n    <script>
+    </style>
+    <script>
         // Protecao Anti-Copia ChameiApp
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => {
@@ -358,18 +359,18 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-4 md:p-8">
-        <!-- Coluna do FormulÃ¡rio -->
+        <!-- Coluna do Formulário -->
         <div id="formContainer" class="no-print">
             <div class="max-w-2xl mx-auto">
                 <div class="text-center mb-10">
                     <h1 class="text-3xl md:text-4xl font-bold text-gray-800"
-                        style="font-family: 'Montserrat', sans-serif;">Gerador de Parecer TÃ©cnico</h1>
+                        style="font-family: 'Montserrat', sans-serif;">Gerador de Parecer Técnico</h1>
                     <p class="text-gray-600 mt-2">Preencha os campos para gerar o documento.</p>
                 </div>
 
                 <div class="form-section flex items-center justify-between flex-wrap gap-4">
                     <h2 class="text-lg font-semibold mb-0 border-b-0 pb-0"
-                        style="font-family: 'Montserrat', sans-serif;">AÃ§Ãµes de Dados</h2>
+                        style="font-family: 'Montserrat', sans-serif;">Ações de Dados</h2>
                     <div class="flex gap-2 flex-wrap">
                         <button type="button" id="importFileBtn"
                             class="bg-teal-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-teal-700 transition-colors">Importar
@@ -380,7 +381,7 @@
                         <input type="file" id="importFileInput" class="hidden" accept=".json">
                         <button type="button" id="clearFormBtn"
                             class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors">Limpar
-                            FormulÃ¡rio</button>
+                            Formulário</button>
                     </div>
                 </div>
                 <div id="statusMessage" class="text-center mb-4 h-6"></div>
@@ -395,49 +396,49 @@
                                     type="text" id="clientName" class="form-input" placeholder="Nome do cliente"
                                     required></div>
                             <div class="md:col-span-2"><label for="clientAddress"
-                                    class="form-label">EndereÃ§o</label><input type="text" id="clientAddress"
-                                    class="form-input" placeholder="EndereÃ§o completo" required></div>
+                                    class="form-label">Endereço</label><input type="text" id="clientAddress"
+                                    class="form-input" placeholder="Endereço completo" required></div>
                             <div class="md:col-span-2"><label for="reportTitle" class="form-label">TÃ­tulo do
                                     Parecer</label><input type="text" id="reportTitle" class="form-input"
-                                    value="PARECER TÃ‰CNICO DE ENGENHARIA ELÃ‰TRICA" required></div>
+                                    value="PARECER TÉCNICO DE ENGENHARIA ELÉTRICA" required></div>
                             <div><label for="reportNumber" class="form-label">NÂº do Parecer</label><input type="text"
                                     id="reportNumber" class="form-input" placeholder="Ex: 001/2024" required></div>
-                            <div><label for="reportDate" class="form-label">Data da Vistoria/AnÃ¡lise</label><input
+                            <div><label for="reportDate" class="form-label">Data da Vistoria/Análise</label><input
                                     type="date" id="reportDate" class="form-input" required></div>
                             <div class="md:col-span-2"><label for="companyName" class="form-label">Nome da Sua Empresa
-                                    (RodapÃ©)</label><input type="text" id="companyName" class="form-input"
+                                    (Rodapé)</label><input type="text" id="companyName" class="form-input"
                                     placeholder="Digite o Nome da Sua Empresa..." required></div>
-                            <div class="md:col-span-2"><label for="companyAddress" class="form-label">EndereÃ§o da Sua
-                                    Empresa (RodapÃ©)</label><input type="text" id="companyAddress" class="form-input"
-                                    placeholder="Digite o endereÃ§o completo da sua empresa..." required></div>
-                            <div><label for="companyPhone" class="form-label">Telefone (RodapÃ©)</label><input type="tel"
+                            <div class="md:col-span-2"><label for="companyAddress" class="form-label">Endereço da Sua
+                                    Empresa (Rodapé)</label><input type="text" id="companyAddress" class="form-input"
+                                    placeholder="Digite o endereço completo da sua empresa..." required></div>
+                            <div><label for="companyPhone" class="form-label">Telefone (Rodapé)</label><input type="tel"
                                     id="companyPhone" class="form-input" placeholder="Digite o telefone (xx) xxxxx-xxxx"
                                     required></div>
-                            <div><label for="companyEmail" class="form-label">E-mail (RodapÃ©)</label><input type="email"
+                            <div><label for="companyEmail" class="form-label">E-mail (Rodapé)</label><input type="email"
                                     id="companyEmail" class="form-input" placeholder="Digite o e-mail comercial..."
                                     required></div>
                         </div>
                     </div>
 
                     <div class="form-section">
-                        <h2>Corpo do Parecer TÃ©cnico</h2>
+                        <h2>Corpo do Parecer Técnico</h2>
                         <div><label for="textObjeto" class="form-label">1. Objeto</label><textarea id="textObjeto"
                                 rows="4"
-                                class="form-textarea">O objeto deste parecer tÃ©cnico Ã© analisar e documentar as condiÃ§Ãµes de [descrever o sistema ou equipamento analisado], localizado em [local especÃ­fico], atendendo Ã  solicitaÃ§Ã£o de [Nome do Solicitante].</textarea>
+                                class="form-textarea">O objeto deste parecer técnico é analisar e documentar as condições de [descrever o sistema ou equipamento analisado], localizado em [local especÃ­fico], atendendo Ã  solicitação de [Nome do Solicitante].</textarea>
                         </div>
-                        <div class="mt-4"><label for="textAnalise" class="form-label">2. AnÃ¡lise TÃ©cnica /
+                        <div class="mt-4"><label for="textAnalise" class="form-label">2. Análise Técnica /
                                 Vistoria</label><textarea id="textAnalise" rows="10"
-                                class="form-textarea">Durante a vistoria realizada na data de [Data da Vistoria], foram inspecionados os seguintes itens e realizadas as seguintes verificaÃ§Ãµes: [detalhar os procedimentos, inspeÃ§Ãµes visuais, mediÃ§Ãµes e ensaios realizados].</textarea>
+                                class="form-textarea">Durante a vistoria realizada na data de [Data da Vistoria], foram inspecionados os seguintes itens e realizadas as seguintes verificações: [detalhar os procedimentos, inspeções visuais, medições e ensaios realizados].</textarea>
                         </div>
-                        <div class="mt-4"><label for="textDiagnostico" class="form-label">3. DiagnÃ³stico / ConsideraÃ§Ãµes
-                                TÃ©cnicas</label><textarea id="textDiagnostico" rows="10"
-                                class="form-textarea">Com base na anÃ¡lise, constatou-se que [descrever as constataÃ§Ãµes, anomalias, pontos de atenÃ§Ã£o e conformidade ou nÃ£o conformidade com as normas tÃ©cnicas pertinentes, como NBR 5410, NR-10, etc.].</textarea>
+                        <div class="mt-4"><label for="textDiagnostico" class="form-label">3. Diagnóstico / Considerações
+                                Técnicas</label><textarea id="textDiagnostico" rows="10"
+                                class="form-textarea">Com base na análise, constatou-se que [descrever as constatações, anomalias, pontos de atenção e conformidade ou não conformidade com as normas técnicas pertinentes, como NBR 5410, NR-10, etc.].</textarea>
                         </div>
                     </div>
 
                     <div class="form-section">
                         <div class="flex justify-between items-center">
-                            <h2>4. Anexos FotogrÃ¡ficos</h2>
+                            <h2>4. Anexos Fotográficos</h2>
                             <button type="button" id="addPhotoBtn"
                                 class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">Adicionar
                                 Foto</button>
@@ -446,17 +447,17 @@
                     </div>
 
                     <div class="form-section">
-                        <h2>ConclusÃ£o e ResponsÃ¡vel</h2>
+                        <h2>Conclusão e Responsável</h2>
                         <div class="mt-6"><label for="finalConclusion" class="form-label">5. Parecer Final
-                                (ConclusÃ£o)</label><textarea id="finalConclusion" rows="10"
-                                class="form-textarea">Diante do exposto, Ã© nosso parecer que [resumir a conclusÃ£o principal]. Recomenda-se [listar as aÃ§Ãµes corretivas ou preventivas necessÃ¡rias, se houver]. As instalaÃ§Ãµes, no estado em que se encontram, [apresentam/nÃ£o apresentam] riscos e [estÃ£o/nÃ£o estÃ£o] em conformidade com as normas tÃ©cnicas vigentes.</textarea>
+                                (Conclusão)</label><textarea id="finalConclusion" rows="10"
+                                class="form-textarea">Diante do exposto, é nosso parecer que [resumir a conclusão principal]. Recomenda-se [listar as ações corretivas ou preventivas necessárias, se houver]. As instalações, no estado em que se encontram, [apresentam/não apresentam] riscos e [estão/não estão] em conformidade com as normas técnicas vigentes.</textarea>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                             <div><label for="engineerSignature" class="form-label">Upload da Assinatura</label><input
                                     type="file" id="engineerSignature" accept="image/*" class="form-input"></div>
                             <div><label for="engineerName" class="form-label">Nome do Engenheiro
                                     Eletricista</label><input type="text" id="engineerName" class="form-input"
-                                    placeholder="Nome do ResponsÃ¡vel TÃ©cnico" required></div>
+                                    placeholder="Nome do Responsável Técnico" required></div>
                             <div><label for="creaNumber" class="form-label">DOCUMENTO DE IDENTIDADE</label><input
                                     type="text" id="creaNumber" class="form-input" placeholder="CREA/CFT" required>
                             </div>
@@ -477,11 +478,11 @@
             </div>
         </div>
 
-        <!-- Coluna da PrÃ©-visualizaÃ§Ã£o -->
+        <!-- Coluna da Pré-visualização -->
         <div id="reportOutputWrapper" class="flex flex-col h-screen lg:h-auto lg:overflow-y-auto">
             <div
                 class="no-print bg-gray-800 text-white p-4 flex justify-between items-center sticky top-0 z-50 shadow-lg rounded-t-lg flex-shrink-0">
-                <h3 class="font-bold text-lg">PrÃ©-visualizaÃ§Ã£o ao Vivo</h3>
+                <h3 class="font-bold text-lg">Pré-visualização ao Vivo</h3>
                 <button id="downloadPdfBtn"
                     class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -494,38 +495,38 @@
                 </button>
             </div>
             <div id="reportOutputContainer" class="bg-gray-400 p-4 md:p-8 rounded-b-lg flex-grow">
-                <!-- As pÃ¡ginas serÃ£o geradas aqui pelo JS -->
+                <!-- As páginas serão geradas aqui pelo JS -->
             </div>
         </div>
     </div>
 
-    <!-- Template para Anexo FotogrÃ¡fico -->
+    <!-- Template para Anexo Fotográfico -->
     <template id="photoTemplate">
         <div class="photo-item border p-4 rounded-lg">
             <div class="flex justify-between items-center mb-4">
-                <label class="form-label mb-0">DescriÃ§Ã£o da Foto</label>
+                <label class="form-label mb-0">Descrição da Foto</label>
                 <button type="button"
                     class="remove-photo-btn text-red-600 hover:text-red-800 text-sm font-semibold">Remover</button>
             </div>
             <textarea class="form-textarea photo-description" rows="3"
-                placeholder="Digite a descriÃ§Ã£o da foto..."></textarea>
+                placeholder="Digite a descrição da foto..."></textarea>
             <div class="mt-4"><label class="form-label">Arquivo de Imagem</label><input type="file"
                     class="form-input photo-file" accept="image/*"></div>
             <img class="mt-2 h-40 w-full object-contain rounded-md hidden bg-gray-100 p-1" src=""
-                alt="PrÃ©-visualizaÃ§Ã£o">
+                alt="Pré-visualização">
         </div>
     </template>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // --- CONFIGURAÃ‡ÃƒO INICIAL ---
+            // --- CONFIGURAÇãO INICIAL ---
             const { jsPDF } = window.jspdf;
             pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js`;
             let debounceTimer;
             let isGeneratingPDF = false;
             document.getElementById('pdf-loader').style.display = 'none';
 
-            // --- FUNÃ‡Ã•ES DE DADOS E ARQUIVOS ---
+            // --- FUNÇÃ•ES DE DADOS E ARQUIVOS ---
             function fileToDataURL(file) {
                 return new Promise((resolve, reject) => {
                     if (!file) { resolve(null); return; }
@@ -555,7 +556,7 @@
                     return pageDataUrls;
                 } catch (error) {
                     console.error("Erro ao processar PDF:", error);
-                    showStatus("NÃ£o foi possÃ­vel processar o arquivo PDF.", false);
+                    showStatus("Não foi possÃ­vel processar o arquivo PDF.", false);
                     return [];
                 }
             }
@@ -602,7 +603,7 @@
                 return data;
             }
 
-            // --- RENDERIZAÃ‡ÃƒO DA PRÃ‰-VISUALIZAÃ‡ÃƒO ---
+            // --- RENDERIZAÇãO DA PRÉ-VISUALIZAÇãO ---
             async function updateAndRender() {
                 if (isGeneratingPDF) return;
                 const data = await getFormData();
@@ -638,7 +639,7 @@
                                 <td class="p-1 text-center font-bold" colspan="2" style="font-family: 'Montserrat', sans-serif;">${data.reportTitle}</td>
                             </tr>
                             <tr><td class="p-1" colspan="2" style="border-top: 2px solid #333;"><strong>SOLICITANTE:</strong> ${data.clientName}</td></tr>
-                            <tr><td class="p-1" colspan="2" style="border-top: 2px solid #333;"><strong>ENDEREÃ‡O:</strong> ${data.clientAddress}</td></tr>
+                            <tr><td class="p-1" colspan="2" style="border-top: 2px solid #333;"><strong>ENDEREÇO:</strong> ${data.clientAddress}</td></tr>
                             <tr>
                                 <td class="p-1" style="border-top: 2px solid #333;"><strong>NÂº PARECER:</strong> ${data.reportNumber}</td>
                                 <td class="p-1" style="border-top: 2px solid #333; border-left: 2px solid #333;"><strong>PÃGINA:</strong> ${pageNum} de ${totalPages}</td>
@@ -659,7 +660,7 @@
                     return footer;
                 };
 
-                // PÃ¡gina 1: Capa
+                // Página 1: Capa
                 const coverPageWrapper = createPageWrapper();
                 coverPageWrapper.firstElementChild.innerHTML = `
                 <div style="display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center; height: 100%; padding: 15mm;">
@@ -675,11 +676,11 @@
                 </div>`;
                 pages.push(coverPageWrapper);
 
-                // ConteÃºdo principal
+                // Conteúdo principal
                 const contentParts = [
                     `<h3 class="report-section-title">1. OBJETO</h3><p>${data.textObjeto.replace(/\n/g, '</p><p>')}</p>`,
-                    `<h3 class="report-section-title">2. ANÃLISE TÃ‰CNICA / VISTORIA</h3><p>${data.textAnalise.replace(/\n/g, '</p><p>')}</p>`,
-                    `<h3 class="report-section-title">3. DIAGNÃ“STICO / CONSIDERAÃ‡Ã•ES TÃ‰CNICAS</h3><p>${data.textDiagnostico.replace(/\n/g, '</p><p>')}</p>`,
+                    `<h3 class="report-section-title">2. ANÃLISE TÉCNICA / VISTORIA</h3><p>${data.textAnalise.replace(/\n/g, '</p><p>')}</p>`,
+                    `<h3 class="report-section-title">3. DIAGNÓSTICO / CONSIDERAÇÃ•ES TÉCNICAS</h3><p>${data.textDiagnostico.replace(/\n/g, '</p><p>')}</p>`,
                 ];
 
                 let currentPageWrapper = createPageWrapper();
@@ -710,7 +711,7 @@
                 pages.push(currentPageWrapper);
                 document.body.removeChild(tempDiv);
 
-                // PÃ¡ginas de Fotos
+                // Páginas de Fotos
                 if (data.photos.length > 0) {
                     for (let i = 0; i < data.photos.length; i += 4) {
                         const photoChunk = data.photos.slice(i, i + 4);
@@ -729,10 +730,10 @@
                     }
                 }
 
-                // PÃ¡gina de ConclusÃ£o
+                // Página de Conclusão
                 const conclusionPageWrapper = createPageWrapper();
                 conclusionPageWrapper.firstElementChild.innerHTML = `<div class="report-content flex flex-col">
-                    <h3 class="report-section-title">5. PARECER FINAL (CONCLUSÃƒO)</h3>
+                    <h3 class="report-section-title">5. PARECER FINAL (CONCLUSãO)</h3>
                     <p>${data.finalConclusion.replace(/\n/g, '</p><p>')}</p>
                     <div class="signature-container">
                         <div class="inline-flex flex-col items-center">
@@ -747,7 +748,7 @@
                 </div>`;
                 pages.push(conclusionPageWrapper);
 
-                // PÃ¡ginas de Anexos (ART, etc.)
+                // Páginas de Anexos (ART, etc.)
                 if (data.artUrls && data.artUrls.length > 0) {
                     data.artUrls.forEach(url => {
                         const artPageWrapper = createPageWrapper();
@@ -759,10 +760,10 @@
                     });
                 }
 
-                // Adiciona cabeÃ§alhos e rodapÃ©s
+                // Adiciona cabeçalhos e rodapés
                 const totalPages = pages.length;
                 pages.forEach((wrapper, index) => {
-                    if (index > 0) { // NÃ£o adiciona em capa
+                    if (index > 0) { // Não adiciona em capa
                         const page = wrapper.firstElementChild;
                         page.insertBefore(createHeader(data, index + 1, totalPages), page.firstChild);
                         page.appendChild(createFooter(data));
@@ -772,7 +773,7 @@
                 return pages;
             }
 
-            // --- GERAÃ‡ÃƒO DE PDF ---
+            // --- GERAÇãO DE PDF ---
             async function downloadPDF() {
                 const downloadBtn = document.getElementById('downloadPdfBtn');
                 const downloadBtnText = downloadBtn.querySelector('span');
@@ -785,7 +786,7 @@
 
                 const loader = document.getElementById('pdf-loader');
                 const loaderMessage = document.getElementById('loader-message');
-                loaderMessage.textContent = 'Preparando renderizaÃ§Ã£o...';
+                loaderMessage.textContent = 'Preparando renderização...';
                 loader.style.display = 'flex';
 
                 await updateAndRender();
@@ -801,7 +802,7 @@
                     reportOutputContainer.classList.add('pdf-render-mode');
 
                     for (let i = 0; i < originalPageContainers.length; i++) {
-                        loaderMessage.textContent = `Processando pÃ¡gina ${i + 1} de ${originalPageContainers.length}...`;
+                        loaderMessage.textContent = `Processando página ${i + 1} de ${originalPageContainers.length}...`;
                         const pageContainer = originalPageContainers[i];
 
                         await new Promise(resolve => setTimeout(resolve, 50));
@@ -834,7 +835,7 @@
                 }
             }
 
-            // --- MANIPULAÃ‡ÃƒO DO FORMULÃRIO E UI ---
+            // --- MANIPULAÇãO DO FORMULÃRIO E UI ---
             function showStatus(message, isSuccess = true) {
                 const statusEl = document.getElementById('statusMessage');
                 statusEl.textContent = message;
@@ -876,7 +877,7 @@
             }
 
             function clearForm(confirmFirst = true) {
-                if (confirmFirst && !confirm('Tem certeza? Todos os dados nÃ£o salvos serÃ£o perdidos.')) return;
+                if (confirmFirst && !confirm('Tem certeza? Todos os dados não salvos serão perdidos.')) return;
                 document.getElementById('reportForm').reset();
                 document.getElementById('photosContainer').innerHTML = '';
                 document.querySelectorAll('input[type="file"]').forEach(input => {
@@ -885,7 +886,7 @@
                     delete input.dataset.artUrls;
                 });
                 addInitialItems();
-                showStatus('FormulÃ¡rio limpo.');
+                showStatus('Formulário limpo.');
             }
 
             function addInitialItems() {
@@ -918,7 +919,7 @@
                     try {
                         const data = JSON.parse(e.target.result);
                         populateForm(data);
-                    } catch { showStatus('Arquivo JSON invÃ¡lido.', false); }
+                    } catch { showStatus('Arquivo JSON inválido.', false); }
                 };
                 reader.readAsText(file);
                 event.target.value = '';

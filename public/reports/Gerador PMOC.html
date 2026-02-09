@@ -572,7 +572,7 @@
             overflow: hidden;
             position: relative;
             padding-bottom: 30mm;
-            /* reserva espaÃ§o pro rodapÃ© */
+            /* reserva espaço pro rodapé */
         }
 
         .pad {
@@ -1015,7 +1015,8 @@
                 page-break-after: always;
             }
         }
-    </style>`n    <script>
+    </style>
+    <script>
         // Protecao Anti-Copia ChameiApp
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => {
@@ -1059,7 +1060,7 @@
                 <div class="panel-header">
                     <div>
                         <h2>Editor de Dados</h2>
-                        <p>Preencha os campos e gere o PDF pelo botÃ£o â€œVisualizar / Imprimirâ€.</p>
+                        <p>Preencha os campos e gere o PDF pelo botão â€œVisualizar / Imprimirâ€.</p>
                     </div>
                 </div>
                 <div class="panel-body">
@@ -1097,16 +1098,16 @@
                         <div class="row">
                             <div><label>NÂº Documento</label><input id="docNumber" placeholder="Ex: PMOC_001_2025" />
                             </div>
-                            <div><label>RevisÃ£o</label><input id="docRevision" value="REV_A" /></div>
+                            <div><label>Revisão</label><input id="docRevision" value="REV_A" /></div>
                         </div>
                         <div class="row">
                             <div><label>Data</label><input id="docDate" type="date" /></div>
-                            <div><label>EmissÃ£o Inicial</label><input id="docEmissionInitial"
+                            <div><label>Emissão Inicial</label><input id="docEmissionInitial"
                                     placeholder="Data Inicial" />
                             </div>
                         </div>
                         <div class="row row-1">
-                            <div><label>Proc./Ref.</label><input id="docProcessRef" placeholder="ReferÃªncia Interna" />
+                            <div><label>Proc./Ref.</label><input id="docProcessRef" placeholder="Referência Interna" />
                             </div>
                         </div>
                     </div>
@@ -1130,7 +1131,7 @@
                             </div>
                         </div>
                         <div class="row row-1">
-                            <div><label>EndereÃ§o</label><input id="clientAddress" value="" /></div>
+                            <div><label>Endereço</label><input id="clientAddress" value="" /></div>
                         </div>
                     </div>
 
@@ -1154,8 +1155,8 @@
                             </div>
                         </div>
                         <div class="row row-1">
-                            <div><label>EndereÃ§o Completo</label><input id="providerAddress"
-                                    placeholder="EndereÃ§o completo da sua empresa..." />
+                            <div><label>Endereço Completo</label><input id="providerAddress"
+                                    placeholder="Endereço completo da sua empresa..." />
                             </div>
                         </div>
                         <div class="row">
@@ -1173,27 +1174,27 @@
                             <h3>Textos</h3>
                         </div>
                         <div class="row row-1">
-                            <div><label>IntroduÃ§Ã£o</label><textarea id="introText"></textarea></div>
+                            <div><label>Introdução</label><textarea id="introText"></textarea></div>
                         </div>
                         <div class="row row-1">
                             <div><label>Lei PMOC</label><textarea id="lawText"></textarea></div>
                         </div>
                         <div class="row row-1">
-                            <div><label>ImportÃ¢ncia</label><textarea id="benefitsText"></textarea></div>
+                            <div><label>Importância</label><textarea id="benefitsText"></textarea></div>
                         </div>
                     </div>
 
                     <!-- Tabelas -->
                     <div class="section">
                         <div class="section-title">
-                            <h3>RevisÃµes</h3>
+                            <h3>Revisões</h3>
                         </div>
                         <table id="revisionsTable">
                             <thead>
                                 <tr>
                                     <th>Rev.</th>
                                     <th>TE</th>
-                                    <th>DescriÃ§Ã£o</th>
+                                    <th>Descrição</th>
                                     <th>Por</th>
                                     <th>Ver.</th>
                                     <th>Apr.</th>
@@ -1240,16 +1241,16 @@
                         </div>
                     </div>
 
-                    <!-- Obs/ConclusÃ£o -->
+                    <!-- Obs/Conclusão -->
                     <div class="section">
                         <div class="section-title">
-                            <h3>Obs / ConclusÃ£o</h3>
+                            <h3>Obs / Conclusão</h3>
                         </div>
                         <div class="row row-1">
-                            <div><label>ObservaÃ§Ãµes</label><textarea id="obsText"></textarea></div>
+                            <div><label>Observações</label><textarea id="obsText"></textarea></div>
                         </div>
                         <div class="row row-1">
-                            <div><label>ConclusÃ£o</label><textarea id="conclusionText"></textarea></div>
+                            <div><label>Conclusão</label><textarea id="conclusionText"></textarea></div>
                         </div>
                         <div class="row row-1">
                             <div><label>Encerramento</label><textarea id="closingText"></textarea></div>
@@ -1266,7 +1267,7 @@
                             <h3>Assinatura</h3>
                         </div>
                         <div class="row">
-                            <div><label>Nome</label><input id="engineerName" placeholder="ResponsÃ¡vel TÃ©cnico" /></div>
+                            <div><label>Nome</label><input id="engineerName" placeholder="Responsável Técnico" /></div>
                             <div><label>CREA</label><input id="engineerCrea" placeholder="CREA" /></div>
                         </div>
                         <div class="row">
@@ -1277,7 +1278,7 @@
                                     placeholder="Ex: Engenheiro Eletricista" />
                             </div>
                             <div><label>Cargo 2</label><input id="engineerTitle2"
-                                    placeholder="Ex: TÃ©c. em RefrigeraÃ§Ã£o" /></div>
+                                    placeholder="Ex: Téc. em Refrigeração" /></div>
                         </div>
                         <div class="row row-1">
                             <div>
@@ -1305,36 +1306,36 @@
 
         const DEFAULTS = {
             introText:
-                `O PMOC (Plano de ManutenÃ§Ã£o, OperaÃ§Ã£o e Controle) Ã© o conjunto de procedimentos documentados destinado a assegurar a adequada operaÃ§Ã£o, a rastreabilidade das rotinas de manutenÃ§Ã£o e as condiÃ§Ãµes de higiene dos sistemas de climatizaÃ§Ã£o, com foco na qualidade do ar interior e na preservaÃ§Ã£o da saÃºde dos ocupantes, bem como na integridade das edificaÃ§Ãµes.
+                `O PMOC (Plano de Manutenção, Operação e Controle) é o conjunto de procedimentos documentados destinado a assegurar a adequada operação, a rastreabilidade das rotinas de manutenção e as condições de higiene dos sistemas de climatização, com foco na qualidade do ar interior e na preservação da saúde dos ocupantes, bem como na integridade das edificações.
 
-O plano Ã© estruturado a partir de rotinas com periodicidades definidas e registros de inspeÃ§Ã£o, limpeza, ajustes, verificaÃ§Ãµes e mediÃ§Ãµes, permitindo a identificaÃ§Ã£o preventiva de nÃ£o conformidades e a adoÃ§Ã£o de aÃ§Ãµes corretivas antes da ocorrÃªncia de falhas relevantes.`,
+O plano é estruturado a partir de rotinas com periodicidades definidas e registros de inspeção, limpeza, ajustes, verificações e medições, permitindo a identificação preventiva de não conformidades e a adoção de ações corretivas antes da ocorrência de falhas relevantes.`,
 
             lawText:
-                `â€¢ Portaria MS nÂº 3.523/1998 â€“ MinistÃ©rio da SaÃºde (obrigatoriedade de implementaÃ§Ã£o e disponibilizaÃ§Ã£o do PMOC em imÃ³veis com sistemas de climatizaÃ§Ã£o).
-â€¢ Lei nÂº 13.589/2018 â€“ DispÃµe sobre a manutenÃ§Ã£o de instalaÃ§Ãµes e equipamentos de sistemas de climatizaÃ§Ã£o de ambientes.
-â€¢ ResoluÃ§Ã£o ANVISA nÂº 09/2003 â€“ Estabelece parÃ¢metros referenciais de qualidade do ar interior, bem como critÃ©rios para avaliaÃ§Ã£o e recomendaÃ§Ãµes de controle.`,
+                `â€¢ Portaria MS nÂº 3.523/1998 â€“ Ministério da Saúde (obrigatoriedade de implementação e disponibilização do PMOC em imóveis com sistemas de climatização).
+â€¢ Lei nÂº 13.589/2018 â€“ Dispõe sobre a manutenção de instalações e equipamentos de sistemas de climatização de ambientes.
+â€¢ Resolução ANVISA nÂº 09/2003 â€“ Estabelece parâmetros referenciais de qualidade do ar interior, bem como critérios para avaliação e recomendações de controle.`,
 
             benefitsText:
-                `A inexistÃªncia ou a nÃ£o manutenÃ§Ã£o do PMOC caracteriza infraÃ§Ã£o sanitÃ¡ria, sujeita Ã s penalidades previstas na legislaÃ§Ã£o aplicÃ¡vel.
+                `A inexistência ou a não manutenção do PMOC caracteriza infração sanitária, sujeita Ã s penalidades previstas na legislação aplicável.
 
-AlÃ©m do atendimento legal, o PMOC contribui para:
-â€¢ MitigaÃ§Ã£o de riscos associados Ã  qualidade do ar interior e reduÃ§Ã£o de ocorrÃªncias relacionadas Ã  â€œSÃ­ndrome do EdifÃ­cio Doenteâ€;
+Além do atendimento legal, o PMOC contribui para:
+â€¢ Mitigação de riscos associados Ã  qualidade do ar interior e redução de ocorrências relacionadas Ã  â€œSÃ­ndrome do EdifÃ­cio Doenteâ€;
 â€¢ Aumento da confiabilidade operacional e disponibilidade dos equipamentos;
-â€¢ ExtensÃ£o da vida Ãºtil dos ativos e reduÃ§Ã£o de falhas recorrentes;
-â€¢ OtimizaÃ§Ã£o do consumo energÃ©tico, decorrente de operaÃ§Ã£o em condiÃ§Ãµes adequadas de limpeza e ajuste.`,
+â€¢ Extensão da vida útil dos ativos e redução de falhas recorrentes;
+â€¢ Otimização do consumo energético, decorrente de operação em condições adequadas de limpeza e ajuste.`,
 
             obsText:
-                `â€¢ Em ambientes crÃ­ticos, recomenda-se reduzir a periodicidade de rotinas de limpeza (filtros, evaporadores e componentes correlatos), visando manter o equipamento em condiÃ§Ãµes adequadas de conservaÃ§Ã£o e desempenho.
-â€¢ ServiÃ§os nÃ£o listados neste PMOC, porÃ©m previstos nos manuais do fabricante, devem ser executados e devidamente registrados.
-â€¢ Os registros devem ser realizados nas planilhas/relatÃ³rios de inspeÃ§Ã£o, mediÃ§Ãµes e pendÃªncias, mantendo rastreabilidade documental.
-â€¢ Ã‰ obrigatÃ³ria a anexaÃ§Ã£o da Ordem de ServiÃ§o Ã s rotinas executadas, mantendo ambos os documentos disponÃ­veis na Unidade.
-â€¢ Recomenda-se estudo/avaliaÃ§Ã£o de Qualidade do Ar Interior (QAI) por profissional habilitado, em conformidade com normas e referÃªncias vigentes.`,
+                `â€¢ Em ambientes crÃ­ticos, recomenda-se reduzir a periodicidade de rotinas de limpeza (filtros, evaporadores e componentes correlatos), visando manter o equipamento em condições adequadas de conservação e desempenho.
+â€¢ Serviços não listados neste PMOC, porém previstos nos manuais do fabricante, devem ser executados e devidamente registrados.
+â€¢ Os registros devem ser realizados nas planilhas/relatórios de inspeção, medições e pendências, mantendo rastreabilidade documental.
+â€¢ É obrigatória a anexação da Ordem de Serviço Ã s rotinas executadas, mantendo ambos os documentos disponÃ­veis na Unidade.
+â€¢ Recomenda-se estudo/avaliação de Qualidade do Ar Interior (QAI) por profissional habilitado, em conformidade com normas e referências vigentes.`,
 
             conclusionText:
-                `Este Plano de ManutenÃ§Ã£o, OperaÃ§Ã£o e Controle (PMOC) refere-se aos equipamentos eletromecÃ¢nicos do sistema de climatizaÃ§Ã£o/refrigeraÃ§Ã£o da unidade informada, contemplando rotinas preventivas/preditivas e recomendaÃ§Ãµes para preservaÃ§Ã£o das condiÃ§Ãµes sanitÃ¡rias, conforto tÃ©rmico e desempenho operacional.`,
+                `Este Plano de Manutenção, Operação e Controle (PMOC) refere-se aos equipamentos eletromecânicos do sistema de climatização/refrigeração da unidade informada, contemplando rotinas preventivas/preditivas e recomendações para preservação das condições sanitárias, conforto térmico e desempenho operacional.`,
 
             closingText:
-                `Vai o presente laudo digitalizado em ___ (_____) folhas, sendo a Ãºltima devidamente datada e assinada.`,
+                `Vai o presente laudo digitalizado em ___ (_____) folhas, sendo a última devidamente datada e assinada.`,
             engineerName: "",
             engineerCrea: "",
             engineerCft: "",
@@ -1349,30 +1350,30 @@ AlÃ©m do atendimento legal, o PMOC contribui para:
         // Default PMOC items (25 standard maintenance tasks)
         const DEFAULT_PMOC_ITEMS = [
             { item: 1, descricao: "(FILTRO DE AR) LIMPAR ELEMENTO FILTRANTE OU SUBSTITUIR EM CASO DE AVARIAS", periodicidade: "Mensal" },
-            { item: 2, descricao: "(DRENO) VERIFICAR OPERAÃ‡ÃƒO DE DRENAGEM DO CONDENSADOR DA BANDEJA", periodicidade: "Mensal" },
-            { item: 3, descricao: "(BANDEJA DE DRENO) LAVAR AS BANDEIJAS COM REMOÃ‡ÃƒO DO LODO SEM O USO DE DESENGRAXANTES", periodicidade: "Trimensal" },
+            { item: 2, descricao: "(DRENO) VERIFICAR OPERAÇãO DE DRENAGEM DO CONDENSADOR DA BANDEJA", periodicidade: "Mensal" },
+            { item: 3, descricao: "(BANDEJA DE DRENO) LAVAR AS BANDEIJAS COM REMOÇãO DO LODO SEM O USO DE DESENGRAXANTES", periodicidade: "Trimensal" },
             { item: 4, descricao: "(EVAPORADOR) VERIFICAR VAZAMENTOS E CORRIGIR SE NECESSÃRIO", periodicidade: "Mensal" },
             { item: 5, descricao: "(EVAPORADOR) LAVAR A SERPENTINA COM PRODUTO BIODEGRADÃVEL", periodicidade: "Semestral" },
-            { item: 6, descricao: "(EVAPORADOR) VERIFICAR E ELIMINAR SUJEIRA DANOS E CORROSÃƒO NO ALETADO E MOLDURA DA SERPENTINA", periodicidade: "Mensal" },
-            { item: 7, descricao: "(CARCAÃ‡A PLÃSTICA) LIMPEZA UTILIZANDO PRODUTO BIODEGRADÃVEL", periodicidade: "Mensal" },
-            { item: 8, descricao: "(CARCAÃ‡A PLÃSTICA) VERIFICAR ESTADO DE CONSERVAÃ‡ÃƒO", periodicidade: "Mensal" },
-            { item: 9, descricao: "(MOTOR EVAP.) VERIFICAR E ELIMINAR SUJEIRAS, DANOS E CORROSÃƒO ROTOR", periodicidade: "Trimensal" },
+            { item: 6, descricao: "(EVAPORADOR) VERIFICAR E ELIMINAR SUJEIRA DANOS E CORROSãO NO ALETADO E MOLDURA DA SERPENTINA", periodicidade: "Mensal" },
+            { item: 7, descricao: "(CARCAÇA PLÃSTICA) LIMPEZA UTILIZANDO PRODUTO BIODEGRADÃVEL", periodicidade: "Mensal" },
+            { item: 8, descricao: "(CARCAÇA PLÃSTICA) VERIFICAR ESTADO DE CONSERVAÇãO", periodicidade: "Mensal" },
+            { item: 9, descricao: "(MOTOR EVAP.) VERIFICAR E ELIMINAR SUJEIRAS, DANOS E CORROSãO ROTOR", periodicidade: "Trimensal" },
             { item: 10, descricao: "(MOTOR EVAP.) VERIFICAR RUÃDOS ANORMAIS E LUBRIFICAR SE NECESSÃRIO", periodicidade: "Mensal" },
-            { item: 11, descricao: "(CONDENSADOR) LAVAR E REMOVER INCRUSTRAÃ‡Ã•ES", periodicidade: "Semestral" },
-            { item: 12, descricao: "(CONDENSADOR) VERIFICAR EXISTENCIA DE DANOS E CORROSÃƒO NO ALETADO DAS MOLDURAS", periodicidade: "Trimensal" },
-            { item: 13, descricao: "(CONDENSADOR) VERIFICAR VIBRAÃ‡Ã•ES E FIXAÃ‡ÃƒO OU RUÃDOS ANORMAIS", periodicidade: "Mensal" },
-            { item: 14, descricao: "(CONDENSADOR) VERIFICAR VEDAÃ‡ÃƒO DOS PAINÃ‰IS DE FECHAMENTO, FIXAÃ‡Ã•ES/DANOS", periodicidade: "Mensal" },
+            { item: 11, descricao: "(CONDENSADOR) LAVAR E REMOVER INCRUSTRAÇÃ•ES", periodicidade: "Semestral" },
+            { item: 12, descricao: "(CONDENSADOR) VERIFICAR EXISTENCIA DE DANOS E CORROSãO NO ALETADO DAS MOLDURAS", periodicidade: "Trimensal" },
+            { item: 13, descricao: "(CONDENSADOR) VERIFICAR VIBRAÇÃ•ES E FIXAÇãO OU RUÃDOS ANORMAIS", periodicidade: "Mensal" },
+            { item: 14, descricao: "(CONDENSADOR) VERIFICAR VEDAÇãO DOS PAINÉIS DE FECHAMENTO, FIXAÇÃ•ES/DANOS", periodicidade: "Mensal" },
             { item: 15, descricao: "(MOTOR CONDENS) VERIFICAR RUÃDOS ANORMAIS E LUBRIFICAR SE NECESSÃRIO", periodicidade: "Mensal" },
-            { item: 16, descricao: "(COMPRESSOR) VERIFICAR FIXAÃ‡ÃƒO E VIBRAÃ‡Ã•ES E RUÃDOS ANORMAIS", periodicidade: "Mensal" },
+            { item: 16, descricao: "(COMPRESSOR) VERIFICAR FIXAÇãO E VIBRAÇÃ•ES E RUÃDOS ANORMAIS", periodicidade: "Mensal" },
             { item: 17, descricao: "(CIRCUITO REFRIGERANTE) VERIFICAR EXISTENCIA DE VAZAMENTOS DE FLUÃDO E CORRIGIR SE NECESSÃRIO", periodicidade: "Mensal" },
-            { item: 18, descricao: "(CIRCUITO ELÃ‰TRICO) VERIFICAR DISJUNTORES, CONDUTORES E TOMADAS", periodicidade: "Mensal" },
-            { item: 19, descricao: "(CIRCUITO ELÃ‰TRICO) VERIFICAR TODOS OS CONTATOS E BORNES", periodicidade: "Mensal" },
-            { item: 20, descricao: "(CIRCUITO ELÃ‰TRICO) VERIFICAR SENSORES (DEGELO, AMBIENTE, OUTROS)", periodicidade: "Trimensal" },
-            { item: 21, descricao: "(CIRCUITO ELÃ‰TRICO) VERIFICAR FUNCIONAMENTO DE DISPOSITIVO DE AQUECIMENTO (SOLENOIDE)", periodicidade: "Mensal" },
-            { item: 22, descricao: "(CIRCUITO ELÃ‰TRICO) MEDIR E REGISTRAR TENSÃƒO, CORRENTE", periodicidade: "Mensal" },
+            { item: 18, descricao: "(CIRCUITO ELÉTRICO) VERIFICAR DISJUNTORES, CONDUTORES E TOMADAS", periodicidade: "Mensal" },
+            { item: 19, descricao: "(CIRCUITO ELÉTRICO) VERIFICAR TODOS OS CONTATOS E BORNES", periodicidade: "Mensal" },
+            { item: 20, descricao: "(CIRCUITO ELÉTRICO) VERIFICAR SENSORES (DEGELO, AMBIENTE, OUTROS)", periodicidade: "Trimensal" },
+            { item: 21, descricao: "(CIRCUITO ELÉTRICO) VERIFICAR FUNCIONAMENTO DE DISPOSITIVO DE AQUECIMENTO (SOLENOIDE)", periodicidade: "Mensal" },
+            { item: 22, descricao: "(CIRCUITO ELÉTRICO) MEDIR E REGISTRAR TENSãO, CORRENTE", periodicidade: "Mensal" },
             { item: 23, descricao: "LIMPAR FILTRO DA TOMADA DE AR EXTERNO", periodicidade: "Mensal" },
             { item: 24, descricao: "VERIFICAR SE RETORNO DE AR ENCONTRA-SE OBSTRUÃDO", periodicidade: "Mensal" },
-            { item: 25, descricao: "(CIRCUITO REFRIGERANTE) VERIFICAR ISOLAMENTO TÃ‰RMICO", periodicidade: "Mensal" }
+            { item: 25, descricao: "(CIRCUITO REFRIGERANTE) VERIFICAR ISOLAMENTO TÉRMICO", periodicidade: "Mensal" }
         ];
 
         function switchTab(mode) {
@@ -1415,7 +1416,7 @@ AlÃ©m do atendimento legal, o PMOC contribui para:
 
             try {
                 const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpj}`);
-                if (!response.ok) throw new Error('CNPJ nÃ£o encontrado');
+                if (!response.ok) throw new Error('CNPJ não encontrado');
 
                 const data = await response.json();
 
@@ -1491,7 +1492,7 @@ AlÃ©m do atendimento legal, o PMOC contribui para:
         function addRevisionRow(values) {
             const tbody = document.querySelector("#revisionsTable tbody");
             const tr = tbody.insertRow();
-            const vals = values || ["A", "B", "EMISSÃƒO INICIAL", "RSS", "MR", "AD", "RS", "18/02/2025"];
+            const vals = values || ["A", "B", "EMISSãO INICIAL", "RSS", "MR", "AD", "RS", "18/02/2025"];
             vals.forEach(v => {
                 tr.insertCell().innerHTML = `<input class="cell-input" value="${escapeHtml(v)}">`;
             });
@@ -1579,7 +1580,7 @@ AlÃ©m do atendimento legal, o PMOC contribui para:
                         <input type="text" data-field="tipoAtividade" value="${escapeHtml(equip.tipoAtividade)}" onchange="updateEquipmentField('${equip.id}', 'tipoAtividade', this.value)">
                     </div>
                     <div class="equip-field">
-                        <label>IdentificaÃ§Ã£o do Ambiente</label>
+                        <label>Identificação do Ambiente</label>
                         <input type="text" data-field="identificacaoAmbiente" value="${escapeHtml(equip.identificacaoAmbiente)}" onchange="updateEquipmentField('${equip.id}', 'identificacaoAmbiente', this.value)">
                     </div>
                     <div class="equip-field">
@@ -1599,19 +1600,19 @@ AlÃ©m do atendimento legal, o PMOC contribui para:
                         <input type="text" data-field="fabricante" value="${escapeHtml(equip.fabricante)}" onchange="updateEquipmentField('${equip.id}', 'fabricante', this.value)">
                     </div>
                     <div class="equip-field">
-                        <label>GÃ¡s Refrigerante</label>
+                        <label>Gás Refrigerante</label>
                         <input type="text" data-field="gasRefrigerante" value="${escapeHtml(equip.gasRefrigerante)}" onchange="updateEquipmentField('${equip.id}', 'gasRefrigerante', this.value)">
                     </div>
                     <div class="equip-field">
-                        <label>Carga de GÃ¡s</label>
+                        <label>Carga de Gás</label>
                         <input type="text" data-field="cargaGas" value="${escapeHtml(equip.cargaGas)}" onchange="updateEquipmentField('${equip.id}', 'cargaGas', this.value)">
                     </div>
                     <div class="equip-field">
-                        <label>TensÃ£o Nominal</label>
+                        <label>Tensão Nominal</label>
                         <input type="text" data-field="tensaoNominal" value="${escapeHtml(equip.tensaoNominal)}" onchange="updateEquipmentField('${equip.id}', 'tensaoNominal', this.value)">
                     </div>
                     <div class="equip-field">
-                        <label>FrequÃªncia</label>
+                        <label>Frequência</label>
                         <input type="text" data-field="frequencia" value="${escapeHtml(equip.frequencia)}" onchange="updateEquipmentField('${equip.id}', 'frequencia', this.value)">
                     </div>
                     <div class="equip-field">
@@ -1619,13 +1620,13 @@ AlÃ©m do atendimento legal, o PMOC contribui para:
                         <input type="text" data-field="correnteNominal" value="${escapeHtml(equip.correnteNominal)}" onchange="updateEquipmentField('${equip.id}', 'correnteNominal', this.value)">
                     </div>
                     <div class="equip-field">
-                        <label>PotÃªncia Nominal (Resfriamento)</label>
+                        <label>Potência Nominal (Resfriamento)</label>
                         <input type="text" data-field="potenciaNominal" value="${escapeHtml(equip.potenciaNominal)}" onchange="updateEquipmentField('${equip.id}', 'potenciaNominal', this.value)">
                     </div>
                 </div>
                 
                 <div class="pmoc-table-container">
-                    <h4>Tabela PMOC - Rotinas de ManutenÃ§Ã£o</h4>
+                    <h4>Tabela PMOC - Rotinas de Manutenção</h4>
                     ${createPMOCTable(equip)}
                     <button class="btn small good" onclick="addPMOCItem('${equip.id}')">âž• Adicionar Item</button>
                 </div>
@@ -1639,9 +1640,9 @@ AlÃ©m do atendimento legal, o PMOC contribui para:
                     <thead>
                         <tr>
                             <th class="item-col">Item</th>
-                            <th>DescriÃ§Ã£o</th>
+                            <th>Descrição</th>
                             <th class="period-col">Periodicidade</th>
-                            <th class="actions-col">AÃ§Ãµes</th>
+                            <th class="actions-col">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1754,7 +1755,7 @@ AlÃ©m do atendimento legal, o PMOC contribui para:
             }
         }
 
-        // NOVA FUNÃ‡ÃƒO: toParagraphs
+        // NOVA FUNÇãO: toParagraphs
         function toParagraphs(text) {
             const t = (text || "").trim();
             if (!t) return "";
@@ -1812,16 +1813,16 @@ AlÃ©m do atendimento legal, o PMOC contribui para:
                 meta
             }));
 
-            // 2) PÃGINA: REVISÃ•ES + INTRODUÃ‡ÃƒO (com pmoc.jpg)
+            // 2) PÃGINA: REVISÃ•ES + INTRODUÇãO (com pmoc.jpg)
             shell.appendChild(createPage({
                 meta, dateBr, content: `
-          <div class="h2">Controle de RevisÃµes</div>
+          <div class="h2">Controle de Revisões</div>
           <table class="tbl">
-            <thead><tr><th>Rev.</th><th>TE</th><th>DescriÃ§Ã£o</th><th>Por</th><th>Ver.</th><th>Apr.</th><th>Aut.</th><th>Data</th></tr></thead>
+            <thead><tr><th>Rev.</th><th>TE</th><th>Descrição</th><th>Por</th><th>Ver.</th><th>Apr.</th><th>Aut.</th><th>Data</th></tr></thead>
             <tbody>${revisions.map(r => `<tr>${r.map(c => `<td>${escapeHtml(c)}</td>`).join("")}</tr>`).join("")}</tbody>
           </table>
           <div style="height:12mm"></div>
-          <div class="h2">IntroduÃ§Ã£o</div>
+          <div class="h2">Introdução</div>
           <div class="p">${toParagraphs(v("introText"))}</div>
           
           <div style="height:8mm"></div>
@@ -1837,7 +1838,7 @@ AlÃ©m do atendimento legal, o PMOC contribui para:
             // 3) PÃGINA: IMPORTÃ‚NCIA
             shell.appendChild(createPage({
                 meta, dateBr, content: `
-          <div class="h2">ImportÃ¢ncia do Plano</div>
+          <div class="h2">Importância do Plano</div>
           <div class="p">${toParagraphs(v("benefitsText"))}</div>
         `
             }));
@@ -1851,18 +1852,18 @@ AlÃ©m do atendimento legal, o PMOC contribui para:
             <tbody>
                 ${equips.map(r => `<tr>${r.map(c => `<td>${escapeHtml(c)}</td>`).join("")}</tr>`).join("")}
                 <tr style="background:rgba(15, 23, 42, 0.05); font-weight:800;">
-                    <td colspan="3" style="text-align:right; padding-right:12px;">CARGA TÃ‰RMICA TOTAL:</td>
+                    <td colspan="3" style="text-align:right; padding-right:12px;">CARGA TÉRMICA TOTAL:</td>
                     <td>${totalBtuFormatted} BTU</td>
                 </tr>
             </tbody>
           </table>
           <div style="height:12mm"></div>
-          <div class="h2">ObservaÃ§Ãµes</div>
+          <div class="h2">Observações</div>
           <div class="p">${toParagraphs(v("obsText"))}</div>
         `
             }));
 
-            // 5) PÃGINAS: FICHAS TÃ‰CNICAS DOS EQUIPAMENTOS
+            // 5) PÃGINAS: FICHAS TÉCNICAS DOS EQUIPAMENTOS
             // Sync equipments from table if needed
             syncEquipmentsFromTable();
 
@@ -1870,7 +1871,7 @@ AlÃ©m do atendimento legal, o PMOC contribui para:
                 // Equipment technical sheet page
                 shell.appendChild(createPage({
                     meta, dateBr, content: `
-                        <div class="h2">Ficha TÃ©cnica do Equipamento ${index + 1}</div>
+                        <div class="h2">Ficha Técnica do Equipamento ${index + 1}</div>
                         
                         <div style="margin-top:8mm">
                             <h3 style="font-size:11pt;font-weight:800;margin:0 0 8px;color:#0b1220;text-transform:uppercase;letter-spacing:0.08em;">Dados do Equipamento</h3>
@@ -1881,7 +1882,7 @@ AlÃ©m do atendimento legal, o PMOC contribui para:
                                         <td>${escapeHtml(equip.tipoAtividade || '-')}</td>
                                     </tr>
                                     <tr>
-                                        <td style="background:rgba(15,23,42,.04);font-weight:700;">IdentificaÃ§Ã£o do Ambiente</td>
+                                        <td style="background:rgba(15,23,42,.04);font-weight:700;">Identificação do Ambiente</td>
                                         <td>${escapeHtml(equip.identificacaoAmbiente || '-')}</td>
                                     </tr>
                                     <tr>
@@ -1901,19 +1902,19 @@ AlÃ©m do atendimento legal, o PMOC contribui para:
                                         <td>${escapeHtml(equip.fabricante || '-')}</td>
                                     </tr>
                                     <tr>
-                                        <td style="background:rgba(15,23,42,.04);font-weight:700;">GÃ¡s Refrigerante</td>
+                                        <td style="background:rgba(15,23,42,.04);font-weight:700;">Gás Refrigerante</td>
                                         <td>${escapeHtml(equip.gasRefrigerante || '-')}</td>
                                     </tr>
                                     <tr>
-                                        <td style="background:rgba(15,23,42,.04);font-weight:700;">Carga de GÃ¡s</td>
+                                        <td style="background:rgba(15,23,42,.04);font-weight:700;">Carga de Gás</td>
                                         <td>${escapeHtml(equip.cargaGas || '-')}</td>
                                     </tr>
                                     <tr>
-                                        <td style="background:rgba(15,23,42,.04);font-weight:700;">TensÃ£o Nominal</td>
+                                        <td style="background:rgba(15,23,42,.04);font-weight:700;">Tensão Nominal</td>
                                         <td>${escapeHtml(equip.tensaoNominal || '-')}</td>
                                     </tr>
                                     <tr>
-                                        <td style="background:rgba(15,23,42,.04);font-weight:700;">FrequÃªncia</td>
+                                        <td style="background:rgba(15,23,42,.04);font-weight:700;">Frequência</td>
                                         <td>${escapeHtml(equip.frequencia || '-')}</td>
                                     </tr>
                                     <tr>
@@ -1921,7 +1922,7 @@ AlÃ©m do atendimento legal, o PMOC contribui para:
                                         <td>${escapeHtml(equip.correnteNominal || '-')}</td>
                                     </tr>
                                     <tr>
-                                        <td style="background:rgba(15,23,42,.04);font-weight:700;">PotÃªncia Nominal (Resfriamento)</td>
+                                        <td style="background:rgba(15,23,42,.04);font-weight:700;">Potência Nominal (Resfriamento)</td>
                                         <td>${escapeHtml(equip.potenciaNominal || '-')}</td>
                                     </tr>
                                 </tbody>
@@ -1929,12 +1930,12 @@ AlÃ©m do atendimento legal, o PMOC contribui para:
                         </div>
                         
                         <div style="margin-top:12mm">
-                            <h3 style="font-size:11pt;font-weight:800;margin:0 0 8px;color:#0b1220;text-transform:uppercase;letter-spacing:0.08em;">Tabela PMOC - Rotinas de ManutenÃ§Ã£o</h3>
+                            <h3 style="font-size:11pt;font-weight:800;margin:0 0 8px;color:#0b1220;text-transform:uppercase;letter-spacing:0.08em;">Tabela PMOC - Rotinas de Manutenção</h3>
                             <table class="tbl" style="margin-top:8px;font-size:9.5pt;">
                                 <thead>
                                     <tr>
                                         <th style="width:40px;text-align:center;">Item</th>
-                                        <th>DescriÃ§Ã£o</th>
+                                        <th>Descrição</th>
                                         <th style="width:100px;">Periodicidade</th>
                                     </tr>
                                 </thead>
@@ -1953,7 +1954,7 @@ AlÃ©m do atendimento legal, o PMOC contribui para:
                 }));
             });
 
-            // 6) PÃGINA: CONCLUSÃƒO + ASSINATURA
+            // 6) PÃGINA: CONCLUSãO + ASSINATURA
             const closingLocal = v("closingLocal") || "";
             const closingDateRaw = v("closingDate");
             let closingDateFormatted = "";
@@ -1967,7 +1968,7 @@ AlÃ©m do atendimento legal, o PMOC contribui para:
 
             shell.appendChild(createPage({
                 meta, dateBr, content: `
-          <div class="h2">ConclusÃ£o</div>
+          <div class="h2">Conclusão</div>
           <div class="p">${toParagraphs(v("conclusionText"))}</div>
           <div style="height:8mm"></div>
           <div class="p">${toParagraphs(v("closingText"))}</div>
@@ -1998,7 +1999,7 @@ AlÃ©m do atendimento legal, o PMOC contribui para:
         </div>
         <div class="cover-mid">
           <h1>PMOC</h1>
-          <h2>Plano de ManutenÃ§Ã£o, OperaÃ§Ã£o e Controle</h2>
+          <h2>Plano de Manutenção, Operação e Controle</h2>
           
           <div class="client-block">
             <span style="font-size:7.5pt; color:#64748b; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:4px;">Cliente / Unidade:</span>
@@ -2009,7 +2010,7 @@ AlÃ©m do atendimento legal, o PMOC contribui para:
           
           <div class="chip-row">
             <div class="chip">AR CONDICIONADO</div>
-            <div class="chip">MANUTENÃ‡ÃƒO PREVENTIVA / PREDITIVA</div>
+            <div class="chip">MANUTENÇãO PREVENTIVA / PREDITIVA</div>
             <div class="chip">${escapeHtml(String(data.year))}</div>
           </div>
           
@@ -2037,7 +2038,7 @@ AlÃ©m do atendimento legal, o PMOC contribui para:
           <div class="logoBox"><img src="${images.provider || ""}"></div>
           <div class="doc-title">
             <div class="kicker">AR CONDICIONADO</div>
-            <div class="name">PLANO DE MANUTENÃ‡ÃƒO (PMOC)</div>
+            <div class="name">PLANO DE MANUTENÇãO (PMOC)</div>
             <div class="client-info">
               <b>${escapeHtml(meta.clientName)}</b><br>
               ${escapeHtml(meta.clientAddress)}<br>
@@ -2048,11 +2049,11 @@ AlÃ©m do atendimento legal, o PMOC contribui para:
         </div>
         <div class="meta-strip">
           <div class="m"><b>NÂº Documento</b>${escapeHtml(meta.docNumber)}</div>
-          <div class="m"><b>RevisÃ£o</b>${escapeHtml(meta.docRevision)}</div>
+          <div class="m"><b>Revisão</b>${escapeHtml(meta.docRevision)}</div>
           <div class="m"><b>Data</b>${escapeHtml(dateBr)}</div>
-          <div class="m"><b>EmissÃ£o Inicial</b>${escapeHtml(meta.emissionInitial)}</div>
+          <div class="m"><b>Emissão Inicial</b>${escapeHtml(meta.emissionInitial)}</div>
           <div class="m"><b>Proc./Ref.</b>${escapeHtml(meta.processRef)}</div>
-          <div class="m"><b>PÃ¡g.</b><span class="f-page-number"></span></div>
+          <div class="m"><b>Pág.</b><span class="f-page-number"></span></div>
         </div>
         <div class="pad">${content}</div>
         ${footerHTML()}
@@ -2131,7 +2132,7 @@ AlÃ©m do atendimento legal, o PMOC contribui para:
                 try {
                     localStorage.setItem("pmoc_v4_draft", JSON.stringify(state));
                 } catch (e) {
-                    console.warn("Storage local cheio, backup nÃ£o salvo internamente. O arquivo JSON serÃ¡ baixado normalmente.");
+                    console.warn("Storage local cheio, backup não salvo internamente. O arquivo JSON será baixado normalmente.");
                 }
 
                 // Download as JSON file
@@ -2218,7 +2219,7 @@ AlÃ©m do atendimento legal, o PMOC contribui para:
                         try {
                             localStorage.setItem("pmoc_v4_draft", JSON.stringify(state));
                         } catch (e) {
-                            console.warn("Storage local cheio, backup nÃ£o salvo internamente.");
+                            console.warn("Storage local cheio, backup não salvo internamente.");
                         }
 
                         alert("âœ… Arquivo JSON carregado com sucesso!");
@@ -2263,7 +2264,7 @@ AlÃ©m do atendimento legal, o PMOC contribui para:
                     const sheet = sheets[i];
 
                     // Update loading message
-                    loadingDiv.innerHTML = `â³ Gerando PDF... PÃ¡gina ${i + 1} de ${sheets.length}`;
+                    loadingDiv.innerHTML = `â³ Gerando PDF... Página ${i + 1} de ${sheets.length}`;
 
                     // Capture sheet as canvas with high quality
                     const canvas = await html2canvas(sheet, {
@@ -2337,7 +2338,7 @@ AlÃ©m do atendimento legal, o PMOC contribui para:
                         const ctx = canvas.getContext("2d");
                         ctx.drawImage(img, 0, 0);
                         images[key] = canvas.toDataURL("image/jpeg");
-                    } catch (e) { console.warn("Pulo do preloader devido a restriÃ§Ã£o do navegador"); }
+                    } catch (e) { console.warn("Pulo do preloader devido a restrição do navegador"); }
                 };
                 img.src = url;
             };
@@ -2349,16 +2350,16 @@ AlÃ©m do atendimento legal, o PMOC contribui para:
             // seed tables based on your baseline
             const revTb = document.querySelector("#revisionsTable tbody");
             if (revTb && revTb.children.length === 0) {
-                addRevisionRow(["A", "B", "EMISSÃƒO INICIAL", "RSS", "MR", "AD", "RS", "18/02/2025"]);
+                addRevisionRow(["A", "B", "EMISSãO INICIAL", "RSS", "MR", "AD", "RS", "18/02/2025"]);
             }
 
             const eqTb = document.querySelector("#equipTable tbody");
             if (eqTb && eqTb.children.length === 0) {
                 addEquipRow(["Almoxarifado", "SHFE-9000-2", "Hi Wall", "9.000"]);
-                addEquipRow(["Sala de ReuniÃ£o", "SHFE-12000-3", "Hi Wall", "12.000"]);
-                addEquipRow(["EscritÃ³rio 1", "SHFE-18000-4", "Split", "18.000"]);
-                addEquipRow(["Apoio ManutenÃ§Ã£o", "PAC30000FM9", "Hi Wall", "30.000"]);
-                addEquipRow(["AdministraÃ§Ã£o", "VE09F", "Hi Wall", "9.000"]);
+                addEquipRow(["Sala de Reunião", "SHFE-12000-3", "Hi Wall", "12.000"]);
+                addEquipRow(["Escritório 1", "SHFE-18000-4", "Split", "18.000"]);
+                addEquipRow(["Apoio Manutenção", "PAC30000FM9", "Hi Wall", "30.000"]);
+                addEquipRow(["Administração", "VE09F", "Hi Wall", "9.000"]);
                 addEquipRow(["Portaria", "VE09F", "Hi Wall", "9.000"]);
                 addEquipRow(["CCO", "42AFVQG22S5", "Hi Wall", "22.000"]);
                 // Render equipment accordion
@@ -2371,12 +2372,12 @@ AlÃ©m do atendimento legal, o PMOC contribui para:
     CHECKLIST:
     [x] Editor existe e alterna com Preview via abas
     [x] Upload 2 logos
-    [x] EmissÃ£o inicial editÃ¡vel
-    [x] Tabela revisÃµes com add/remove
+    [x] Emissão inicial editável
+    [x] Tabela revisões com add/remove
     [x] Tabela equipamentos com add/remove
-    [x] pmoc.jpg sÃ³ na introduÃ§Ã£o no fluxo do conteÃºdo (abaixo do texto da lei)
-    [x] Textos distribuÃ­dos em parÃ¡grafos com recuo de 12mm
-    [x] RodapÃ© Word-style em todas as pÃ¡ginas
+    [x] pmoc.jpg só na introdução no fluxo do conteúdo (abaixo do texto da lei)
+    [x] Textos distribuÃ­dos em parágrafos com recuo de 12mm
+    [x] Rodapé Word-style em todas as páginas
     [x] Cores de texto pretas (#111827) para legibilidade PDF
   -->
 </body>

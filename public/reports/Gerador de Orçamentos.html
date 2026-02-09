@@ -9,20 +9,20 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Bibliotecas de GeraÃ§Ã£o de PDF -->
+  <!-- Bibliotecas de Geração de PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-  <!-- Fonte 'Lato' que vocÃª gostou -->
+  <!-- Fonte 'Lato' que você gostou -->
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
 
   <style>
-    /* InjecÃ§Ã£o da fonte 'Lato' */
+    /* Injecção da fonte 'Lato' */
     .font-sans {
       font-family: 'Lato', sans-serif;
     }
 
-    /* AnimaÃ§Ã£o do Loader */
+    /* Animação do Loader */
     @keyframes spin {
       from {
         transform: rotate(0deg);
@@ -105,6 +105,7 @@
 
       .sheet,
       .report-page {
+            overflow: hidden;
         width: 210mm !important;
       }
 
@@ -120,7 +121,8 @@
         font-size: 20pt !important;
       }
     }
-  </style>`n    <script>
+  </style>
+    <script>
         // Protecao Anti-Copia ChameiApp
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => {
@@ -196,7 +198,7 @@
 
   <main class="max-w-5xl mx-auto p-4">
 
-    <!-- === MODO DE EDIÃ‡ÃƒO === -->
+    <!-- === MODO DE EDIÇãO === -->
     <div id="edit-view" class="space-y-6 animate-fade-in">
 
       <!-- Card: Identidade Visual -->
@@ -205,11 +207,11 @@
           Identidade Visual (Logo)</h3>
         <div class="flex flex-col md:flex-row gap-6 mb-6 items-center">
           <div class="w-full md:w-1/2">
-            <!-- CORREÃ‡ÃƒO 1: Adicionado for="company-logo-input" -->
+            <!-- CORREÇãO 1: Adicionado for="company-logo-input" -->
             <label for="company-logo-input"
               class="cursor-pointer flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-blue-300 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors relative overflow-hidden shadow-inner group">
               <div id="company-logo-edit-preview" class="h-full w-full">
-                <!-- A prÃ©-visualizaÃ§Ã£o da logo (no editor) aparece aqui -->
+                <!-- A pré-visualização da logo (no editor) aparece aqui -->
                 <div class="flex flex-col items-center justify-center h-full">
                   <!-- Icone: Upload -->
                   <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
@@ -236,12 +238,12 @@
             </label>
           </div>
           <div class="w-full md:w-1/2 space-y-3">
-            <p class="text-sm text-gray-500 italic mb-2">Preencha os dados da sua empresa que aparecerÃ£o no cabeÃ§alho.
+            <p class="text-sm text-gray-500 italic mb-2">Preencha os dados da sua empresa que aparecerão no cabeçalho.
             </p>
             <div>
               <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">Nome da
                 Empresa</label>
-              <input type="text" id="company-name" placeholder="Digite a RazÃ£o Social ou Fantasia..."
+              <input type="text" id="company-name" placeholder="Digite a Razão Social ou Fantasia..."
                 class="w-full p-2 text-sm border border-gray-300 rounded bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all">
             </div>
             <div>
@@ -251,7 +253,7 @@
             </div>
           </div>
         </div>
-        <h4 class="text-xs font-bold text-gray-400 uppercase mb-3 border-b pb-1">EndereÃ§o e Contato</h4>
+        <h4 class="text-xs font-bold text-gray-400 uppercase mb-3 border-b pb-1">Endereço e Contato</h4>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
             <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">Telefone</label>
@@ -269,8 +271,8 @@
               class="w-full p-2 text-sm border border-gray-300 rounded bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all">
           </div>
           <div>
-            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">EndereÃ§o</label>
-            <input type="text" id="company-address" placeholder="EndereÃ§o completo da empresa..."
+            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">Endereço</label>
+            <input type="text" id="company-address" placeholder="Endereço completo da empresa..."
               class="w-full p-2 text-sm border border-gray-300 rounded bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all">
           </div>
           <div class="flex gap-2">
@@ -304,7 +306,7 @@
               class="w-full p-2 text-sm border border-gray-300 rounded bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all">
           </div>
           <div>
-            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">RevisÃ£o</label>
+            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">Revisão</label>
             <input type="text" id="proposal-rev"
               class="w-full p-2 text-sm border border-gray-300 rounded bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all">
           </div>
@@ -332,7 +334,7 @@
                   class="w-full p-2 text-sm border border-gray-300 rounded bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all">
               </div>
               <div>
-                <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">ReferÃªncia /
+                <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">Referência /
                   Objeto</label>
                 <input type="text" id="client-reference"
                   class="w-full p-2 text-sm border border-gray-300 rounded bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all">
@@ -342,12 +344,12 @@
         </div>
       </div>
 
-      <!-- Card: Itens do OrÃ§amento -->
+      <!-- Card: Itens do Orçamento -->
       <div class="bg-white p-5 rounded-lg shadow-sm border border-slate-200">
         <h3 class="text-blue-900 font-bold text-base mb-5 border-b border-slate-100 pb-2 flex items-center gap-2">3.
-          Itens do OrÃ§amento</h3>
+          Itens do Orçamento</h3>
         <div id="items-container" class="space-y-4">
-          <!-- Itens dinÃ¢micos entram aqui -->
+          <!-- Itens dinâmicos entram aqui -->
         </div>
         <button id="add-item-btn"
           class="w-full mt-4 py-3 border-2 border-dashed border-blue-300 text-blue-600 font-bold rounded-lg hover:bg-blue-50 flex justify-center items-center gap-2 transition-all hover:scale-[1.01]">
@@ -380,7 +382,7 @@
           </div>
         </div>
         <div class="mb-4">
-          <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">ObservaÃ§Ãµes
+          <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">Observações
             Finais</label>
           <textarea id="values-obs"
             class="w-full p-2 text-sm border border-gray-300 rounded focus:border-blue-500 outline-none"
@@ -393,7 +395,7 @@
             class="w-full p-2 text-sm border border-gray-300 rounded bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all">
         </div>
         <div class="mt-6 border-t border-dashed pt-4">
-          <h4 class="text-sm font-bold text-gray-700 mb-2">ResponsÃ¡vel TÃ©cnico (Assinatura)</h4>
+          <h4 class="text-sm font-bold text-gray-700 mb-2">Responsável Técnico (Assinatura)</h4>
 
           <!-- === NOVO CAMPO DE UPLOAD DA ASSINATURA === -->
           <div class="mb-4">
@@ -441,11 +443,11 @@
       </div>
     </div>
 
-    <!-- === MODO VISUALIZAÃ‡ÃƒO (PREVIEW HTML) === -->
+    <!-- === MODO VISUALIZAÇãO (PREVIEW HTML) === -->
     <div id="preview-view" class="hidden justify-start mt-4 mb-24 overflow-auto">
 
       <!-- O "MOLDE" A4: width: '794px' -->
-      <!-- CORREÃ‡ÃƒO 3: Voltamos ao "height: auto" (PDF esticado) -->
+      <!-- CORREÇãO 3: Voltamos ao "height: auto" (PDF esticado) -->
       <div id="document-to-print" class="bg-white shadow-2xl relative text-black box-border mx-auto" style="
                 width: 794px; 
                 height: auto; 
@@ -455,10 +457,10 @@
                 padding-bottom: 100px; 
                 overflow: visible;
               ">
-        <!-- CabeÃ§alho -->
+        <!-- Cabeçalho -->
         <div class="flex flex-row justify-between items-start border-b-2 border-blue-900 pb-4 mb-6 w-full">
           <div class="w-[60%] pr-4">
-            <!-- CORREÃ‡ÃƒO 4: h-64 (256px) para a logo -->
+            <!-- CORREÇãO 4: h-64 (256px) para a logo -->
             <div id="preview-logo-container" class="mb-4 h-64 flex items-start">
               <!-- Logo entra aqui -->
             </div>
@@ -467,7 +469,7 @@
             <div class="pl-2 border-l-4 border-blue-600">
               <p class="text-[10px] font-bold uppercase text-gray-800">MATRIZ <span id="preview-company-city"></span>
               </p>
-              <p class="text-[10px] uppercase text-gray-600">ELÃ‰TRICA / MANUTENÃ‡ÃƒO</p>
+              <p class="text-[10px] uppercase text-gray-600">ELÉTRICA / MANUTENÇãO</p>
             </div>
           </div>
           <div class="w-[40%] flex flex-col items-end text-right">
@@ -495,14 +497,14 @@
           <h2 id="preview-client-name" class="text-xl font-bold text-gray-900 leading-tight"></h2>
           <p id="preview-client-contact" class="text-sm text-gray-600 mb-2"></p>
           <div class="bg-blue-50 border border-blue-100 px-3 py-2 rounded-sm w-full">
-            <p class="text-xs text-blue-900"><strong class="font-bold uppercase mr-1">ReferÃªncia:</strong> <span
+            <p class="text-xs text-blue-900"><strong class="font-bold uppercase mr-1">Referência:</strong> <span
                 id="preview-client-reference"></span></p>
           </div>
         </section>
 
         <!-- Itens -->
         <section id="preview-items-container" class="mb-8">
-          <!-- Itens dinÃ¢micos da prÃ©-visualizaÃ§Ã£o entram aqui -->
+          <!-- Itens dinâmicos da pré-visualização entram aqui -->
         </section>
 
         <!-- Fechamento (Investimento, Validade, Assinatura) -->
@@ -536,7 +538,7 @@
               <div class="w-56 border-t border-gray-800 pt-2 relative">
                 <!-- === ASSINATURA: MUDADO DE mb-2 PARA -mb-4 PARA BAIXAR MAIS === -->
                 <div id="preview-signature-container" class="absolute bottom-full left-0 -mb-4 h-20 flex items-end">
-                  <!-- Imagem da assinatura serÃ¡ inserida aqui via JS -->
+                  <!-- Imagem da assinatura será inserida aqui via JS -->
                 </div>
                 <!-- ======================================== -->
                 <p id="preview-signer-name" class="font-bold text-gray-900 text-base"></p>
@@ -558,7 +560,7 @@
           </footer>
         </div>
 
-        <!-- RODAPÃ‰ FIXO -->
+        <!-- RODAPÉ FIXO -->
         <div class="absolute left-0 w-full" style="padding: 0 45px 30px 45px; bottom: 0px;">
           <div class="border-t border-gray-200 py-3 text-center">
             <p class="text-[9px] text-gray-500"><span id="preview-footer-address"></span> â€¢ <span
@@ -572,7 +574,7 @@
 
   </main>
 
-  <!-- BOTÃƒO FLUTUANTE DE DOWNLOAD -->
+  <!-- BOTãO FLUTUANTE DE DOWNLOAD -->
   <div id="generate-pdf-btn-container" class="fixed bottom-6 right-6 z-50 animate-bounce-slow hidden">
     <button id="generate-pdf-btn"
       class="flex items-center gap-3 bg-green-600 text-white pl-6 pr-8 py-4 rounded-full shadow-2xl font-bold text-lg transition-all transform hover:scale-105 active:scale-95 border-4 border-white">
@@ -603,7 +605,7 @@
   </div>
 
   <script>
-    // --- LÃ“GICA JAVASCRIPT PURA ---
+    // --- LÓGICA JAVASCRIPT PURA ---
 
     // --- DADOS INICIAIS ---
     const initialData = {
@@ -622,59 +624,59 @@
         number: "2025_00180",
         date: "2025-11-06",
         rev: "A",
-        type: "manutenÃ§Ã£o"
+        type: "manutenção"
       },
       client: {
         name: "Incloud - Log Betim Via Expressa - MG",
         contact: '"Sro" Fabricio',
-        reference: "Remanejamento e verificaÃ§Ã£o de aparelhos de ar-condicionado"
+        reference: "Remanejamento e verificação de aparelhos de ar-condicionado"
       },
       items: [
         {
           id: 1,
           title: "Sala de Filmagem",
-          text: "SerÃ¡ realizada a verificaÃ§Ã£o tÃ©cnica e o remanejamento de dois aparelhos de ar-condicionado instalados na sala de filmagem.\n\nAtualmente, as unidades condensadoras (externas) encontram-se instaladas dentro do galpÃ£o, o que nÃ£o Ã© adequado e pode ocasionar superaquecimento.\n\nOs serviÃ§os compreenderÃ£o a desinstalaÃ§Ã£o tÃ©cnica das unidades existentes e a nova instalaÃ§Ã£o em posiÃ§Ã£o adequada."
+          text: "Será realizada a verificação técnica e o remanejamento de dois aparelhos de ar-condicionado instalados na sala de filmagem.\n\nAtualmente, as unidades condensadoras (externas) encontram-se instaladas dentro do galpão, o que não é adequado e pode ocasionar superaquecimento.\n\nOs serviços compreenderão a desinstalação técnica das unidades existentes e a nova instalação em posição adequada."
         },
         {
           id: 2,
-          title: "Sala de ReuniÃ£o",
-          text: "SerÃ¡ realizada a verificaÃ§Ã£o tÃ©cnica do aparelho de ar-condicionado da sala de reuniÃ£o, que apresenta partida do compressor seguida de desarme.\n\nDiagnÃ³stico da causa da falha e proposiÃ§Ã£o das correÃ§Ãµes necessÃ¡rias."
+          title: "Sala de Reunião",
+          text: "Será realizada a verificação técnica do aparelho de ar-condicionado da sala de reunião, que apresenta partida do compressor seguida de desarme.\n\nDiagnóstico da causa da falha e proposição das correções necessárias."
         }
       ],
       values: {
         amount: "3.500,00",
-        amountExtenso: "trÃªs mil e quinhentos reais",
-        obs: "Este valor contempla exclusivamente o custo da mÃ£o de obra. Os materiais e eventuais peÃ§as de reposiÃ§Ã£o necessÃ¡rios serÃ£o fornecidos pela contratante."
+        amountExtenso: "três mil e quinhentos reais",
+        obs: "Este valor contempla exclusivamente o custo da mão de obra. Os materiais e eventuais peças de reposição necessários serão fornecidos pela contratante."
       },
       validity: "30 (trinta) dias",
       signer: {
         name: "Helgon Henrique",
-        role: "OperaÃ§Ãµes",
+        role: "Operações",
         phones: "(31) 99770-5904 | (31) 99333-8026",
         image: null // ADICIONADO: Campo para imagem da assinatura
       }
     };
 
     // --- VARIÃVEIS DE ESTADO ---
-    let data = JSON.parse(JSON.stringify(initialData)); // CÃ³pia profunda
+    let data = JSON.parse(JSON.stringify(initialData)); // Cópia profunda
     let view = 'edit';
     let isGenerating = false;
 
-    // --- FUNÃ‡ÃƒO PRINCIPAL (EQUIVALENTE A useEffect) ---
+    // --- FUNÇãO PRINCIPAL (EQUIVALENTE A useEffect) ---
     document.addEventListener('DOMContentLoaded', () => {
 
       // --- SELETORES DE ELEMENTOS ---
       const editView = document.getElementById('edit-view');
       const previewView = document.getElementById('preview-view');
 
-      // BotÃµes Navbar
+      // Botões Navbar
       const saveJsonBtn = document.getElementById('save-json-btn');
       const importJsonBtn = document.getElementById('import-json-btn');
       const importFileInput = document.getElementById('import-file-input');
       const editBtn = document.getElementById('edit-btn');
       const previewBtn = document.getElementById('preview-btn');
 
-      // BotÃ£o Flutuante
+      // Botão Flutuante
       const pdfBtnContainer = document.getElementById('generate-pdf-btn-container');
       const pdfBtn = document.getElementById('generate-pdf-btn');
       const pdfBtnLoading = document.getElementById('generate-pdf-btn-loading');
@@ -684,9 +686,9 @@
       const itemsContainer = document.getElementById('items-container');
       const addItemBtn = document.getElementById('add-item-btn');
 
-      // --- FUNÃ‡Ã•ES DE SINCRONIZAÃ‡ÃƒO DE UI ---
+      // --- FUNÇÃ•ES DE SINCRONIZAÇãO DE UI ---
 
-      // Sincroniza a visualizaÃ§Ã£o (qual tela mostrar)
+      // Sincroniza a visualização (qual tela mostrar)
       function syncView() {
         if (view === 'edit') {
           editView.classList.remove('hidden');
@@ -707,7 +709,7 @@
         }
       }
 
-      // Pega os dados dos inputs do formulÃ¡rio e salva no objeto 'data'
+      // Pega os dados dos inputs do formulário e salva no objeto 'data'
       function syncDataFromInputs() {
         // Empresa
         data.company.name = document.getElementById('company-name').value;
@@ -727,7 +729,7 @@
         data.client.name = document.getElementById('client-name').value;
         data.client.contact = document.getElementById('client-contact').value;
         data.client.reference = document.getElementById('client-reference').value;
-        // Itens (lÃ³gica de loop)
+        // Itens (lógica de loop)
         data.items = [];
         const itemElements = itemsContainer.querySelectorAll('.item-editor');
         itemElements.forEach(itemEl => {
@@ -747,7 +749,7 @@
         data.signer.phones = document.getElementById('signer-phones').value;
       }
 
-      // Pega os dados do objeto 'data' e preenche o formulÃ¡rio
+      // Pega os dados do objeto 'data' e preenche o formulário
       function renderForm() {
         // Empresa
         document.getElementById('company-name').value = data.company.name;
@@ -778,10 +780,10 @@
         document.getElementById('signer-name').value = data.signer.name;
         document.getElementById('signer-role').value = data.signer.role;
         document.getElementById('signer-phones').value = data.signer.phones;
-        // Logo (prÃ©-visualizaÃ§Ã£o do editor)
+        // Logo (pré-visualização do editor)
         renderLogoPreview('company-logo-edit-preview', 'company-logo-remove-btn');
 
-        // Assinatura (prÃ©-visualizaÃ§Ã£o do editor) - ADICIONADO
+        // Assinatura (pré-visualização do editor) - ADICIONADO
         renderSignatureEditPreview();
       }
 
@@ -800,16 +802,16 @@
         </button>
         <span class="text-xs font-bold text-blue-500 mb-2 block uppercase tracking-wide">Item ${idx + 1}</span>
         <div>
-          <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">TÃ­tulo do ServiÃ§o</label>
+          <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">TÃ­tulo do Serviço</label>
           <input type="text" value="${item.title}" class="item-title-input w-full p-2 text-sm border border-gray-300 rounded bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all">
         </div>
         <div class="mt-3">
-            <label class="text-[10px] font-bold text-gray-500 uppercase">DescriÃ§Ã£o Detalhada</label>
+            <label class="text-[10px] font-bold text-gray-500 uppercase">Descrição Detalhada</label>
             <textarea class="item-text-input w-full p-3 text-sm border border-gray-200 bg-slate-50 rounded focus:border-blue-500 outline-none resize-y min-h-[100px]" rows="4">${item.text}</textarea>
         </div>
       `;
 
-          // Adiciona listener ao botÃ£o de remover
+          // Adiciona listener ao botão de remover
           itemEl.querySelector('.remove-item-btn').addEventListener('click', (e) => {
             const idToRemove = e.currentTarget.dataset.id;
             data.items = data.items.filter(i => i.id.toString() !== idToRemove.toString());
@@ -820,9 +822,9 @@
         });
       }
 
-      // Pega os dados do objeto 'data' e preenche a PRÃ‰-VISUALIZAÃ‡ÃƒO
+      // Pega os dados do objeto 'data' e preenche a PRÉ-VISUALIZAÇãO
       function renderPreview() {
-        // CabeÃ§alho
+        // Cabeçalho
         renderLogoPreview('preview-logo-container');
         document.getElementById('preview-company-name').innerText = data.company.name;
         document.getElementById('preview-company-subtitle').innerText = data.company.subtitle;
@@ -876,7 +878,7 @@
           signaturePreviewContainer.innerHTML = `<img src="${data.signer.image}" class="h-full w-auto object-contain" alt="Assinatura">`;
         }
 
-        // RodapÃ© Fixo
+        // Rodapé Fixo
         document.getElementById('preview-footer-address').innerText = data.company.address;
         document.getElementById('preview-footer-city').innerText = data.company.city;
         document.getElementById('preview-footer-cep').innerText = data.company.cep;
@@ -884,7 +886,7 @@
         document.getElementById('preview-footer-email').innerText = data.company.email;
       }
 
-      // FunÃ§Ã£o auxiliar para renderizar a logo em ambos os lugares
+      // Função auxiliar para renderizar a logo em ambos os lugares
       function renderLogoPreview(containerId, removeBtnId = null) {
         const logoContainer = document.getElementById(containerId);
         const removeBtn = removeBtnId ? document.getElementById(removeBtnId) : null;
@@ -893,10 +895,10 @@
 
         if (data.company.logo) {
           if (containerId === 'company-logo-edit-preview') {
-            // PrÃ©-visualizaÃ§Ã£o do editor (grande, p-4)
+            // Pré-visualização do editor (grande, p-4)
             logoContainer.innerHTML = `<img src="${data.company.logo}" class="h-full w-full object-contain p-4" alt="Logo">`;
           } else {
-            // PrÃ©-visualizaÃ§Ã£o do documento final (h-full w-auto)
+            // Pré-visualização do documento final (h-full w-auto)
             logoContainer.innerHTML = `<img src="${data.company.logo}" class="h-full w-auto object-contain" alt="Logo">`;
           }
           if (removeBtn) removeBtn.classList.remove('hidden');
@@ -911,10 +913,10 @@
           `;
           if (removeBtn) removeBtn.classList.add('hidden');
         }
-        // Se nÃ£o tiver logo e for o container de preview, ele fica vazio (como deve ser)
+        // Se não tiver logo e for o container de preview, ele fica vazio (como deve ser)
       }
 
-      // --- NOVA FUNÃ‡ÃƒO DE RENDER DA ASSINATURA (EDITOR) ---
+      // --- NOVA FUNÇãO DE RENDER DA ASSINATURA (EDITOR) ---
       function renderSignatureEditPreview() {
         const container = document.getElementById('signature-edit-preview');
         const removeBtn = document.getElementById('signature-remove-btn');
@@ -936,13 +938,13 @@
       }
 
 
-      // --- FUNÃ‡Ã•ES DE LÃ“GICA (PDF, JSON) ---
+      // --- FUNÇÃ•ES DE LÓGICA (PDF, JSON) ---
 
-      // Carrega script (funÃ§Ã£o auxiliar)
+      // Carrega script (função auxiliar)
       const loadScript = (src) => {
         return new Promise((resolve, reject) => {
           if (document.querySelector(`script[src="${src}"]`)) {
-            return resolve(); // JÃ¡ carregado
+            return resolve(); // Já carregado
           }
           const script = document.createElement('script');
           script.src = src;
@@ -952,7 +954,7 @@
         });
       };
 
-      // GERAÃ‡ÃƒO DE PDF (LÃ³gica "Bala de Prata")
+      // GERAÇãO DE PDF (Lógica "Bala de Prata")
       const generatePDF = async () => {
         if (isGenerating) return;
         isGenerating = true;
@@ -978,21 +980,21 @@
           const element = document.getElementById('document-to-print');
 
           try {
-            // 1. Tira a "foto" (Canvas) do elemento de prÃ©-visualizaÃ§Ã£o
+            // 1. Tira a "foto" (Canvas) do elemento de pré-visualização
             const canvas = await window.html2canvas(element, {
               scale: 3,
               useCORS: true,
               logging: false,
 
-              // CORREÃ‡ÃƒO 2: A "BALA DE PRATA" (Modo Desktop)
+              // CORREÇãO 2: A "BALA DE PRATA" (Modo Desktop)
               windowWidth: 794
             });
 
             const imgData = canvas.toDataURL('image/jpeg', 0.98);
 
-            // --- LÃ“GICA DE "ESTICAR" (PÃ¡gina Ãšnica) ---
+            // --- LÓGICA DE "ESTICAR" (Página Ãšnica) ---
 
-            // 3. Calcula as dimensÃµes exatas da imagem capturada
+            // 3. Calcula as dimensões exatas da imagem capturada
             const canvasWidth = canvas.width;
             const canvasHeight = canvas.height;
             const ratio = canvasHeight / canvasWidth;
@@ -1009,7 +1011,7 @@
             // 7. Adiciona a imagem UMA VEZ
             pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
 
-            // 8. Removemos a lÃ³gica de mÃºltiplas pÃ¡ginas A4
+            // 8. Removemos a lógica de múltiplas páginas A4
             // (O loop 'while (heightLeft > 0)' FOI REMOVIDO)
 
             // 9. Salva o PDF
@@ -1029,7 +1031,7 @@
 
       // BACKUP JSON
       const handleExportJSON = () => {
-        syncDataFromInputs(); // Garante que os dados estÃ£o atualizados
+        syncDataFromInputs(); // Garante que os dados estão atualizados
         const jsonString = JSON.stringify(data, null, 2);
         const blob = new Blob([jsonString], { type: "application/json" });
         const href = URL.createObjectURL(blob);
@@ -1052,14 +1054,14 @@
             if (importedData.company && importedData.items) {
               data = importedData; // Atualiza o objeto de dados
 
-              // Garante compatibilidade caso o JSON importado seja antigo e nÃ£o tenha o campo image
+              // Garante compatibilidade caso o JSON importado seja antigo e não tenha o campo image
               if (!data.signer.image) data.signer.image = null;
 
-              renderForm(); // Re-renderiza o formulÃ¡rio
-              renderPreview(); // Re-renderiza a prÃ©-visualizaÃ§Ã£o
+              renderForm(); // Re-renderiza o formulário
+              renderPreview(); // Re-renderiza a pré-visualização
               alert("Backup restaurado com sucesso!");
             } else {
-              alert("Arquivo invÃ¡lido. Tente outro arquivo JSON.");
+              alert("Arquivo inválido. Tente outro arquivo JSON.");
             }
           } catch (error) {
             alert("Erro ao ler o arquivo.");
@@ -1089,7 +1091,7 @@
         renderLogoPreview('preview-logo-container');
       };
 
-      // --- FUNÃ‡Ã•ES DE UPLOAD DA ASSINATURA ---
+      // --- FUNÇÃ•ES DE UPLOAD DA ASSINATURA ---
       const handleSignatureUpload = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -1097,7 +1099,7 @@
           reader.onloadend = () => {
             data.signer.image = reader.result;
             renderSignatureEditPreview();
-            // NÃ£o precisamos chamar renderPreview aqui pois serÃ¡ chamado ao clicar em "Visualizar"
+            // Não precisamos chamar renderPreview aqui pois será chamado ao clicar em "Visualizar"
           };
           reader.readAsDataURL(file);
         }
@@ -1111,14 +1113,14 @@
       // ADICIONAR ITEM
       const addItem = () => {
         const newId = Date.now();
-        data.items.push({ id: newId, title: "Novo ServiÃ§o", text: "DescriÃ§Ã£o..." });
-        renderItemsList(); // Apenas re-renderiza a lista de itens do formulÃ¡rio
+        data.items.push({ id: newId, title: "Novo Serviço", text: "Descrição..." });
+        renderItemsList(); // Apenas re-renderiza a lista de itens do formulário
       };
 
 
-      // --- EVENT LISTENERS (ConexÃµes) ---
+      // --- EVENT LISTENERS (Conexões) ---
 
-      // NavegaÃ§Ã£o
+      // Navegação
       editBtn.addEventListener('click', () => {
         view = 'edit';
         syncView();
@@ -1131,10 +1133,10 @@
         syncView();           // Mostra o preview
       });
 
-      // BotÃµes principais
+      // Botões principais
       pdfBtn.addEventListener('click', () => {
-        syncDataFromInputs(); // Garante que os dados estÃ£o 100%
-        renderPreview();      // Garante que o preview estÃ¡ 100%
+        syncDataFromInputs(); // Garante que os dados estão 100%
+        renderPreview();      // Garante que o preview está 100%
         generatePDF();        // Gera o PDF
       });
 
@@ -1153,9 +1155,9 @@
       document.getElementById('signature-input').addEventListener('change', handleSignatureUpload);
       document.getElementById('signature-remove-btn').addEventListener('click', removeSignature);
 
-      // --- INICIALIZAÃ‡ÃƒO ---
-      renderForm();      // Preenche o formulÃ¡rio com os dados iniciais
-      renderPreview();   // Preenche a prÃ©-visualizaÃ§Ã£o (escondida)
+      // --- INICIALIZAÇãO ---
+      renderForm();      // Preenche o formulário com os dados iniciais
+      renderPreview();   // Preenche a pré-visualização (escondida)
       syncView();        // Mostra a view 'edit'
     });
 

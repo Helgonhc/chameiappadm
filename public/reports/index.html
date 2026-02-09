@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Engenharia | Sistema de RelatÃ³rios</title>
+    <title>Dashboard de Engenharia | Sistema de Relatórios</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@700;800;900&display=swap"
@@ -152,6 +152,7 @@
 
             .sheet,
             .report-page {
+            overflow: hidden;
                 width: 210mm !important;
             }
 
@@ -167,7 +168,8 @@
                 font-size: 20pt !important;
             }
         }
-    </style>`n    <script>
+    </style>
+    <script>
         // Protecao Anti-Copia ChameiApp
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => {
@@ -203,7 +205,7 @@
             </div>
 
             <div class="relative w-full md:w-96">
-                <input type="text" id="searchInput" placeholder="Filtrar tÃ©cnica ou relatÃ³rio..."
+                <input type="text" id="searchInput" placeholder="Filtrar técnica ou relatório..."
                     class="w-full bg-slate-900/50 border border-slate-800 text-white text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all placeholder-slate-600">
                 <div class="absolute right-4 top-2.5">
                     <kbd
@@ -220,18 +222,18 @@
             <div class="flex items-center gap-2 mb-2 text-blue-400 font-bold text-xs uppercase tracking-widest">
                 <span class="status-dot"></span> Online Systems
             </div>
-            <h2 class="font-display text-4xl md:text-5xl font-black text-white mb-4">Central de RelatÃ³rios</h2>
-            <p class="text-slate-400 max-w-2xl text-lg">Selecione o mÃ³dulo de inspeÃ§Ã£o tÃ©cnica abaixo. Todos os
-                geradores estÃ£o prontos para emissÃ£o profissional.</p>
+            <h2 class="font-display text-4xl md:text-5xl font-black text-white mb-4">Central de Relatórios</h2>
+            <p class="text-slate-400 max-w-2xl text-lg">Selecione o módulo de inspeção técnica abaixo. Todos os
+                geradores estão prontos para emissão profissional.</p>
         </section>
 
         <!-- Categories & Grid -->
         <div class="space-y-16">
 
-            <!-- Category: ElÃ©trica & PotÃªncia -->
+            <!-- Category: Elétrica & Potência -->
             <div>
                 <div class="flex items-center gap-4 mb-8">
-                    <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.3em]">ElÃ©trica & InspeÃ§Ã£o de
+                    <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.3em]">Elétrica & Inspeção de
                         Campo</h3>
                     <div class="h-px flex-1 bg-gradient-to-r from-slate-800 to-transparent"></div>
                 </div>
@@ -256,16 +258,16 @@
                         <div>
                             <h4 class="font-display text-lg font-bold text-white mb-1">Termografia Infravermelha</h4>
                             <p class="text-slate-500 text-sm leading-relaxed">Mapeamento de calor em sistemas sob carga
-                                com anÃ¡lise CFCA.</p>
+                                com análise CFCA.</p>
                         </div>
                         <div class="mt-auto flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase">
-                            <span>RelatÃ³rio de InspeÃ§Ã£o</span>
+                            <span>Relatório de Inspeção</span>
                             <span class="text-slate-700">â€¢</span>
                             <span>v5.0</span>
                         </div>
                     </a>
 
-                    <!-- Card: Cabine PrimÃ¡ria -->
+                    <!-- Card: Cabine Primária -->
                     <a href="Gerador Cabine Primaria.HTML" class="tool-card group rounded-2xl p-6 flex flex-col gap-5">
                         <div class="flex justify-between items-start">
                             <div
@@ -275,15 +277,15 @@
                                         d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                                 </svg>
                             </div>
-                            <span class="category-badge">Alta TensÃ£o</span>
+                            <span class="category-badge">Alta Tensão</span>
                         </div>
                         <div>
-                            <h4 class="font-display text-lg font-bold text-white mb-1">Cabine PrimÃ¡ria</h4>
-                            <p class="text-slate-500 text-sm leading-relaxed">Checklist de manutenÃ§Ã£o preventiva em
-                                subestaÃ§Ãµes de 13.8kV.</p>
+                            <h4 class="font-display text-lg font-bold text-white mb-1">Cabine Primária</h4>
+                            <p class="text-slate-500 text-sm leading-relaxed">Checklist de manutenção preventiva em
+                                subestações de 13.8kV.</p>
                         </div>
                         <div class="mt-auto flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase">
-                            <span>ManutenÃ§Ã£o</span>
+                            <span>Manutenção</span>
                             <span class="text-slate-700">â€¢</span>
                             <span>v1.2</span>
                         </div>
@@ -303,8 +305,8 @@
                         </div>
                         <div>
                             <h4 class="font-display text-lg font-bold text-white mb-1">Laudo de SPDA</h4>
-                            <p class="text-slate-500 text-sm leading-relaxed">Para-raios e aterramento com mediÃ§Ãµes
-                                Ã´hmicas de inspeÃ§Ã£o.</p>
+                            <p class="text-slate-500 text-sm leading-relaxed">Para-raios e aterramento com medições
+                                ôhmicas de inspeção.</p>
                         </div>
                         <div class="mt-auto flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase">
                             <span>Normativo</span>
@@ -316,10 +318,10 @@
                 </div>
             </div>
 
-            <!-- Category: ClimatizaÃ§Ã£o & Engenharia -->
+            <!-- Category: Climatização & Engenharia -->
             <div>
                 <div class="flex items-center gap-4 mb-8">
-                    <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.3em]">ClimatizaÃ§Ã£o & Engenharia
+                    <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.3em]">Climatização & Engenharia
                     </h3>
                     <div class="h-px flex-1 bg-gradient-to-r from-slate-800 to-transparent"></div>
                 </div>
@@ -336,11 +338,11 @@
                                     </path>
                                 </svg>
                             </div>
-                            <span class="category-badge">SanitÃ¡rio</span>
+                            <span class="category-badge">Sanitário</span>
                         </div>
                         <div>
                             <h4 class="font-display text-lg font-bold text-white mb-1">PMOC</h4>
-                            <p class="text-slate-500 text-sm leading-relaxed">Plano de ManutenÃ§Ã£o, OperaÃ§Ã£o e Controle
+                            <p class="text-slate-500 text-sm leading-relaxed">Plano de Manutenção, Operação e Controle
                                 (Lei 13.589/18).</p>
                         </div>
                         <div class="mt-auto flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase">
@@ -350,7 +352,7 @@
                         </div>
                     </a>
 
-                    <!-- Card: Coleta Ã“leo -->
+                    <!-- Card: Coleta Óleo -->
                     <a href="Gerador de Coleta Oleo Transformador.html"
                         class="tool-card group rounded-2xl p-6 flex flex-col gap-5">
                         <div class="flex justify-between items-start">
@@ -365,8 +367,8 @@
                             <span class="category-badge">Laborat.</span>
                         </div>
                         <div>
-                            <h4 class="font-display text-lg font-bold text-white mb-1">Coleta de Ã“leo</h4>
-                            <p class="text-slate-500 text-sm leading-relaxed">Registro de amostragem dielÃ©trica para
+                            <h4 class="font-display text-lg font-bold text-white mb-1">Coleta de Óleo</h4>
+                            <p class="text-slate-500 text-sm leading-relaxed">Registro de amostragem dielétrica para
                                 transformadores.</p>
                         </div>
                         <div class="mt-auto flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase">
@@ -376,7 +378,7 @@
                         </div>
                     </a>
 
-                    <!-- Card: Parecer TÃ©cnico -->
+                    <!-- Card: Parecer Técnico -->
                     <a href="Gerador de Parecer Tecnico.html"
                         class="tool-card group rounded-2xl p-6 flex flex-col gap-5">
                         <div class="flex justify-between items-start">
@@ -392,8 +394,8 @@
                         </div>
                         <div>
                             <h4 class="font-display text-lg font-bold text-white mb-1">Parecer de Engenharia</h4>
-                            <p class="text-slate-500 text-sm leading-relaxed">AvaliaÃ§Ãµes tÃ©cnicas pontuais com
-                                diagnÃ³sticos especializados.</p>
+                            <p class="text-slate-500 text-sm leading-relaxed">Avaliações técnicas pontuais com
+                                diagnósticos especializados.</p>
                         </div>
                         <div class="mt-auto flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase">
                             <span>Laudo</span>
@@ -405,16 +407,16 @@
                 </div>
             </div>
 
-            <!-- Category: GestÃ£o & DocumentaÃ§Ã£o -->
+            <!-- Category: Gestão & Documentação -->
             <div>
                 <div class="flex items-center gap-4 mb-8">
-                    <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.3em]">GestÃ£o & Comercial</h3>
+                    <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.3em]">Gestão & Comercial</h3>
                     <div class="h-px flex-1 bg-gradient-to-r from-slate-800 to-transparent"></div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-                    <!-- Card: OrÃ§amentos -->
-                    <a href="Gerador de OrÃ§amentos.html" class="tool-card group rounded-2xl p-6 flex flex-col gap-5">
+                    <!-- Card: Orçamentos -->
+                    <a href="Gerador de Orçamentos.html" class="tool-card group rounded-2xl p-6 flex flex-col gap-5">
                         <div class="flex justify-between items-start">
                             <div
                                 class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300">
@@ -427,9 +429,9 @@
                             <span class="category-badge">Financeiro</span>
                         </div>
                         <div>
-                            <h4 class="font-display text-lg font-bold text-white mb-1">Gerador de OrÃ§amentos</h4>
+                            <h4 class="font-display text-lg font-bold text-white mb-1">Gerador de Orçamentos</h4>
                             <p class="text-slate-500 text-sm leading-relaxed">Propostas comerciais com layout premium e
-                                cÃ¡lculo automÃ¡tico.</p>
+                                cálculo automático.</p>
                         </div>
                         <div class="mt-auto flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase">
                             <span>Vendas</span>
@@ -438,7 +440,7 @@
                         </div>
                     </a>
 
-                    <!-- Card: RelatÃ³rios TÃ©cnicos -->
+                    <!-- Card: Relatórios Técnicos -->
                     <a href="GERADOR DE RELATORIOS TECNICOS.html"
                         class="tool-card group rounded-2xl p-6 flex flex-col gap-5">
                         <div class="flex justify-between items-start">
@@ -450,12 +452,12 @@
                                     </path>
                                 </svg>
                             </div>
-                            <span class="category-badge">PadrÃ£o</span>
+                            <span class="category-badge">Padrão</span>
                         </div>
                         <div>
                             <h4 class="font-display text-lg font-bold text-white mb-1">Geral de Engenharia</h4>
-                            <p class="text-slate-500 text-sm leading-relaxed">RelatÃ³rio multifuncional para qualquer
-                                demanda tÃ©cnica.</p>
+                            <p class="text-slate-500 text-sm leading-relaxed">Relatório multifuncional para qualquer
+                                demanda técnica.</p>
                         </div>
                         <div class="mt-auto flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase">
                             <span>Docs</span>
@@ -467,7 +469,7 @@
                     <!-- Card: Ver Tudo -->
                     <div
                         class="relative group rounded-2xl p-6 border-2 border-dashed border-slate-800 flex flex-col items-center justify-center text-center gap-2 opacity-50 hover:opacity-100 transition-all cursor-pointer">
-                        <span class="text-slate-500 text-xs font-bold uppercase tracking-widest">Mais MÃ³dulos</span>
+                        <span class="text-slate-500 text-xs font-bold uppercase tracking-widest">Mais Módulos</span>
                         <p class="text-slate-600 text-[10px] leading-tight max-w-[120px]">Novos geradores em
                             desenvolvimento.</p>
                     </div>
@@ -483,7 +485,7 @@
                 &copy; 2025 Engineering Suite â€¢ Industrial Grade Solutions
             </div>
             <div class="flex gap-6">
-                <a href="#" class="text-slate-500 hover:text-white text-xs transition-colors">DocumentaÃ§Ã£o</a>
+                <a href="#" class="text-slate-500 hover:text-white text-xs transition-colors">Documentação</a>
                 <a href="#" class="text-slate-500 hover:text-white text-xs transition-colors">Suporte</a>
                 <a href="#" class="text-slate-500 hover:text-white text-xs transition-colors">Termos</a>
             </div>

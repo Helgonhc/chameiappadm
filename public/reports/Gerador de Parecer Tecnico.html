@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Parecer TÃ©cnico</title>
+    <title>Gerador de Parecer Técnico</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Bibliotecas PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -26,7 +26,7 @@
             background-color: var(--light-gray);
         }
 
-        /* FormulÃ¡rio */
+        /* Formulário */
         .form-section {
             background: #fff;
             border-radius: 0.5rem;
@@ -72,7 +72,7 @@
             background-color: #fff;
         }
 
-        /* RelatÃ³rio - Estrutura A4 */
+        /* Relatório - Estrutura A4 */
         .report-page-container {
             width: 100%;
             max-width: var(--a4-width);
@@ -95,7 +95,7 @@
             box-sizing: border-box;
         }
 
-        /* CabeÃ§alho e RodapÃ© */
+        /* Cabeçalho e Rodapé */
         .report-header {
             padding: 10mm 12mm 0 12mm;
             flex-shrink: 0;
@@ -107,7 +107,7 @@
             margin-top: auto;
         }
 
-        /* Ãrea de ConteÃºdo */
+        /* Ãrea de Conteúdo */
         .report-content {
             flex-grow: 1;
             padding: 8mm 12mm;
@@ -136,7 +136,7 @@
             margin-top: 0;
         }
 
-        /* ParÃ¡grafos com Recuo */
+        /* Parágrafos com Recuo */
         .report-p {
             text-align: left;
             text-indent: 1.25cm;
@@ -412,7 +412,8 @@
                 font-size: 20pt !important;
             }
         }
-    </style>`n    <script>
+    </style>
+    <script>
         // Protecao Anti-Copia ChameiApp
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => {
@@ -438,7 +439,7 @@
             <div class="max-w-lg mx-auto pb-10">
                 <div class="text-center mb-6">
                     <h1 class="text-2xl font-bold text-gray-800 font-montserrat">Gerador de Parecer</h1>
-                    <p class="text-xs text-gray-500 uppercase font-bold">VersÃ£o Final</p>
+                    <p class="text-xs text-gray-500 uppercase font-bold">Versão Final</p>
                 </div>
 
                 <div class="flex gap-2 mb-6 justify-center">
@@ -453,7 +454,7 @@
                 <div id="statusMessage" class="text-center text-xs h-4 mb-2 font-semibold text-green-600"></div>
 
                 <form id="reportForm" class="space-y-5">
-                    <!-- Campos do FormulÃ¡rio -->
+                    <!-- Campos do Formulário -->
                     <div class="form-section">
                         <h2>1. Identidade</h2>
                         <div class="space-y-2">
@@ -461,8 +462,8 @@
                                     accept="image/*" class="form-input text-xs"></div>
                             <div><label class="form-label">Empresa</label><input type="text" id="companyName"
                                     class="form-input" placeholder="Nome da Sua Empresa"></div>
-                            <div><label class="form-label">EndereÃ§o</label><input type="text" id="companyAddress"
-                                    class="form-input" placeholder="EndereÃ§o Completo da Empresa" required>
+                            <div><label class="form-label">Endereço</label><input type="text" id="companyAddress"
+                                    class="form-input" placeholder="Endereço Completo da Empresa" required>
                             </div>
                             <div class="grid grid-cols-2 gap-2">
                                 <div><label class="form-label">Telefone</label><input type="text" id="companyPhone"
@@ -478,7 +479,7 @@
                         <h2>2. Dados</h2>
                         <div class="space-y-2">
                             <div><label class="form-label">TÃ­tulo</label><input type="text" id="reportTitle"
-                                    class="form-input" value="PARECER TÃ‰CNICO DE ENGENHARIA ELÃ‰TRICA"></div>
+                                    class="form-input" value="PARECER TÉCNICO DE ENGENHARIA ELÉTRICA"></div>
                             <div class="grid grid-cols-2 gap-2">
                                 <div><label class="form-label">NÂº</label><input type="text" id="reportNumber"
                                         class="form-input" value="001/2024"></div>
@@ -487,21 +488,21 @@
                             </div>
                             <div><label class="form-label">Cliente</label><input type="text" id="clientName"
                                     class="form-input"></div>
-                            <div><label class="form-label">EndereÃ§o Cliente</label><input type="text" id="clientAddress"
+                            <div><label class="form-label">Endereço Cliente</label><input type="text" id="clientAddress"
                                     class="form-input"></div>
                         </div>
                     </div>
 
                     <div class="form-section">
-                        <h2>3. ConteÃºdo</h2>
+                        <h2>3. Conteúdo</h2>
                         <div class="space-y-3">
                             <div><label class="form-label">Objeto</label><textarea id="textObjeto" rows="3"
                                     class="form-textarea"></textarea></div>
-                            <div><label class="form-label">AnÃ¡lise</label><textarea id="textAnalise" rows="6"
+                            <div><label class="form-label">Análise</label><textarea id="textAnalise" rows="6"
                                     class="form-textarea"></textarea></div>
-                            <div><label class="form-label">DiagnÃ³stico</label><textarea id="textDiagnostico" rows="6"
+                            <div><label class="form-label">Diagnóstico</label><textarea id="textDiagnostico" rows="6"
                                     class="form-textarea"></textarea></div>
-                            <div><label class="form-label">ConclusÃ£o</label><textarea id="finalConclusion" rows="6"
+                            <div><label class="form-label">Conclusão</label><textarea id="finalConclusion" rows="6"
                                     class="form-textarea"></textarea></div>
                         </div>
                     </div>
@@ -517,14 +518,14 @@
                     </div>
 
                     <div class="form-section">
-                        <h2>5. ResponsÃ¡vel</h2>
+                        <h2>5. Responsável</h2>
                         <div class="space-y-2">
                             <div><label class="form-label">Assinatura</label><input type="file" id="engineerSignature"
                                     accept="image/*" class="form-input text-xs"></div>
                             <div><label class="form-label">Nome</label><input type="text" id="engineerName"
-                                    class="form-input" placeholder="Nome do ResponsÃ¡vel"></div>
+                                    class="form-input" placeholder="Nome do Responsável"></div>
                             <div><label class="form-label">CREA</label><input type="text" id="creaNumber"
-                                    class="form-input" placeholder="NÃºmero do CREA"></div>
+                                    class="form-input" placeholder="Número do CREA"></div>
                             <div class="grid grid-cols-2 gap-2">
                                 <div><label class="form-label">Cidade</label><input type="text" id="signatureCity"
                                         class="form-input" placeholder="Cidade/UF"></div>
@@ -546,7 +547,7 @@
         <!-- Painel Direito -->
         <div class="flex-grow h-full bg-gray-600 flex flex-col relative">
             <div class="bg-gray-800 text-white p-3 shadow-md z-20 flex justify-between items-center sticky top-0">
-                <span class="text-xs font-bold uppercase tracking-wide px-4 text-gray-300">PrÃ©-visualizaÃ§Ã£o A4</span>
+                <span class="text-xs font-bold uppercase tracking-wide px-4 text-gray-300">Pré-visualização A4</span>
                 <button id="downloadPdfBtn"
                     class="bg-green-600 hover:bg-green-700 text-white px-5 py-1.5 rounded font-bold text-sm flex items-center gap-2 transition shadow-lg">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -648,7 +649,7 @@
                     const descInput = item.querySelector('.photo-description');
                     const src = img.src;
                     if (src && !src.includes('data:,')) {
-                        // Salva com chave 'description' para consistÃªncia
+                        // Salva com chave 'description' para consistência
                         data.photos.push({ description: descInput.value, src });
                     }
                 }
@@ -662,7 +663,7 @@
                 return data;
             }
 
-            // --- MOTOR DE RENDERIZAÃ‡ÃƒO ---
+            // --- MOTOR DE RENDERIZAÇãO ---
             async function updateAndRender() {
                 if (isGeneratingPDF) return;
                 const data = await getFormData();
@@ -736,8 +737,8 @@
                 };
 
                 addSection('OBJETO', data.textObjeto, '1');
-                addSection('ANÃLISE TÃ‰CNICA / VISTORIA', data.textAnalise, '2');
-                addSection('DIAGNÃ“STICO', data.textDiagnostico, '3');
+                addSection('ANÃLISE TÉCNICA / VISTORIA', data.textAnalise, '2');
+                addSection('DIAGNÓSTICO', data.textDiagnostico, '3');
 
                 // FOTOS
                 if (data.photos.length > 0) {
@@ -747,7 +748,7 @@
                     for (let i = 2; i < data.photos.length; i += 2) addSafe(photoRow(data.photos[i], data.photos[i + 1]));
                 }
 
-                // --- FORÃ‡AR NOVA PÃGINA PARA CONCLUSÃƒO ---
+                // --- FORÇAR NOVA PÃGINA PARA CONCLUSãO ---
                 pgNum++;
                 pgWrapper = createPage();
                 pg = pgWrapper.firstElementChild;
@@ -759,13 +760,13 @@
                 container.appendChild(pgWrapper);
                 ghost.innerHTML = ''; // Reset
 
-                // CONCLUSÃƒO
+                // CONCLUSãO
                 if (data.finalConclusion) {
-                    addSafe(`<h3 class="report-section-title">5. PARECER FINAL (CONCLUSÃƒO)</h3>`);
+                    addSafe(`<h3 class="report-section-title">5. PARECER FINAL (CONCLUSãO)</h3>`);
                     data.finalConclusion.split('\n').filter(p => p.trim()).forEach(p => addSafe(`<p class="report-p">${p}</p>`));
                 }
 
-                // ASSINATURA (Sempre na pÃ¡gina da conclusÃ£o ou nova se estourar)
+                // ASSINATURA (Sempre na página da conclusão ou nova se estourar)
                 const sig = `
                 <div class="signature-container">
                     ${data.engineerSignatureUrl ? `<img src="${data.engineerSignatureUrl}" class="signature-image">` : '<div style="height:60px"></div>'}
@@ -806,7 +807,7 @@
                 h.innerHTML = `<table class="w-full h-full" style="border-collapse:collapse; border:1.5px solid #333; font-family:'Inter',sans-serif;">
                 <tr><td class="w-[25%] p-1 align-middle text-center border-r border-gray-400" rowspan="4"><img src="${d.companyLogoUrl}" style="max-height:100px; max-width:100%; object-fit:contain;"></td><td class="p-1 text-center font-bold text-[9pt] bg-gray-50" colspan="2" style="font-family:'Montserrat';">${d.reportTitle}</td></tr>
                 <tr><td class="p-1 pl-2 text-[7.5pt] border-t border-gray-300" colspan="2"><strong>CLIENTE:</strong> ${d.clientName}</td></tr>
-                <tr><td class="p-1 pl-2 text-[7.5pt] border-t border-gray-300" colspan="2"><strong>ENDEREÃ‡O:</strong> ${d.clientAddress}</td></tr>
+                <tr><td class="p-1 pl-2 text-[7.5pt] border-t border-gray-300" colspan="2"><strong>ENDEREÇO:</strong> ${d.clientAddress}</td></tr>
                 <tr><td class="p-1 pl-2 text-[7.5pt] border-t border-gray-300 w-[50%]"><strong>REF:</strong> ${d.reportNumber}</td><td class="p-1 pl-2 text-[7.5pt] border-t border-gray-300 border-l border-gray-300 w-[25%]"><strong>PÃGINA:</strong> ${n} / <span class="total-pages">--</span></td></tr>
             </table>`; return h;
             }
@@ -878,7 +879,7 @@
                         last.querySelector('img').src = p.src;
                         last.querySelector('img').classList.remove('hidden');
                         last.querySelector('.w-12').classList.add('hidden');
-                        last.querySelector('.photo-description').value = p.description; // Restaura descriÃ§Ã£o
+                        last.querySelector('.photo-description').value = p.description; // Restaura descrição
                     });
                     // Restaura anexos (se houver URL salva)
                     if (d.artUrls && document.getElementById('artPdf')) {

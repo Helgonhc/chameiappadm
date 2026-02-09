@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gerador de RelatÃ³rios TÃ©cnicos</title>
+  <title>Gerador de Relatórios Técnicos</title>
 
   <!-- Bibliotecas Externas (CDN) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -172,10 +172,10 @@
       max-height: 5000px;
     }
 
-    /* IndentaÃ§Ã£o de parÃ¡grafo */
+    /* Indentação de parágrafo */
     .indent-text {
       text-indent: 2.5em;
-      /* Aproximadamente 4-5 espaÃ§os */
+      /* Aproximadamente 4-5 espaços */
       margin-bottom: 1.5em;
     }
 
@@ -257,7 +257,8 @@
         font-size: 20pt !important;
       }
     }
-  </style>`n    <script>
+  </style>
+    <script>
         // Protecao Anti-Copia ChameiApp
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => {
@@ -284,12 +285,12 @@
       <div class="flex flex-col">
         <span class="text-white text-2xl font-black italic tracking-tighter leading-none">SISTEMA</span>
         <span class="text-blue-400 text-[9px] font-black tracking-[0.4em] uppercase leading-none mt-1">De
-          RelatÃ³rios</span>
+          Relatórios</span>
       </div>
       <div class="h-8 w-px bg-white/10 mx-2"></div>
       <div class="hidden md:flex flex-col">
-        <span class="text-white/40 text-[9px] font-black uppercase tracking-widest">Plataforma de RelatÃ³rios</span>
-        <span class="text-white/80 text-[10px] font-bold">VersÃ£o 2.5 (High Performance)</span>
+        <span class="text-white/40 text-[9px] font-black uppercase tracking-widest">Plataforma de Relatórios</span>
+        <span class="text-white/80 text-[10px] font-bold">Versão 2.5 (High Performance)</span>
       </div>
     </div>
 
@@ -342,7 +343,7 @@
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <span class="f-label">Logo da Empresa (RelatÃ³rio)</span>
+            <span class="f-label">Logo da Empresa (Relatório)</span>
             <label
               class="flex flex-col items-center justify-center h-32 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition overflow-hidden bg-gray-50/50">
               <img id="prevCompLogo" class="hidden h-full w-full object-contain" />
@@ -379,16 +380,16 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div class="card p-6">
           <h2 class="text-sm font-black text-blue-900 mb-6 flex items-center gap-2 border-l-4 border-blue-900 pl-3">
-            DADOS DO RELATÃ“RIO</h2>
+            DADOS DO RELATÓRIO</h2>
           <div class="grid grid-cols-2 gap-4">
-            <div class="col-span-2"><span class="f-label">Processo / ReferÃªncia</span> <input type="text"
+            <div class="col-span-2"><span class="f-label">Processo / Referência</span> <input type="text"
                 data-key="reportInfo.reference" oninput="sync(this)" class="f-input"></div>
-            <div><span class="f-label">NÂº RelatÃ³rio</span> <input type="text" data-key="reportInfo.number"
+            <div><span class="f-label">NÂº Relatório</span> <input type="text" data-key="reportInfo.number"
                 oninput="sync(this)" class="f-input"></div>
             <div class="flex gap-2">
               <div class="flex-1"><span class="f-label">Data</span> <input type="date" data-key="reportInfo.date"
                   oninput="sync(this)" class="f-input"></div>
-              <div class="shrink-0 w-16"><span class="f-label">RevisÃ£o</span> <input type="text"
+              <div class="shrink-0 w-16"><span class="f-label">Revisão</span> <input type="text"
                   data-key="reportInfo.revision" oninput="sync(this)" class="f-input text-center"></div>
             </div>
           </div>
@@ -397,7 +398,7 @@
             <div class="space-y-4">
               <div><span class="f-label">Nome do Cliente</span> <input type="text" data-key="reportInfo.clientName"
                   oninput="sync(this)" class="f-input"></div>
-              <div><span class="f-label">EndereÃ§o Completo</span> <input type="text" data-key="reportInfo.clientAddress"
+              <div><span class="f-label">Endereço Completo</span> <input type="text" data-key="reportInfo.clientAddress"
                   oninput="sync(this)" class="f-input"></div>
               <div><span class="f-label">CEP</span> <input type="text" data-key="reportInfo.clientCep"
                   oninput="sync(this)" class="f-input"></div>
@@ -418,24 +419,24 @@
                   DADOS</button>
               </div>
             </div>
-            <div class="col-span-2"><span class="f-label">RazÃ£o Social / Fantasia</span> <input type="text"
+            <div class="col-span-2"><span class="f-label">Razão Social / Fantasia</span> <input type="text"
                 data-key="companyInfo.name" oninput="sync(this)" class="f-input"
-                placeholder="Digite a RazÃ£o Social ou Nome Fantasia da sua empresa..."></div>
+                placeholder="Digite a Razão Social ou Nome Fantasia da sua empresa..."></div>
             <div><span class="f-label">CNPJ</span> <input type="text" data-key="companyInfo.cnpj" oninput="sync(this)"
                 class="f-input" placeholder="00.000.000/0000-00"></div>
-            <div><span class="f-label">Data do RelatÃ³rio</span> <input type="date" data-key="reportInfo.date"
+            <div><span class="f-label">Data do Relatório</span> <input type="date" data-key="reportInfo.date"
                 oninput="sync(this)" class="f-input"></div>
             <div>
-              <span class="f-label">Ano ReferÃªncia (Capa)</span>
+              <span class="f-label">Ano Referência (Capa)</span>
               <input type="text" data-key="reportInfo.year" oninput="sync(this)" class="f-input" placeholder="Ex: 2025">
             </div>
-            <div><span class="f-label">RevisÃ£o</span> <input type="text" data-key="reportInfo.revision"
+            <div><span class="f-label">Revisão</span> <input type="text" data-key="reportInfo.revision"
                 oninput="sync(this)" class="f-input"></div>
             <div><span class="f-label">Cidade/UF (Assinatura)</span> <input type="text" data-key="companyInfo.cityUf"
-                oninput="sync(this)" class="f-input" placeholder="Ex: SÃ£o Paulo/SP"></div>
-            <div class="col-span-2"><span class="f-label">EndereÃ§o Empresa</span> <input type="text"
+                oninput="sync(this)" class="f-input" placeholder="Ex: São Paulo/SP"></div>
+            <div class="col-span-2"><span class="f-label">Endereço Empresa</span> <input type="text"
                 data-key="companyInfo.address" oninput="sync(this)" class="f-input"
-                placeholder="Digite o endereÃ§o completo da sua empresa..."></div>
+                placeholder="Digite o endereço completo da sua empresa..."></div>
             <div><span class="f-label">WhatsApp / Tel</span> <input type="text" data-key="companyInfo.phone"
                 oninput="sync(this)" class="f-input" placeholder="(00) 00000-0000"></div>
             <div><span class="f-label">E-mail</span> <input type="text" data-key="companyInfo.email"
@@ -443,7 +444,7 @@
 
           </div>
           <div class="mt-6 pt-6 border-t border-gray-100 grid grid-cols-2 gap-4">
-            <div class="col-span-2 text-xs font-black text-gray-400 uppercase">ResponsÃ¡vel TÃ©cnico</div>
+            <div class="col-span-2 text-xs font-black text-gray-400 uppercase">Responsável Técnico</div>
             <div>
               <span class="f-label">Nome Completo</span>
               <input type="text" data-key="reportInfo.technician" oninput="sync(this)" class="f-input">
@@ -464,7 +465,7 @@
         <h2 class="text-sm font-black text-blue-900 mb-6 flex items-center gap-2 border-l-4 border-blue-900 pl-3">
           CONTEÃšDO TEXTUAL</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div><span class="f-label">1. IntroduÃ§Ã£o</span> <textarea data-key="texts.introduction" oninput="sync(this)"
+          <div><span class="f-label">1. Introdução</span> <textarea data-key="texts.introduction" oninput="sync(this)"
               class="f-input h-32"></textarea></div>
           <div><span class="f-label">2. Objetivo</span> <textarea data-key="texts.objective" oninput="sync(this)"
               class="f-input h-32"></textarea></div>
@@ -481,9 +482,9 @@
               <!-- Dynamic -->
             </div>
           </div>
-          <div class="col-span-1 md:col-span-2"><span class="f-label">5. ConclusÃ£o TÃ©cnica</span> <textarea
+          <div class="col-span-1 md:col-span-2"><span class="f-label">5. Conclusão Técnica</span> <textarea
               data-key="texts.conclusion" oninput="sync(this)" class="f-input h-32"></textarea></div>
-          <div class="col-span-1 md:col-span-2"><span class="f-label">6. RecomendaÃ§Ãµes</span> <textarea
+          <div class="col-span-1 md:col-span-2"><span class="f-label">6. Recomendações</span> <textarea
               data-key="texts.recommendations" oninput="sync(this)" class="f-input h-20"></textarea></div>
         </div>
       </div>
@@ -499,7 +500,7 @@
             </div>
             <div>
               <h2 class="text-base font-black text-blue-900 tracking-tight uppercase">Equipamentos Analisados</h2>
-              <p class="text-[10px] text-blue-700 font-bold uppercase tracking-widest opacity-60 italic">GestÃ£o de
+              <p class="text-[10px] text-blue-700 font-bold uppercase tracking-widest opacity-60 italic">Gestão de
                 Transformadores & Laudos em PDF</p>
             </div>
           </div>
@@ -531,8 +532,8 @@
             </svg>
             <div class="text-[11px] font-medium leading-relaxed">
               <strong class="uppercase block mb-1">Nota importante sobre anexos:</strong>
-              Os arquivos PDF processados sÃ£o mantidos apenas em memÃ³ria temporÃ¡ria por motivos de desempenho.
-              Ao recarregar a pÃ¡gina (F5), os dados de texto serÃ£o mantidos, mas os PDFs deverÃ£o ser anexados novamente.
+              Os arquivos PDF processados são mantidos apenas em memória temporária por motivos de desempenho.
+              Ao recarregar a página (F5), os dados de texto serão mantidos, mas os PDFs deverão ser anexados novamente.
             </div>
           </div>
         </div>
@@ -541,7 +542,7 @@
     <!-- PREVIEW TAB -->
     <section id="panePreview" class="hidden space-y-8 fade-in flex flex-col items-center">
       <div id="previewContainer" class="print-container">
-        <!-- PÃ¡ginas renderizadas via JS -->
+        <!-- Páginas renderizadas via JS -->
       </div>
     </section>
 
@@ -565,7 +566,7 @@
       },
       reportInfo: {
         number: 'RT-0001/24',
-        reference: 'ManutenÃ§Ã£o 2024',
+        reference: 'Manutenção 2024',
         date: new Date().toISOString().split('T')[0],
         revision: '00',
         year: new Date().getFullYear().toString(),
@@ -579,26 +580,26 @@
         role: 'Engenheiro Eletricista'
       },
       texts: {
-        introduction: `O presente Laudo TÃ©cnico documenta as atividades de manutenÃ§Ã£o preventiva realizadas em transformadores de potÃªncia, com a finalidade de garantir a seguranÃ§a operacional, a confiabilidade dos sistemas elÃ©tricos, o desempenho adequado dos equipamentos e a continuidade dos serviÃ§os.
+        introduction: `O presente Laudo Técnico documenta as atividades de manutenção preventiva realizadas em transformadores de potência, com a finalidade de garantir a segurança operacional, a confiabilidade dos sistemas elétricos, o desempenho adequado dos equipamentos e a continuidade dos serviços.
 
-As inspeÃ§Ãµes, ensaios e intervenÃ§Ãµes foram executados em conformidade com as normas tÃ©cnicas vigentes, em especial as diretrizes aplicÃ¡veis da ABNT, tais como NBR 5356, NBR 7274, NBR 10576, bem como demais recomendaÃ§Ãµes tÃ©cnicas pertinentes, adotando-se as boas prÃ¡ticas de engenharia de manutenÃ§Ã£o para identificaÃ§Ã£o de possÃ­veis nÃ£o conformidades e preservaÃ§Ã£o da vida Ãºtil dos ativos.`,
-        objective: 'Apresentar, de forma clara e sistematizada, os resultados tÃ©cnicos obtidos durante a execuÃ§Ã£o da manutenÃ§Ã£o preventiva nos transformadores de potÃªncia, realizada no dia {DATE}, contemplando as inspeÃ§Ãµes, verificaÃ§Ãµes operacionais e avaliaÃ§Ãµes de conformidade com os parÃ¢metros normativos e critÃ©rios tÃ©cnicos estabelecidos.',
-        testsPerformed: 'AnÃ¡lise de Cromatografia Gasosa e Ensaio FÃ­sico-QuÃ­mico completo.',
+As inspeções, ensaios e intervenções foram executados em conformidade com as normas técnicas vigentes, em especial as diretrizes aplicáveis da ABNT, tais como NBR 5356, NBR 7274, NBR 10576, bem como demais recomendações técnicas pertinentes, adotando-se as boas práticas de engenharia de manutenção para identificação de possÃ­veis não conformidades e preservação da vida útil dos ativos.`,
+        objective: 'Apresentar, de forma clara e sistematizada, os resultados técnicos obtidos durante a execução da manutenção preventiva nos transformadores de potência, realizada no dia {DATE}, contemplando as inspeções, verificações operacionais e avaliações de conformidade com os parâmetros normativos e critérios técnicos estabelecidos.',
+        testsPerformed: 'Análise de Cromatografia Gasosa e Ensaio FÃ­sico-QuÃ­mico completo.',
         activities: [
-          'InspeÃ§Ã£o visual do estado geral externo dos transformadores, abrangendo carcaÃ§as, gabinetes, buchas e conexÃµes.',
-          'AvaliaÃ§Ã£o da existÃªncia de indÃ­cios de corrosÃ£o, vazamentos de Ã³leo isolante, trincas, deformaÃ§Ãµes ou outros danos mecÃ¢nicos.',
-          'VerificaÃ§Ã£o das conexÃµes elÃ©tricas, com inspeÃ§Ã£o detalhada dos terminais, barramentos e pontos de fixaÃ§Ã£o, assegurando o correto reaperto e a integridade dos contatos.',
-          'AnÃ¡lise das condiÃ§Ãµes dos sistemas de isolamento elÃ©trico, visando identificar possÃ­veis degradaÃ§Ãµes, contaminaÃ§Ãµes ou comprometimentos dielÃ©tricos.',
-          'VerificaÃ§Ã£o do nÃ­vel de Ã³leo isolante, garantindo sua conformidade com os limites operacionais recomendados pelo fabricante e normas tÃ©cnicas aplicÃ¡veis.',
-          'Coleta de amostras de Ã³leo isolante para ensaios laboratoriais, com o objetivo de avaliar suas caracterÃ­sticas fÃ­sico-quÃ­micas e identificar a presenÃ§a de contaminantes, umidade ou produtos de degradaÃ§Ã£o.'
+          'Inspeção visual do estado geral externo dos transformadores, abrangendo carcaças, gabinetes, buchas e conexões.',
+          'Avaliação da existência de indÃ­cios de corrosão, vazamentos de óleo isolante, trincas, deformações ou outros danos mecânicos.',
+          'Verificação das conexões elétricas, com inspeção detalhada dos terminais, barramentos e pontos de fixação, assegurando o correto reaperto e a integridade dos contatos.',
+          'Análise das condições dos sistemas de isolamento elétrico, visando identificar possÃ­veis degradações, contaminações ou comprometimentos dielétricos.',
+          'Verificação do nÃ­vel de óleo isolante, garantindo sua conformidade com os limites operacionais recomendados pelo fabricante e normas técnicas aplicáveis.',
+          'Coleta de amostras de óleo isolante para ensaios laboratoriais, com o objetivo de avaliar suas caracterÃ­sticas fÃ­sico-quÃ­micas e identificar a presença de contaminantes, umidade ou produtos de degradação.'
         ],
-        recommendations: 'Monitoramento periÃ³dico do nÃ­vel de Ã³leo e realizaÃ§Ã£o de anÃ¡lises laboratoriais conforme cronograma estabelecido.',
-        conclusion: 'Os diagnÃ³sticos resultantes da manutenÃ§Ã£o foram satisfatÃ³rios, nÃ£o apresentando parÃ¢metros que indiquem status de alerta. Foi efetuada uma minuciosa inspeÃ§Ã£o, obedecendo rigorosamente os princÃ­pios e critÃ©rios dos testes realizados. Este laudo Ã© composto por pÃ¡ginas datadas e assinadas.'
+        recommendations: 'Monitoramento periódico do nÃ­vel de óleo e realização de análises laboratoriais conforme cronograma estabelecido.',
+        conclusion: 'Os diagnósticos resultantes da manutenção foram satisfatórios, não apresentando parâmetros que indiquem status de alerta. Foi efetuada uma minuciosa inspeção, obedecendo rigorosamente os princÃ­pios e critérios dos testes realizados. Este laudo é composto por páginas datadas e assinadas.'
       },
       equipments: []
     };
 
-    // --- INICIALIZAÃ‡ÃƒO ---
+    // --- INICIALIZAÇãO ---
     const DEFAULTS = JSON.parse(JSON.stringify(state));
 
     window.onload = () => {
@@ -606,7 +607,7 @@ As inspeÃ§Ãµes, ensaios e intervenÃ§Ãµes foram executados em conformidad
       if (saved) {
         const parsed = JSON.parse(saved);
 
-        // --- LÃ“GICA DE RESTAURAÃ‡ÃƒO DE TEXTOS PADRÃƒO ---
+        // --- LÓGICA DE RESTAURAÇãO DE TEXTOS PADRãO ---
         if (parsed.texts) {
           // Restaura textos simples
           for (let key in DEFAULTS.texts) {
@@ -617,7 +618,7 @@ As inspeÃ§Ãµes, ensaios e intervenÃ§Ãµes foram executados em conformidad
             }
           }
           // Restaura a lista de atividades se estiver vazia ou SE for a lista antiga (placeholder)
-          const isOldList = parsed.texts.activities && parsed.texts.activities[0] && parsed.texts.activities[0].includes('VerificaÃ§Ã£o do estado geral externo');
+          const isOldList = parsed.texts.activities && parsed.texts.activities[0] && parsed.texts.activities[0].includes('Verificação do estado geral externo');
           if (!parsed.texts.activities || parsed.texts.activities.length === 0 || isOldList) {
             parsed.texts.activities = JSON.parse(JSON.stringify(DEFAULTS.texts.activities));
           }
@@ -634,15 +635,15 @@ As inspeÃ§Ãµes, ensaios e intervenÃ§Ãµes foram executados em conformidad
     };
 
     function clearAllData() {
-      if (confirm('ATENÃ‡ÃƒO: Isso apagarÃ¡ TODOS os dados do cliente, equipamentos e imagens. Os textos profissionais voltarÃ£o ao padrÃ£o ao atualizar a pÃ¡gina (F5). Deseja continuar?')) {
-        // Limpar Dados de RelatÃ³rio
+      if (confirm('ATENÇãO: Isso apagará TODOS os dados do cliente, equipamentos e imagens. Os textos profissionais voltarão ao padrão ao atualizar a página (F5). Deseja continuar?')) {
+        // Limpar Dados de Relatório
         state.reportInfo.clientName = '';
         state.reportInfo.clientAddress = '';
         state.reportInfo.number = 'RT-' + new Date().getFullYear() + '-0001';
         state.reportInfo.revision = '00';
         state.reportInfo.reference = '';
 
-        // Limpar Textos (para que o F5 restaure os padrÃµes)
+        // Limpar Textos (para que o F5 restaure os padrões)
         for (let key in state.texts) {
           if (Array.isArray(state.texts[key])) {
             state.texts[key] = [];
@@ -661,13 +662,13 @@ As inspeÃ§Ãµes, ensaios e intervenÃ§Ãµes foram executados em conformidad
         renderActivityList();
         renderEquipmentList();
         updateBranding();
-        alert('Dados limpos! Ao atualizar a pÃ¡gina (F5), os textos profissionais padrÃ£o serÃ£o recarregados.');
+        alert('Dados limpos! Ao atualizar a página (F5), os textos profissionais padrão serão recarregados.');
       }
     }
 
     // --- PERSISTÃŠNCIA ---
     function save() {
-      // Criar cÃ³pia profunda filtrada para nÃ£o salvar strings gigantes de imagens no localStorage
+      // Criar cópia profunda filtrada para não salvar strings gigantes de imagens no localStorage
       const stateToSave = JSON.parse(JSON.stringify(state));
       stateToSave.equipments.forEach(eq => {
         eq.attachments.forEach(at => at.pages = []); // Limpa imagens
@@ -697,14 +698,14 @@ As inspeÃ§Ãµes, ensaios e intervenÃ§Ãµes foram executados em conformidad
         try {
           const importedState = JSON.parse(e.target.result);
           state = importedState;
-          save(); // Isso salva no localStorage (versÃ£o limpa)
+          save(); // Isso salva no localStorage (versão limpa)
           syncInputs();
           renderActivityList();
           renderEquipmentList();
           updateBranding();
-          alert('Backup restaurado com sucesso! Os anexos PDF precisarÃ£o ser carregados novamente se as imagens nÃ£o estiverem no backup.');
+          alert('Backup restaurado com sucesso! Os anexos PDF precisarão ser carregados novamente se as imagens não estiverem no backup.');
         } catch (err) {
-          alert('Erro ao importar JSON: Arquivo invÃ¡lido.');
+          alert('Erro ao importar JSON: Arquivo inválido.');
         } finally {
           hideOverlay();
           event.target.value = ''; // Limpa o input
@@ -733,12 +734,12 @@ As inspeÃ§Ãµes, ensaios e intervenÃ§Ãµes foram executados em conformidad
     // --- IMAGENS & API ---
     async function lookupCompanyData() {
       const cnpj = document.getElementById('lookupCnpj').value.replace(/\D/g, '');
-      if (cnpj.length !== 14) return alert('Digite um CNPJ vÃ¡lido com 14 dÃ­gitos.');
+      if (cnpj.length !== 14) return alert('Digite um CNPJ válido com 14 dÃ­gitos.');
 
       showOverlay('Consultando CNPJ...');
       try {
         const resp = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpj}`);
-        if (!resp.ok) throw new Error('NÃ£o encontrado');
+        if (!resp.ok) throw new Error('Não encontrado');
         const data = await resp.json();
 
         state.companyInfo.name = data.razao_social;
@@ -752,7 +753,7 @@ As inspeÃ§Ãµes, ensaios e intervenÃ§Ãµes foram executados em conformidad
         syncInputs();
         alert('Dados atualizados com sucesso!');
       } catch (e) {
-        alert('Erro ao buscar CNPJ. Verifique o nÃºmero ou tente novamente mais tarde.');
+        alert('Erro ao buscar CNPJ. Verifique o número ou tente novamente mais tarde.');
       } finally {
         hideOverlay();
       }
@@ -820,7 +821,7 @@ As inspeÃ§Ãµes, ensaios e intervenÃ§Ãµes foram executados em conformidad
         isOpen: true,
         name: 'TRANSFORMADOR 0' + (state.equipments.length + 1),
         tag: 'TF-0' + (state.equipments.length + 1),
-        serial: '', power: '', voltage: '', manufacturer: '', year: '', type: 'AÃ‰REO',
+        serial: '', power: '', voltage: '', manufacturer: '', year: '', type: 'AÉREO',
         labReportNo: '', sampleDate: '',
         attachments: []
       });
@@ -872,18 +873,18 @@ As inspeÃ§Ãµes, ensaios e intervenÃ§Ãµes foram executados em conformidad
                             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                                 <div><span class="f-label">Nome</span> <input type="text" value="${eq.name}" oninput="updateEq(${eq.id}, 'name', this.value)" class="f-input"></div>
                                 <div><span class="f-label">TAG</span> <input type="text" value="${eq.tag}" oninput="updateEq(${eq.id}, 'tag', this.value)" class="f-input"></div>
-                                <div><span class="f-label">NÂº SÃ©rie</span> <input type="text" value="${eq.serial}" oninput="updateEq(${eq.id}, 'serial', this.value)" class="f-input"></div>
-                                <div><span class="f-label">PotÃªncia</span> <input type="text" value="${eq.power}" oninput="updateEq(${eq.id}, 'power', this.value)" class="f-input"></div>
-                                <div><span class="f-label">TensÃ£o</span> <input type="text" value="${eq.voltage}" oninput="updateEq(${eq.id}, 'voltage', this.value)" class="f-input"></div>
+                                <div><span class="f-label">NÂº Série</span> <input type="text" value="${eq.serial}" oninput="updateEq(${eq.id}, 'serial', this.value)" class="f-input"></div>
+                                <div><span class="f-label">Potência</span> <input type="text" value="${eq.power}" oninput="updateEq(${eq.id}, 'power', this.value)" class="f-input"></div>
+                                <div><span class="f-label">Tensão</span> <input type="text" value="${eq.voltage}" oninput="updateEq(${eq.id}, 'voltage', this.value)" class="f-input"></div>
                                 <div><span class="f-label">Fabricante</span> <input type="text" value="${eq.manufacturer}" oninput="updateEq(${eq.id}, 'manufacturer', this.value)" class="f-input"></div>
                                 <div><span class="f-label">Ano</span> <input type="text" value="${eq.year}" oninput="updateEq(${eq.id}, 'year', this.value)" class="f-input"></div>
                                 <div><span class="f-label">Tipo/Local</span> <input type="text" value="${eq.type}" oninput="updateEq(${eq.id}, 'type', this.value)" class="f-input"></div>
-                                <div><span class="f-label">NÂº Laudo LaboratÃ³rio</span> <input type="text" value="${eq.labReportNo}" oninput="updateEq(${eq.id}, 'labReportNo', this.value)" class="f-input"></div>
+                                <div><span class="f-label">NÂº Laudo Laboratório</span> <input type="text" value="${eq.labReportNo}" oninput="updateEq(${eq.id}, 'labReportNo', this.value)" class="f-input"></div>
                                 <div><span class="f-label">Data de Coleta</span> <input type="date" value="${eq.sampleDate}" oninput="updateEq(${eq.id}, 'sampleDate', this.value)" class="f-input"></div>
                             </div>
                             
                             <div class="bg-gray-50 p-6 rounded-2xl border-2 border-dashed border-gray-200">
-                                <span class="f-label mb-3">Anexos PDF do LaboratÃ³rio</span>
+                                <span class="f-label mb-3">Anexos PDF do Laboratório</span>
                                 <label class="flex flex-col items-center justify-center py-6 bg-white border-2 border-dashed border-blue-200 rounded-xl cursor-pointer hover:bg-blue-50 transition group">
                                      <svg class="w-8 h-8 text-blue-300 group-hover:text-blue-500 mb-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
                                      <span class="text-[10px] font-black text-blue-900 uppercase tracking-widest">Selecionar PDF(s)</span>
@@ -931,7 +932,7 @@ As inspeÃ§Ãµes, ensaios e intervenÃ§Ãµes foram executados em conformidad
           const pages = [];
 
           for (let i = 1; i <= pdf.numPages; i++) {
-            updateProgress(`Lendo pÃ¡gina ${i}/${pdf.numPages} de ${file.name}`);
+            updateProgress(`Lendo página ${i}/${pdf.numPages} de ${file.name}`);
             const page = await pdf.getPage(i);
             const viewport = page.getViewport({ scale: 4.0 }); // 4x para qualidade ultra-premium
             const canvas = document.createElement('canvas');
@@ -940,7 +941,7 @@ As inspeÃ§Ãµes, ensaios e intervenÃ§Ãµes foram executados em conformidad
             canvas.width = viewport.width;
 
             await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-            pages.push(canvas.toDataURL('image/png', 1.0)); // PNG 100% - mÃ¡xima qualidade
+            pages.push(canvas.toDataURL('image/png', 1.0)); // PNG 100% - máxima qualidade
           }
 
           eq.attachments.push({
@@ -958,7 +959,7 @@ As inspeÃ§Ãµes, ensaios e intervenÃ§Ãµes foram executados em conformidad
 
       hideOverlay();
       renderEquipmentList();
-      save(); // Save sem as images binÃ¡rias (handled in save function)
+      save(); // Save sem as images binárias (handled in save function)
     }
 
     function removePdf(eqId, atId) {
@@ -970,7 +971,7 @@ As inspeÃ§Ãµes, ensaios e intervenÃ§Ãµes foram executados em conformidad
       }
     }
 
-    // --- NAVEGAÃ‡ÃƒO ---
+    // --- NAVEGAÇãO ---
     function switchTab(tab) {
       const edit = document.getElementById('paneEdit');
       const prev = document.getElementById('panePreview');
@@ -1011,7 +1012,7 @@ As inspeÃ§Ãµes, ensaios e intervenÃ§Ãµes foram executados em conformidad
                             </div>
                             <div class="w-1/3 p-3 text-center flex flex-col justify-center bg-white">
                                 <p class="font-black text-[9px] text-gray-400 uppercase tracking-tighter mb-1">TÃTULO DO DOCUMENTO:</p>
-                                <p class="font-black text-[12px] text-blue-900 uppercase italic leading-tight">RELATÃ“RIO TÃ‰CNICO DE MANUTENÃ‡ÃƒO</p>
+                                <p class="font-black text-[12px] text-blue-900 uppercase italic leading-tight">RELATÓRIO TÉCNICO DE MANUTENÇãO</p>
                             </div>
                         </div>
                         <div class="flex text-center divide-x-[1.8pt] divide-gray-900 bg-white">
@@ -1020,11 +1021,11 @@ As inspeÃ§Ãµes, ensaios e intervenÃ§Ãµes foram executados em conformidad
                                 <p class="font-black text-[12px] text-gray-900 leading-none">${state.reportInfo.number}</p>
                             </div>
                             <div class="flex-1 p-2 flex flex-col justify-center">
-                                <p class="font-black text-[8px] text-gray-400 uppercase mb-0.5">REVISÃƒO</p>
+                                <p class="font-black text-[8px] text-gray-400 uppercase mb-0.5">REVISãO</p>
                                 <p class="font-black text-[12px] text-gray-900 leading-none">${state.reportInfo.revision}</p>
                             </div>
                             <div class="flex-1 p-2 flex flex-col justify-center">
-                                <p class="font-black text-[8px] text-gray-400 uppercase mb-0.5">DATA EMISSÃƒO</p>
+                                <p class="font-black text-[8px] text-gray-400 uppercase mb-0.5">DATA EMISSãO</p>
                                 <p class="font-black text-[12px] text-gray-900 leading-none">${formatDate(state.reportInfo.date)}</p>
                             </div>
                             <div class="flex-1 p-2 flex flex-col justify-center bg-gray-50">
@@ -1067,7 +1068,7 @@ As inspeÃ§Ãµes, ensaios e intervenÃ§Ãµes foram executados em conformidad
                 <div class="flex justify-between items-start relative z-10 w-full mb-12">
                     ${state.companyLogoDataUrl ? `<img src="${state.companyLogoDataUrl}" style="max-height: 120px; width: auto; object-fit: contain;" />` : '<div class="h-20"></div>'}
                     <div class="text-right">
-                        <p class="text-[12px] font-extrabold text-blue-900 uppercase tracking-[0.3em] mb-2">RelatÃ³rio TÃ©cnico</p>
+                        <p class="text-[12px] font-extrabold text-blue-900 uppercase tracking-[0.3em] mb-2">Relatório Técnico</p>
                         <p class="text-[16px] font-black text-gray-900 uppercase tracking-tight italic">NÂº ${state.reportInfo.number || '---'}</p>
                     </div>
                 </div>
@@ -1076,13 +1077,13 @@ As inspeÃ§Ãµes, ensaios e intervenÃ§Ãµes foram executados em conformidad
                     <div class="space-y-4 w-full flex flex-col items-center">
                         <div class="border-b-2 border-blue-900 pb-3 mb-6 w-max mx-auto">
                             <h1 class="text-[38px] font-black text-gray-900 tracking-tighter uppercase leading-none whitespace-nowrap">
-                                Laudo TÃ©cnico de ManutenÃ§Ã£o
+                                Laudo Técnico de Manutenção
                             </h1>
                         </div>
                         
                         <div class="mt-4 w-max mx-auto">
                             <h2 class="text-[24px] font-bold text-gray-400 tracking-[0.3em] uppercase italic whitespace-nowrap">
-                                Transformadores de PotÃªncia
+                                Transformadores de Potência
                             </h2>
                         </div>
                     </div>
@@ -1101,7 +1102,7 @@ As inspeÃ§Ãµes, ensaios e intervenÃ§Ãµes foram executados em conformidad
                             </p>
                         </div>
 
-                        <!-- LINHA DIVISÃ“RIA -->
+                        <!-- LINHA DIVISÓRIA -->
                         <div class="w-px h-20 bg-white/10 flex-shrink-0"></div>
 
                         <!-- LADO DIREITO: ANO -->
@@ -1125,7 +1126,7 @@ As inspeÃ§Ãµes, ensaios e intervenÃ§Ãµes foram executados em conformidad
             <div class="flex-1 px-16 py-[180px] flex flex-col">
                 <div class="space-y-12 text-[13px] leading-relaxed text-justify">
                     <section>
-                        <h3 class="text-[18px] font-black text-gray-900 uppercase tracking-widest mb-6 border-b-[2pt] border-gray-900 pb-2">01. IntroduÃ§Ã£o</h3>
+                        <h3 class="text-[18px] font-black text-gray-900 uppercase tracking-widest mb-6 border-b-[2pt] border-gray-900 pb-2">01. Introdução</h3>
                         <div class="text-gray-700 font-bold leading-relaxed">
                             ${state.texts.introduction.split('\n').filter(t => t.trim()).map(t => `<p class="mb-4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${t}</p>`).join('')}
                         </div>
@@ -1169,7 +1170,7 @@ As inspeÃ§Ãµes, ensaios e intervenÃ§Ãµes foram executados em conformidad
                                 <tr>
                                     <th class="p-5 border-r border-white/20 text-center w-20">ITEM</th>
                                     <th class="p-5 border-r border-white/20">TAG EQUIPAMENTO</th>
-                                    <th class="p-5 border-r border-white/20">DADOS TÃ‰CNICOS</th>
+                                    <th class="p-5 border-r border-white/20">DADOS TÉCNICOS</th>
                                     <th class="p-5 text-center">FABRICANTE</th>
                                 </tr>
                             </thead>
@@ -1215,7 +1216,7 @@ As inspeÃ§Ãµes, ensaios e intervenÃ§Ãµes foram executados em conformidad
                 <div class="flex-1 flex flex-col items-center justify-center">
                     <div class="w-24 h-3 bg-gray-900 mb-16"></div>
                     <h1 class="text-8xl font-black text-gray-900 uppercase tracking-[0.4em] italic leading-none ml-10">Anexos</h1>
-                    <p class="text-[14px] font-black text-gray-400 mt-10 uppercase tracking-[0.5em] font-black">DocumentaÃ§Ã£o TÃ©cnica e Laudos</p>
+                    <p class="text-[14px] font-black text-gray-400 mt-10 uppercase tracking-[0.5em] font-black">Documentação Técnica e Laudos</p>
                 </div>
                 ${getStandardFooter()}
             `;
@@ -1233,7 +1234,7 @@ As inspeÃ§Ãµes, ensaios e intervenÃ§Ãµes foram executados em conformidad
                         ${getStandardHeader(pageNum)}
                         <div class="flex-1 px-16 py-[180px] flex flex-col">
                              <div class="mb-6 border-b-[2pt] border-gray-200 pb-2 flex justify-between items-end">
-                                <h3 class="text-[13px] font-black text-gray-900 uppercase tracking-[0.1em] italic">Anexo TÃ©cnico: ${eq.tag} / ${at.name}</h3>
+                                <h3 class="text-[13px] font-black text-gray-900 uppercase tracking-[0.1em] italic">Anexo Técnico: ${eq.tag} / ${at.name}</h3>
                                 <span class="text-[10px] text-gray-400 font-black uppercase italic tracking-widest">Folha ${idx + 1} de ${at.pageCount}</span>
                              </div>
                              <div class="flex-1 flex items-center justify-center bg-white border border-gray-100 rounded-xl shadow-lg p-10">
@@ -1248,21 +1249,21 @@ As inspeÃ§Ãµes, ensaios e intervenÃ§Ãµes foram executados em conformidad
         });
       });
 
-      // CONCLUSÃƒO E ASSINATURA (FINAL)
+      // CONCLUSãO E ASSINATURA (FINAL)
       const conclPage = document.createElement('div');
       conclPage.className = 'print-page p-0 relative';
       conclPage.innerHTML = `
             ${getStandardHeader(pageNum)}
             <div class="flex-1 px-16 py-[180px] flex flex-col">
                 <section class="mb-12">
-                    <h3 class="text-[18px] font-black text-gray-900 uppercase tracking-widest mb-8 border-b-[2pt] border-gray-900 pb-2">06. RecomendaÃ§Ãµes e ObservaÃ§Ãµes</h3>
+                    <h3 class="text-[18px] font-black text-gray-900 uppercase tracking-widest mb-8 border-b-[2pt] border-gray-900 pb-2">06. Recomendações e Observações</h3>
                     <div class="border-l-[6px] border-gray-900 pl-10 ml-2 text-[13px] text-gray-700 font-bold leading-relaxed text-justify">
                         ${state.texts.recommendations.split('\n').filter(t => t.trim()).map(t => `<p class="mb-4 last:mb-0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${t}</p>`).join('')}
                     </div>
                 </section>
 
                 <section class="mb-auto">
-                    <h3 class="text-[18px] font-black text-gray-900 uppercase tracking-widest mb-8 border-b-[2pt] border-gray-900 pb-2">07. ConclusÃ£o TÃ©cnica Final</h3>
+                    <h3 class="text-[18px] font-black text-gray-900 uppercase tracking-widest mb-8 border-b-[2pt] border-gray-900 pb-2">07. Conclusão Técnica Final</h3>
                     <div class="bg-gray-50 p-10 border-[2pt] border-gray-900 text-[13px] text-gray-800 leading-relaxed font-bold italic text-justify shadow-sm">
                         ${state.texts.conclusion.split('\n').filter(t => t.trim()).map(t => `<p class="mb-4 last:mb-0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${t}</p>`).join('')}
                     </div>
@@ -1278,7 +1279,7 @@ As inspeÃ§Ãµes, ensaios e intervenÃ§Ãµes foram executados em conformidad
                         ${state.engineerSignatureDataUrl ? `<img src="${state.engineerSignatureDataUrl}" style="max-height: 125px; margin-bottom: 0.75rem;" />` : '<div class="h-32"></div>'}
                         <div class="w-96 h-[2pt] bg-gray-900"></div>
                         <p class="text-[14px] font-black text-gray-900 mt-5 uppercase tracking-tighter italic leading-none">${state.reportInfo.technician || '---'}</p>
-                        <p class="text-[10px] font-black text-gray-900 uppercase tracking-[0.4em] mt-3 leading-none">${state.reportInfo.role || 'ResponsÃ¡vel TÃ©cnico'} â€¢ CREA: ${state.reportInfo.crea || '---'}</p>
+                        <p class="text-[10px] font-black text-gray-900 uppercase tracking-[0.4em] mt-3 leading-none">${state.reportInfo.role || 'Responsável Técnico'} â€¢ CREA: ${state.reportInfo.crea || '---'}</p>
                     </div>
                 </div>
             </div>
@@ -1302,7 +1303,7 @@ As inspeÃ§Ãµes, ensaios e intervenÃ§Ãµes foram executados em conformidad
       const pdfH = doc.internal.pageSize.getHeight();
 
       for (let i = 0; i < pages.length; i++) {
-        updateProgress(`Rasterizando pÃ¡gina ${i + 1} de ${pages.length}`);
+        updateProgress(`Rasterizando página ${i + 1} de ${pages.length}`);
 
         const canvas = await html2canvas(pages[i], {
           scale: 4, // 4x para qualidade ultra-premium
@@ -1315,7 +1316,7 @@ As inspeÃ§Ãµes, ensaios e intervenÃ§Ãµes foram executados em conformidad
           removeContainer: true
         });
 
-        const imgData = canvas.toDataURL('image/png', 1.0); // PNG qualidade 100% - mÃ¡xima possÃ­vel
+        const imgData = canvas.toDataURL('image/png', 1.0); // PNG qualidade 100% - máxima possÃ­vel
         if (i > 0) doc.addPage();
         doc.addImage(imgData, 'PNG', 0, 0, pdfW, pdfH, undefined, 'SLOW');
       }

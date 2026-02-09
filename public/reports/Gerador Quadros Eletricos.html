@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de RelatÃ³rio de ManutenÃ§Ã£o ElÃ©trica</title>
+    <title>Gerador de Relatório de Manutenção Elétrica</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Bibliotecas para geraÃ§Ã£o de PDF -->
+    <!-- Bibliotecas para geração de PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
@@ -63,7 +63,7 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
         }
 
-        /* Estilos do RelatÃ³rio Gerado */
+        /* Estilos do Relatório Gerado */
         .report-page-container {
             width: 100%;
             max-width: 210mm;
@@ -254,7 +254,8 @@
                 font-size: 20pt !important;
             }
         }
-    </style>`n    <script>
+    </style>
+    <script>
         // Protecao Anti-Copia ChameiApp
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => {
@@ -269,18 +270,18 @@
 <body class="text-gray-800">
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-4 md:p-8 h-screen">
-        <!-- Coluna do FormulÃ¡rio -->
+        <!-- Coluna do Formulário -->
         <div id="formContainer" class="no-print overflow-y-auto pr-4">
             <div class="max-w-2xl mx-auto">
                 <div class="text-center mb-10">
-                    <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Gerador de RelatÃ³rio de ManutenÃ§Ã£o ElÃ©trica
+                    <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Gerador de Relatório de Manutenção Elétrica
                     </h1>
-                    <p class="text-gray-600 mt-2">Preencha os campos para gerar o relatÃ³rio de quadros e subestaÃ§Ãµes.
+                    <p class="text-gray-600 mt-2">Preencha os campos para gerar o relatório de quadros e subestações.
                     </p>
                 </div>
 
                 <div class="form-section flex items-center justify-between flex-wrap gap-4">
-                    <h2 class="text-lg font-semibold mb-0 border-b-0 pb-0">AÃ§Ãµes de Dados</h2>
+                    <h2 class="text-lg font-semibold mb-0 border-b-0 pb-0">Ações de Dados</h2>
                     <div class="flex gap-2 flex-wrap">
                         <button type="button" id="importFileBtn"
                             class="bg-teal-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-teal-700 transition-colors">Importar
@@ -291,7 +292,7 @@
                         <input type="file" id="importFileInput" class="hidden" accept=".json,.txt">
                         <button type="button" id="clearFormBtn"
                             class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors">Limpar
-                            FormulÃ¡rio</button>
+                            Formulário</button>
                     </div>
                 </div>
                 <div id="statusMessage" class="text-center mb-4 h-6"></div>
@@ -306,27 +307,27 @@
                             <div><label for="clientName" class="form-label">Nome do Cliente</label><input type="text"
                                     id="clientName" class="form-input" placeholder="Digite o nome do cliente..."
                                     required></div>
-                            <div class="md:col-span-2"><label for="clientAddress" class="form-label">EndereÃ§o do
+                            <div class="md:col-span-2"><label for="clientAddress" class="form-label">Endereço do
                                     Cliente</label><input type="text" id="clientAddress" class="form-input"
-                                    placeholder="Digite o endereÃ§o completo do cliente..." required></div>
+                                    placeholder="Digite o endereço completo do cliente..." required></div>
                             <div class="md:col-span-2"><label for="reportTitle" class="form-label">TÃ­tulo do
-                                    RelatÃ³rio</label><input type="text" id="reportTitle" class="form-input"
-                                    value="LAUDO TÃ‰CNICO DE AVALIAÃ‡ÃƒO DAS INSTALAÃ‡Ã•ES ELÃ‰TRICAS DE BAIXA TENSÃƒO (BT)"
+                                    Relatório</label><input type="text" id="reportTitle" class="form-input"
+                                    value="LAUDO TÉCNICO DE AVALIAÇãO DAS INSTALAÇÃ•ES ELÉTRICAS DE BAIXA TENSãO (BT)"
                                     required></div>
-                            <div><label for="reportNumber" class="form-label">NÂº do RelatÃ³rio</label><input type="text"
+                            <div><label for="reportNumber" class="form-label">NÂº do Relatório</label><input type="text"
                                     id="reportNumber" class="form-input" placeholder="Ex: 2025/001" required></div>
-                            <div><label for="reportDate" class="form-label">Data da ManutenÃ§Ã£o</label><input type="date"
+                            <div><label for="reportDate" class="form-label">Data da Manutenção</label><input type="date"
                                     id="reportDate" class="form-input" required></div>
                             <div class="md:col-span-2"><label for="companyName" class="form-label">Nome da Sua Empresa
-                                    (RodapÃ©)</label><input type="text" id="companyName" class="form-input"
+                                    (Rodapé)</label><input type="text" id="companyName" class="form-input"
                                     placeholder="Digite o Nome da Sua Empresa..." required></div>
-                            <div class="md:col-span-2"><label for="companyAddress" class="form-label">EndereÃ§o da Sua
-                                    Empresa (RodapÃ©)</label><input type="text" id="companyAddress" class="form-input"
-                                    placeholder="Digite o endereÃ§o completo da sua empresa..." required></div>
-                            <div><label for="companyPhone" class="form-label">Telefone (RodapÃ©)</label><input type="tel"
+                            <div class="md:col-span-2"><label for="companyAddress" class="form-label">Endereço da Sua
+                                    Empresa (Rodapé)</label><input type="text" id="companyAddress" class="form-input"
+                                    placeholder="Digite o endereço completo da sua empresa..." required></div>
+                            <div><label for="companyPhone" class="form-label">Telefone (Rodapé)</label><input type="tel"
                                     id="companyPhone" class="form-input" placeholder="Digite o telefone (xx) xxxxx-xxxx"
                                     required></div>
-                            <div><label for="companyEmail" class="form-label">E-mail (RodapÃ©)</label><input type="email"
+                            <div><label for="companyEmail" class="form-label">E-mail (Rodapé)</label><input type="email"
                                     id="companyEmail" class="form-input" placeholder="Digite o e-mail comercial..."
                                     required></div>
                         </div>
@@ -339,22 +340,22 @@
                     </div>
 
                     <div class="form-section">
-                        <h2 class="section-title">Textos do RelatÃ³rio</h2>
-                        <div><label for="introText" class="form-label">1. IntroduÃ§Ã£o</label><textarea id="introText"
+                        <h2 class="section-title">Textos do Relatório</h2>
+                        <div><label for="introText" class="form-label">1. Introdução</label><textarea id="introText"
                                 rows="5"
-                                class="form-textarea">As instruÃ§Ãµes deste relatÃ³rio referente a [CLIENTE] foram elaboradas observando as normas da ABNT. Aplicam-se aos seguintes locais: SUBESTAÃ‡Ã•ES, QGBTS, QDCâ€™S, QDLâ€™S, BANCO DE CAPACITORES. Os casos omissos e outros de caracterÃ­sticas excepcionais deverÃ£o ser previamente submetidos a apreciaÃ§Ã£o da [SUA EMPRESA].</textarea>
+                                class="form-textarea">As instruções deste relatório referente a [CLIENTE] foram elaboradas observando as normas da ABNT. Aplicam-se aos seguintes locais: SUBESTAÇÃ•ES, QGBTS, QDCâ€™S, QDLâ€™S, BANCO DE CAPACITORES. Os casos omissos e outros de caracterÃ­sticas excepcionais deverão ser previamente submetidos a apreciação da [SUA EMPRESA].</textarea>
                         </div>
                         <div class="mt-4"><label for="objectiveText" class="form-label">2. Objetivo</label><textarea
                                 id="objectiveText" rows="5"
-                                class="form-textarea">ElaboraÃ§Ã£o de Laudo TÃ©cnico de AvaliaÃ§Ã£o apresentando a situaÃ§Ã£o atual na qual se encontra as instalaÃ§Ãµes elÃ©tricas de baixa tensÃ£o do [CLIENTE], localizado no endereÃ§o [ENDERECO], realizado mediÃ§Ã£o das grandezas elÃ©tricas e detecÃ§Ã£o de problemas nos painÃ©is e quadros de distribuiÃ§Ã£o de energia elÃ©trica, apontando soluÃ§Ãµes tÃ©cnicas para os problemas elÃ©tricos encontrado, aferindo sua conformidade com as normas tÃ©cnicas aplicÃ¡veis.</textarea>
+                                class="form-textarea">Elaboração de Laudo Técnico de Avaliação apresentando a situação atual na qual se encontra as instalações elétricas de baixa tensão do [CLIENTE], localizado no endereço [ENDERECO], realizado medição das grandezas elétricas e detecção de problemas nos painéis e quadros de distribuição de energia elétrica, apontando soluções técnicas para os problemas elétricos encontrado, aferindo sua conformidade com as normas técnicas aplicáveis.</textarea>
                         </div>
                         <div class="mt-4"><label for="methodologyText" class="form-label">4.
                                 Metodologia</label><textarea id="methodologyText" rows="5"
-                                class="form-textarea">O procedimento utilizado segue o plano de manutenÃ§Ã£o e na elaboraÃ§Ã£o deste RelatÃ³rio TÃ©cnico foi o de registrar atravÃ©s de imagens todos os componentes do sistema, bem como efetuar mediÃ§Ãµes de grandezas elÃ©tricas. No ato da vistoria, foram registrados todos os detalhes observados pelo TÃ©cnico Eletricista, identificando e qualificando todos os componentes e apontando as necessidades de correÃ§Ã£o das inconformidades apuradas. O RelatÃ³rio TÃ©cnico foi elaborado identificando cada componente atravÃ©s de imagem e comentando as inconformidades segundo as Normas TÃ©cnicas aplicÃ¡veis.</textarea>
+                                class="form-textarea">O procedimento utilizado segue o plano de manutenção e na elaboração deste Relatório Técnico foi o de registrar através de imagens todos os componentes do sistema, bem como efetuar medições de grandezas elétricas. No ato da vistoria, foram registrados todos os detalhes observados pelo Técnico Eletricista, identificando e qualificando todos os componentes e apontando as necessidades de correção das inconformidades apuradas. O Relatório Técnico foi elaborado identificando cada componente através de imagem e comentando as inconformidades segundo as Normas Técnicas aplicáveis.</textarea>
                         </div>
                     </div>
 
-                    <!-- SeÃ§Ã£o de Itens Inspecionados -->
+                    <!-- Seção de Itens Inspecionados -->
                     <div class="form-section">
                         <div class="flex justify-between items-center">
                             <h2 class="section-title mb-0 pb-0 border-b-0">5. Itens Inspecionados</h2>
@@ -365,10 +366,10 @@
                         <div id="visualItemsContainer" class="mt-6 space-y-4"></div>
                     </div>
 
-                    <!-- SeÃ§Ã£o de Anexos FotogrÃ¡ficos -->
+                    <!-- Seção de Anexos Fotográficos -->
                     <div class="form-section">
                         <div class="flex justify-between items-center">
-                            <h2 class="section-title mb-0 pb-0 border-b-0">6. Anexos FotogrÃ¡ficos</h2>
+                            <h2 class="section-title mb-0 pb-0 border-b-0">6. Anexos Fotográficos</h2>
                             <button type="button" id="addPhotoBtn"
                                 class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">Adicionar
                                 Foto</button>
@@ -377,19 +378,19 @@
                     </div>
 
                     <div class="form-section">
-                        <h2 class="section-title">ConclusÃ£o e ResponsÃ¡vel</h2>
-                        <div class="mt-6"><label for="finalConclusion" class="form-label">ConclusÃ£o</label><textarea
+                        <h2 class="section-title">Conclusão e Responsável</h2>
+                        <div class="mt-6"><label for="finalConclusion" class="form-label">Conclusão</label><textarea
                                 id="finalConclusion" rows="6"
-                                class="form-textarea">Foram analizados, SUBESTAÃ‡Ã•ES, QGBTâ€™S,QDCâ€™S,QDLâ€™S, BANCOS DE CAPACITORES,todos os quadros passaram por inspeÃ§Ã£o de criticidade. As irregularidades foram solucionadas. Detectamos presenÃ§a de poeira e alguns elementos nÃ£o prejudiciais ao funcionamento do sistema. AS INTALAÃ‡Ã•ES ELÃ‰TRICAS EM BAIXA TENSÃƒO (BT) estÃ£o em total conformidade com a norma NBR 5410, NBR-5419 E NR 10 e em perfeito estado de funcionamento.</textarea>
+                                class="form-textarea">Foram analizados, SUBESTAÇÃ•ES, QGBTâ€™S,QDCâ€™S,QDLâ€™S, BANCOS DE CAPACITORES,todos os quadros passaram por inspeção de criticidade. As irregularidades foram solucionadas. Detectamos presença de poeira e alguns elementos não prejudiciais ao funcionamento do sistema. AS INTALAÇÃ•ES ELÉTRICAS EM BAIXA TENSãO (BT) estão em total conformidade com a norma NBR 5410, NBR-5419 E NR 10 e em perfeito estado de funcionamento.</textarea>
                         </div>
-                        <div class="mt-6"><label for="closingRemarks" class="form-label">ObservaÃ§Ãµes
+                        <div class="mt-6"><label for="closingRemarks" class="form-label">Observações
                                 Finais</label><textarea id="closingRemarks" rows="3"
-                                class="form-textarea">Segue o presente laudo impresso em [NÃšMERO] folhas escritas de um sÃ³ lado, todas rubricadas e a Ãºltima datada e assinada.</textarea>
+                                class="form-textarea">Segue o presente laudo impresso em [NÃšMERO] folhas escritas de um só lado, todas rubricadas e a última datada e assinada.</textarea>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                             <div><label for="engineerSignature" class="form-label">Upload da Assinatura</label><input
                                     type="file" id="engineerSignature" accept="image/*" class="form-input"></div>
-                            <div><label for="engineerName" class="form-label">Nome do ResponsÃ¡vel TÃ©cnico</label><input
+                            <div><label for="engineerName" class="form-label">Nome do Responsável Técnico</label><input
                                     type="text" id="engineerName" class="form-input" value="Anderson Diniz" required>
                             </div>
                             <div><label for="creaNumber" class="form-label">CREA</label><input type="text"
@@ -405,11 +406,11 @@
             </div>
         </div>
 
-        <!-- Coluna da PrÃ©-visualizaÃ§Ã£o -->
+        <!-- Coluna da Pré-visualização -->
         <div id="reportOutputContainer" class="flex flex-col h-full">
             <div
                 class="no-print bg-gray-800 text-white p-4 flex justify-between items-center sticky top-0 z-50 shadow-lg rounded-t-lg flex-shrink-0">
-                <h3 class="font-bold text-lg">PrÃ©-visualizaÃ§Ã£o ao Vivo</h3>
+                <h3 class="font-bold text-lg">Pré-visualização ao Vivo</h3>
                 <button id="downloadPdfBtn"
                     class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-wait">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -439,24 +440,24 @@
                     <label class="form-label text-sm">Resultado</label>
                     <select class="form-select item-status">
                         <option value="Conforme">Conforme</option>
-                        <option value="NÃ£o Conforme">NÃ£o Conforme</option>
-                        <option value="NÃ£o se aplica">NÃ£o se aplica</option>
+                        <option value="Não Conforme">Não Conforme</option>
+                        <option value="Não se aplica">Não se aplica</option>
                     </select>
                 </div>
             </div>
             <div class="reason-container hidden mt-3">
-                <label class="form-label text-sm text-red-600">ObservaÃ§Ã£o (se nÃ£o conforme):</label>
+                <label class="form-label text-sm text-red-600">Observação (se não conforme):</label>
                 <textarea class="form-textarea item-reason" rows="2"
                     placeholder="Descreva a anomalia encontrada..."></textarea>
             </div>
         </div>
     </template>
 
-    <!-- Template para Anexo FotogrÃ¡fico -->
+    <!-- Template para Anexo Fotográfico -->
     <template id="photoTemplate">
         <div class="photo-item border p-4 rounded-lg">
             <div class="flex justify-between items-center mb-4">
-                <label class="form-label mb-0">DescriÃ§Ã£o da Foto</label>
+                <label class="form-label mb-0">Descrição da Foto</label>
                 <button type="button"
                     class="remove-photo-btn text-red-600 hover:text-red-800 text-sm font-semibold">Remover</button>
             </div>
@@ -464,7 +465,7 @@
             <div class="mt-4"><label class="form-label">Arquivo de Imagem</label><input type="file"
                     class="form-input photo-file" accept="image/*"></div>
             <img class="mt-2 h-40 w-full object-contain rounded-md hidden bg-gray-100 p-1" src=""
-                alt="PrÃ©-visualizaÃ§Ã£o">
+                alt="Pré-visualização">
         </div>
     </template>
 
@@ -485,7 +486,7 @@
             const statusMessage = document.getElementById('statusMessage');
             let debounceTimer;
 
-            // --- FunÃ§Ãµes ---
+            // --- Funções ---
 
             function addVisualItem(data = {}) {
                 const { description = '', status = 'Conforme', reason = '' } = data;
@@ -501,7 +502,7 @@
                 reasonTextarea.value = reason;
 
                 const toggleReasonField = () => {
-                    if (statusSelect.value === 'NÃ£o Conforme') {
+                    if (statusSelect.value === 'Não Conforme') {
                         reasonContainer.classList.remove('hidden');
                     } else {
                         reasonContainer.classList.add('hidden');
@@ -653,7 +654,7 @@
                 const pages = [];
                 let currentPage = 1;
 
-                // --- PÃ¡gina 1: Capa ---
+                // --- Página 1: Capa ---
                 const coverPage = document.createElement('div');
                 coverPage.className = 'report-page-container';
                 coverPage.innerHTML = `
@@ -671,7 +672,7 @@
                 </div>`;
                 pages.push(coverPage);
 
-                // --- PÃ¡gina 2: Textos IntrodutÃ³rios ---
+                // --- Página 2: Textos Introdutórios ---
                 const introPage = document.createElement('div');
                 introPage.className = 'report-page-container';
                 const introTextWithClient = data.introText.replace(/\[CLIENTE\]/g, `<strong>${data.clientName}</strong>`);
@@ -681,16 +682,16 @@
                 <div class="report-page">
                     ${createHeader(data, currentPage++)}
                     <div class="report-content">
-                        <h3 class="report-section-title">1. INTRODUÃ‡ÃƒO</h3>
+                        <h3 class="report-section-title">1. INTRODUÇãO</h3>
                         <p>${introTextWithClient}</p>
                         <h3 class="report-section-title">2. OBJETIVO</h3>
                         <p>${objectiveTextWithClient}</p>
                         <h3 class="report-section-title">3. NORMAS E DOCUMENTOS COMPLEMENTARES</h3>
                         <ul class="list-disc list-inside space-y-1 text-sm">
-                            <li>NBR 5410 - InstalaÃ§Ãµes elÃ©tricas de baixa tensÃ£o.</li>
-                            <li>NBR 5419 - ProteÃ§Ã£o de estruturas contra descargas atmosfÃ©ricas.</li>
-                            <li>NBR 14039 - InstalaÃ§Ãµes elÃ©tricas de mÃ©dia tensÃ£o de 1,0 kV a 36,2 kV.</li>
-                            <li>NR 10 - InstalaÃ§Ãµes e ServiÃ§os em Eletricidade.</li>
+                            <li>NBR 5410 - Instalações elétricas de baixa tensão.</li>
+                            <li>NBR 5419 - Proteção de estruturas contra descargas atmosféricas.</li>
+                            <li>NBR 14039 - Instalações elétricas de média tensão de 1,0 kV a 36,2 kV.</li>
+                            <li>NR 10 - Instalações e Serviços em Eletricidade.</li>
                         </ul>
                         <h3 class="report-section-title">4. METODOLOGIA</h3>
                         <p>${data.methodologyText}</p>
@@ -699,7 +700,7 @@
                 </div>`;
                 pages.push(introPage);
 
-                // --- PÃ¡gina 3: Itens Inspecionados ---
+                // --- Página 3: Itens Inspecionados ---
                 const visualResultsPage = document.createElement('div');
                 visualResultsPage.className = 'report-page-container';
                 visualResultsPage.innerHTML = `
@@ -719,7 +720,7 @@
                                     <tr>
                                         <td>
                                             ${item.description}
-                                            ${item.status === 'NÃ£o Conforme' && item.reason ? `<br><small style="color: #c53030; font-style: italic;"><strong>Obs:</strong> ${item.reason}</small>` : ''}
+                                            ${item.status === 'Não Conforme' && item.reason ? `<br><small style="color: #c53030; font-style: italic;"><strong>Obs:</strong> ${item.reason}</small>` : ''}
                                         </td>
                                         <td>${item.status}</td>
                                     </tr>
@@ -731,7 +732,7 @@
                 </div>`;
                 pages.push(visualResultsPage);
 
-                // --- PÃ¡ginas de Anexos FotogrÃ¡ficos ---
+                // --- Páginas de Anexos Fotográficos ---
                 const photos = data.photos.filter(p => p.src);
                 for (let i = 0; i < photos.length; i += 4) {
                     const photoChunk = photos.slice(i, i + 4);
@@ -761,7 +762,7 @@
                     pages.push(photoPage);
                 }
 
-                // --- PÃ¡ginas da ART ---
+                // --- Páginas da ART ---
                 if (data.artUrls && data.artUrls.length > 0) {
                     data.artUrls.forEach((url, index) => {
                         const artPage = document.createElement('div');
@@ -779,7 +780,7 @@
                     });
                 }
 
-                // --- PÃ¡gina Final: ConclusÃ£o ---
+                // --- Página Final: Conclusão ---
                 const conclusionPage = document.createElement('div');
                 conclusionPage.className = 'report-page-container';
                 const finalClosingRemarks = data.closingRemarks.replace('[NÃšMERO]', currentPage);
@@ -787,14 +788,14 @@
                 <div class="report-page">
                     ${createHeader(data, currentPage)}
                     <div class="report-content">
-                        <h3 class="report-section-title">CONCLUSÃƒO</h3>
+                        <h3 class="report-section-title">CONCLUSãO</h3>
                         <p>${data.finalConclusion}</p>
                         <p class="mt-4 text-sm">${finalClosingRemarks}</p>
                         <div class="mt-auto pt-12 text-center">
                             <div class="inline-flex flex-col items-center">
                                 <img src="${data.engineerSignatureUrl || 'https://placehold.co/200x80/f0f0f0/CCCCCC?text=Assinatura'}" alt="Assinatura" class="h-24 mx-auto mb-2 object-contain">
                                 <p class="border-t border-slate-400 pt-2 mt-2 px-12">${data.engineerName}</p>
-                                <p class="text-sm">ResponsÃ¡vel TÃ©cnico</p>
+                                <p class="text-sm">Responsável Técnico</p>
                                 <p class="text-sm font-bold">CREA: ${data.creaNumber}</p>
                             </div>
                             <p class="text-center mt-8 text-sm">${data.signatureCity}, ${new Date(data.signatureDate + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}.</p>
@@ -822,10 +823,10 @@
                                 <td class="p-1 border-t-2 border-gray-800" colspan="2"><strong>CLIENTE:</strong> ${data.clientName}</td>
                             </tr>
                             <tr>
-                                <td class="p-1 border-t-2 border-gray-800" colspan="2"><strong>ENDEREÃ‡O:</strong> ${data.clientAddress}</td>
+                                <td class="p-1 border-t-2 border-gray-800" colspan="2"><strong>ENDEREÇO:</strong> ${data.clientAddress}</td>
                             </tr>
                             <tr>
-                                <td class="p-1 border-t-2 border-gray-800"><strong>NÂº RELATÃ“RIO:</strong> ${data.reportNumber}</td>
+                                <td class="p-1 border-t-2 border-gray-800"><strong>NÂº RELATÓRIO:</strong> ${data.reportNumber}</td>
                                 <td class="p-1 border-t-2 border-l-2 border-gray-800"><strong>DATA:</strong> ${new Date(data.reportDate + 'T00:00:00').toLocaleDateString('pt-BR')} | <strong>PÃGINA:</strong> ${pageNumber}</td>
                             </tr>
                         </tbody>
@@ -880,8 +881,8 @@
                         const imgData = canvas.toDataURL('image/jpeg', 0.85);
                         pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
                     } catch (error) {
-                        console.error(`Erro ao renderizar a pÃ¡gina ${i + 1}:`, error);
-                        alert(`Ocorreu um erro ao gerar o PDF na pÃ¡gina ${i + 1}. Verifique o console para mais detalhes.`);
+                        console.error(`Erro ao renderizar a página ${i + 1}:`, error);
+                        alert(`Ocorreu um erro ao gerar o PDF na página ${i + 1}. Verifique o console para mais detalhes.`);
                         downloadPdfBtn.disabled = false;
                         downloadBtnText.textContent = originalText;
                         return;
@@ -960,7 +961,7 @@
                         populateForm(data);
                     } catch (error) {
                         console.error("Erro ao ler o arquivo JSON:", error);
-                        showStatus('Arquivo invÃ¡lido. Selecione um arquivo JSON gerado por esta aplicaÃ§Ã£o.', false);
+                        showStatus('Arquivo inválido. Selecione um arquivo JSON gerado por esta aplicação.', false);
                     }
                 };
                 reader.readAsText(file);
@@ -968,7 +969,7 @@
             }
 
             function addInitialItems() {
-                const initialItems = ["Limpeza geral do painel", "Reaperto de conexÃµes", "VerificaÃ§Ã£o de componentes", "IdentificaÃ§Ã£o de circuitos"];
+                const initialItems = ["Limpeza geral do painel", "Reaperto de conexões", "Verificação de componentes", "Identificação de circuitos"];
                 initialItems.forEach(item => addVisualItem({ description: item }));
                 addPhoto();
                 document.getElementById('reportDate').valueAsDate = new Date();
@@ -976,7 +977,7 @@
             }
 
             function clearForm(confirmFirst = true) {
-                if (confirmFirst && !confirm('Tem certeza que deseja limpar todo o formulÃ¡rio?')) {
+                if (confirmFirst && !confirm('Tem certeza que deseja limpar todo o formulário?')) {
                     return;
                 }
                 reportForm.reset();
@@ -990,11 +991,11 @@
 
                 updateAndRender();
                 if (confirmFirst) {
-                    showStatus('FormulÃ¡rio limpo.', true);
+                    showStatus('Formulário limpo.', true);
                 }
             }
 
-            // --- InicializaÃ§Ã£o do script ---
+            // --- Inicialização do script ---
             addInitialItems();
             updateAndRender();
 
@@ -1030,7 +1031,7 @@
                 document.getElementById('clearFormBtnNew').addEventListener('click', () => clearForm(true));
             }
 
-            // --- SincronizaÃ§Ã£o de Rolagem ---
+            // --- Sincronização de Rolagem ---
             const formScroller = document.getElementById('formContainer');
             const previewScroller = document.getElementById('reportOutput');
 

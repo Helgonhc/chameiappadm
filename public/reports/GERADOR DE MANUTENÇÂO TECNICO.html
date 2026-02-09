@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de RelatÃ³rio de ManutenÃ§Ã£o</title>
+    <title>Gerador de Relatório de Manutenção</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Bibliotecas para geraÃ§Ã£o de PDF -->
+    <!-- Bibliotecas para geração de PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
@@ -75,7 +75,7 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
         }
 
-        /* --- Estilos do RelatÃ³rio Gerado (Usado na Nova Aba e PDF) --- */
+        /* --- Estilos do Relatório Gerado (Usado na Nova Aba e PDF) --- */
         .report-page-container {
             width: 100%;
             max-width: var(--a4-width);
@@ -244,14 +244,14 @@
             cursor: not-allowed;
         }
 
-        /* Estilos para o container de renderizaÃ§Ã£o de PDF (agora oculto) */
+        /* Estilos para o container de renderização de PDF (agora oculto) */
         .pdf-render-mode-container {
             position: absolute;
             left: -9999px;
             /* Joga para fora da tela */
             top: 0;
             background-color: var(--light-gray);
-            /* Fundo para a prÃ©via da nova aba */
+            /* Fundo para a prévia da nova aba */
         }
 
         .pdf-render-mode-container .report-page-container {
@@ -357,7 +357,8 @@
                 font-size: 20pt !important;
             }
         }
-    </style>`n    <script>
+    </style>
+    <script>
         // Protecao Anti-Copia ChameiApp
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => {
@@ -378,22 +379,22 @@
 
     <!-- Layout modificado para 1 coluna centralizada -->
     <div class="grid grid-cols-1 gap-8 p-4 md:p-8">
-        <!-- Coluna do FormulÃ¡rio -->
+        <!-- Coluna do Formulário -->
         <div id="formContainer" class="no-print">
             <div class="max-w-2xl mx-auto">
                 <div class="text-center mb-10">
                     <h1 class="text-3xl md:text-4xl font-bold text-gray-800"
-                        style="font-family: 'Montserrat', sans-serif;">Gerador de RelatÃ³rio de ManutenÃ§Ã£o</h1>
+                        style="font-family: 'Montserrat', sans-serif;">Gerador de Relatório de Manutenção</h1>
                     <p class="text-gray-600 mt-2">Preencha os campos para gerar o documento.</p>
                 </div>
 
                 <div class="form-section flex items-center justify-between flex-wrap gap-4">
                     <h2 class="text-lg font-semibold mb-0 border-b-0 pb-0"
-                        style="font-family: 'Montserrat', sans-serif;">AÃ§Ãµes</h2>
+                        style="font-family: 'Montserrat', sans-serif;">Ações</h2>
                     <div class="flex gap-2 flex-wrap">
-                        <!-- BotÃ£o Novo de Preview -->
+                        <!-- Botão Novo de Preview -->
                         <button type="button" id="previewBtn"
-                            class="bg-cyan-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-cyan-700 transition-colors">PrÃ©-visualizar
+                            class="bg-cyan-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-cyan-700 transition-colors">Pré-visualizar
                             em Nova Aba</button>
                         <button type="button" id="downloadPdfBtn"
                             class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2">
@@ -422,7 +423,7 @@
                         <input type="file" id="importFileInput" class="hidden" accept=".json">
                         <button type="button" id="clearFormBtn"
                             class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors">Limpar
-                            FormulÃ¡rio</button>
+                            Formulário</button>
                     </div>
                 </div>
                 <div id="statusMessage" class="text-center mb-4 h-6"></div>
@@ -437,50 +438,50 @@
                                     type="text" id="clientName" class="form-input" placeholder="Nome do cliente"
                                     required></div>
                             <div class="md:col-span-2"><label for="clientAddress"
-                                    class="form-label">EndereÃ§o</label><input type="text" id="clientAddress"
-                                    class="form-input" placeholder="EndereÃ§o completo" required></div>
+                                    class="form-label">Endereço</label><input type="text" id="clientAddress"
+                                    class="form-input" placeholder="Endereço completo" required></div>
                             <div class="md:col-span-2"><label for="reportTitle" class="form-label">TÃ­tulo do
-                                    RelatÃ³rio</label><input type="text" id="reportTitle" class="form-input"
-                                    value="RELATÃ“RIO DE MANUTENÃ‡ÃƒO TÃ‰CNICA" required></div>
-                            <div><label for="reportNumber" class="form-label">NÂº do RelatÃ³rio / OS</label><input
+                                    Relatório</label><input type="text" id="reportTitle" class="form-input"
+                                    value="RELATÓRIO DE MANUTENÇãO TÉCNICA" required></div>
+                            <div><label for="reportNumber" class="form-label">NÂº do Relatório / OS</label><input
                                     type="text" id="reportNumber" class="form-input" placeholder="Ex: OS 001/2024"
                                     required></div>
-                            <div><label for="reportDate" class="form-label">Data da ManutenÃ§Ã£o</label><input type="date"
+                            <div><label for="reportDate" class="form-label">Data da Manutenção</label><input type="date"
                                     id="reportDate" class="form-input" required></div>
                             <div class="md:col-span-2"><label for="companyName" class="form-label">Nome da Sua Empresa
-                                    (RodapÃ©)</label><input type="text" id="companyName" class="form-input"
+                                    (Rodapé)</label><input type="text" id="companyName" class="form-input"
                                     value="Sua Empresa LTDA" required></div>
-                            <div class="md:col-span-2"><label for="companyAddress" class="form-label">EndereÃ§o da Sua
-                                    Empresa (RodapÃ©)</label><input type="text" id="companyAddress" class="form-input"
-                                    value="Seu EndereÃ§o Completo, 123 - Bairro - Cidade - UF" required></div>
-                            <div><label for="companyPhone" class="form-label">Telefone (RodapÃ©)</label><input type="tel"
+                            <div class="md:col-span-2"><label for="companyAddress" class="form-label">Endereço da Sua
+                                    Empresa (Rodapé)</label><input type="text" id="companyAddress" class="form-input"
+                                    value="Seu Endereço Completo, 123 - Bairro - Cidade - UF" required></div>
+                            <div><label for="companyPhone" class="form-label">Telefone (Rodapé)</label><input type="tel"
                                     id="companyPhone" class="form-input" value="(XX) 99999-9999" required></div>
-                            <div><label for="companyEmail" class="form-label">E-mail (RodapÃ©)</label><input type="email"
+                            <div><label for="companyEmail" class="form-label">E-mail (Rodapé)</label><input type="email"
                                     id="companyEmail" class="form-input" value="contato@suaempresa.com" required></div>
                         </div>
                     </div>
 
                     <div class="form-section">
-                        <h2>Corpo do RelatÃ³rio</h2>
-                        <div><label for="textObjeto" class="form-label">1. Objetivo / SolicitaÃ§Ã£o</label><textarea
+                        <h2>Corpo do Relatório</h2>
+                        <div><label for="textObjeto" class="form-label">1. Objetivo / Solicitação</label><textarea
                                 id="textObjeto" rows="4"
-                                class="form-textarea">O objetivo deste relatÃ³rio Ã© documentar os serviÃ§os de manutenÃ§Ã£o [preventiva/corretiva] realizados em [descrever o sistema ou equipamento], localizado em [local especÃ­fico], atendendo Ã  solicitaÃ§Ã£o de [Nome do Solicitante].</textarea>
+                                class="form-textarea">O objetivo deste relatório é documentar os serviços de manutenção [preventiva/corretiva] realizados em [descrever o sistema ou equipamento], localizado em [local especÃ­fico], atendendo Ã  solicitação de [Nome do Solicitante].</textarea>
                         </div>
-                        <div class="mt-4"><label for="textAnalise" class="form-label">2. ServiÃ§os
-                                Executados</label><textarea id="textAnalise" rows="10" class="form-textarea">Durante a visita na data de [Data da ManutenÃ§Ã£o], foram executados os seguintes serviÃ§os:
-- VerificaÃ§Ã£o inicial de [item]
-- Limpeza e lubrificaÃ§Ã£o de [componente]
-- SubstituiÃ§Ã£o de [peÃ§a defeituosa]
+                        <div class="mt-4"><label for="textAnalise" class="form-label">2. Serviços
+                                Executados</label><textarea id="textAnalise" rows="10" class="form-textarea">Durante a visita na data de [Data da Manutenção], foram executados os seguintes serviços:
+- Verificação inicial de [item]
+- Limpeza e lubrificação de [componente]
+- Substituição de [peça defeituosa]
 - Testes de funcionamento em [sistema]</textarea></div>
-                        <div class="mt-4"><label for="textDiagnostico" class="form-label">3. DiagnÃ³stico /
-                                ObservaÃ§Ãµes</label><textarea id="textDiagnostico" rows="10"
-                                class="form-textarea">Com base na anÃ¡lise, constatou-se que [descrever as constataÃ§Ãµes, anomalias, pontos de atenÃ§Ã£o, peÃ§as trocadas, etc.]. O equipamento [estÃ¡/nÃ£o estÃ¡] operando em condiÃ§Ãµes normais.</textarea>
+                        <div class="mt-4"><label for="textDiagnostico" class="form-label">3. Diagnóstico /
+                                Observações</label><textarea id="textDiagnostico" rows="10"
+                                class="form-textarea">Com base na análise, constatou-se que [descrever as constatações, anomalias, pontos de atenção, peças trocadas, etc.]. O equipamento [está/não está] operando em condições normais.</textarea>
                         </div>
                     </div>
 
                     <div class="form-section">
                         <div class="flex justify-between items-center">
-                            <h2>4. Registros FotogrÃ¡ficos</h2>
+                            <h2>4. Registros Fotográficos</h2>
                             <button type="button" id="addPhotoBtn"
                                 class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">Adicionar
                                 Foto</button>
@@ -489,16 +490,16 @@
                     </div>
 
                     <div class="form-section">
-                        <h2>ConclusÃ£o e ResponsÃ¡vel</h2>
-                        <div class="mt-6"><label for="finalConclusion" class="form-label">5. ConclusÃ£o /
-                                RecomendaÃ§Ãµes</label><textarea id="finalConclusion" rows="10" class="form-textarea">Diante do exposto, os serviÃ§os de manutenÃ§Ã£o foram concluÃ­dos com sucesso.
-Recomenda-se [listar aÃ§Ãµes futuras, se houver, como prÃ³xima revisÃ£o, troca de peÃ§as, etc.].
-O equipamento foi entregue em [pleno funcionamento / condiÃ§Ãµes de observaÃ§Ã£o].</textarea></div>
+                        <h2>Conclusão e Responsável</h2>
+                        <div class="mt-6"><label for="finalConclusion" class="form-label">5. Conclusão /
+                                Recomendações</label><textarea id="finalConclusion" rows="10" class="form-textarea">Diante do exposto, os serviços de manutenção foram concluÃ­dos com sucesso.
+Recomenda-se [listar ações futuras, se houver, como próxima revisão, troca de peças, etc.].
+O equipamento foi entregue em [pleno funcionamento / condições de observação].</textarea></div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                             <div><label for="engineerSignature" class="form-label">Upload da Assinatura</label><input
                                     type="file" id="engineerSignature" accept="image/*" class="form-input"></div>
-                            <div><label for="engineerName" class="form-label">Nome do TÃ©cnico ResponsÃ¡vel</label><input
-                                    type="text" id="engineerName" class="form-input" value="Nome do TÃ©cnico" required>
+                            <div><label for="engineerName" class="form-label">Nome do Técnico Responsável</label><input
+                                    type="text" id="engineerName" class="form-input" value="Nome do Técnico" required>
                             </div>
                             <div><label for="creaNumber" class="form-label">CPF / Identidade</label><input type="text"
                                     id="creaNumber" class="form-input" value="123.456.789-00" required></div>
@@ -519,23 +520,23 @@ O equipamento foi entregue em [pleno funcionamento / condiÃ§Ãµes de observa�
             </div>
         </div>
 
-        <!-- Coluna da PrÃ©-visualizaÃ§Ã£o foi REMOVIDA -->
+        <!-- Coluna da Pré-visualização foi REMOVIDA -->
     </div>
 
-    <!-- Template para Anexo FotogrÃ¡fico -->
+    <!-- Template para Anexo Fotográfico -->
     <template id="photoTemplate">
         <div class="photo-item border p-4 rounded-lg">
             <div class="flex justify-between items-center mb-4">
-                <label class="form-label mb-0">DescriÃ§Ã£o da Foto</label>
+                <label class="form-label mb-0">Descrição da Foto</label>
                 <button type="button"
                     class="remove-photo-btn text-red-600 hover:text-red-800 text-sm font-semibold">Remover</button>
             </div>
             <textarea class="form-textarea photo-description" rows="3"
-                placeholder="Digite a descriÃ§Ã£o da foto..."></textarea>
+                placeholder="Digite a descrição da foto..."></textarea>
             <div class="mt-4"><label class="form-label">Arquivo de Imagem</label><input type="file"
                     class="form-input photo-file" accept="image/*"></div>
             <img class="mt-2 h-40 w-full object-contain rounded-md hidden bg-gray-100 p-1" src=""
-                alt="PrÃ©-visualizaÃ§Ã£o">
+                alt="Pré-visualização">
         </div>
     </template>
 
@@ -544,15 +545,15 @@ O equipamento foi entregue em [pleno funcionamento / condiÃ§Ãµes de observa�
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // --- CONFIGURAÃ‡ÃƒO INICIAL ---
+            // --- CONFIGURAÇãO INICIAL ---
             const { jsPDF } = window.jspdf;
             pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js`;
             let isGeneratingPDF = false;
-            // let previewTab = null; // Removido para usar a nova lÃ³gica
+            // let previewTab = null; // Removido para usar a nova lógica
 
             document.getElementById('pdf-loader').style.display = 'none';
 
-            // --- FUNÃ‡Ã•ES DE DADOS E ARQUIVOS ---
+            // --- FUNÇÃ•ES DE DADOS E ARQUIVOS ---
             function fileToDataURL(file) {
                 return new Promise((resolve, reject) => {
                     if (!file) { resolve(null); return; }
@@ -582,7 +583,7 @@ O equipamento foi entregue em [pleno funcionamento / condiÃ§Ãµes de observa�
                     return pageDataUrls;
                 } catch (error) {
                     console.error("Erro ao processar PDF:", error);
-                    showStatus("NÃ£o foi possÃ­vel processar o arquivo PDF.", false);
+                    showStatus("Não foi possÃ­vel processar o arquivo PDF.", false);
                     return [];
                 }
             }
@@ -629,13 +630,14 @@ O equipamento foi entregue em [pleno funcionamento / condiÃ§Ãµes de observa�
                 return data;
             }
 
-            // --- FUNÃ‡ÃƒO DE PRÃ‰-VISUALIZAÃ‡ÃƒO (NOVA ABA) ---
+            // --- FUNÇãO DE PRÉ-VISUALIZAÇãO (NOVA ABA) ---
             async function previewInNewTab() {
                 const data = await getFormData();
                 const allPages = createReportPages(data);
 
                 const headHTML = document.head.outerHTML;
-                let htmlContent = `<html lang="pt-BR"><head>${headHTML}`n    <script>
+                let htmlContent = `<html lang="pt-BR"><head>${headHTML}
+    <script>
         // Protecao Anti-Copia ChameiApp
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => {
@@ -645,420 +647,452 @@ O equipamento foi entregue em [pleno funcionamento / condiÃ§Ãµes de observa�
             }
         });
     </script>
-</head><body class="preview-tab-body">`;
-                allPages.forEach(pageWrapper => {
-                    htmlContent += pageWrapper.outerHTML;
-                });
-                htmlContent += `</body></html>`;
+    </head>
 
-                // Transforma o HTML em um Blob URL para abrir
-                const blob = new Blob([htmlContent], { type: 'text/html' });
-                const url = URL.createObjectURL(blob);
-
-                // Abre (ou reutiliza) a aba com o nome 'reportPreview'
-                const newTab = window.open(url, 'reportPreview');
-
-                // Foca na aba
-                if (newTab) {
-                    newTab.focus();
-                }
-                // Revoga a URL antiga apÃ³s um tempo (o navegador jÃ¡ deve ter lido)
-                setTimeout(() => URL.revokeObjectURL(url), 100);
-            }
-
-            // --- RENDERIZAÃ‡ÃƒO (AGORA SÃ“ PARA GERAR OS ELEMENTOS) ---
-            function createReportPages(data) {
-                const pages = [];
-                let pageCounter = 0;
-
-                const createPageWrapper = () => {
-                    const wrapper = document.createElement('div');
-                    wrapper.className = 'report-page-container';
-                    const page = document.createElement('div');
-                    page.className = 'report-page';
-                    wrapper.appendChild(page);
-                    return wrapper;
-                };
-
-                const createHeader = (pageNum, totalPages) => {
-                    const header = document.createElement('header');
-                    header.className = 'report-header text-[9pt]'; // Aumentado de 8pt
-                    header.innerHTML = `<table class="w-full" style="border-collapse: collapse; border: 2px solid #333;">
-                        <tbody>
-                            <tr>
-                                <td class="w-1/4 p-2 align-middle text-center" rowspan="4" style="border-right: 2px solid #333;"><img src="${data.companyLogoUrl}" class="max-h-36 object-contain inline-block"></td>
-                                <td class="p-1 text-center font-bold" colspan="2" style="font-family: 'Montserrat', sans-serif;">${data.reportTitle}</td>
-                            </tr>
-                            <tr><td class="p-1" colspan="2" style="border-top: 2px solid #333;"><strong>SOLICITANTE:</strong> ${data.clientName}</td></tr>
-                            <tr><td class="p-1" colspan="2" style="border-top: 2px solid #333;"><strong>ENDEREÃ‡O:</strong> ${data.clientAddress}</td></tr>
-                            <tr>
-                                <td class="p-1" style="border-top: 2px solid #333;"><strong>NÂº RELATÃ“RIO:</strong> ${data.reportNumber}</td>
-                                <td class="p-1" style="border-top: 2px solid #333; border-left: 2px solid #333;"><strong>PÃGINA:</strong> ${pageNum} de ${totalPages}</td>
-                            </tr>
-                        </tbody>
-                    </table>`;
-                    return header;
-                };
-
-                const createFooter = () => {
-                    const footer = document.createElement('footer');
-                    footer.className = 'report-footer text-[8.5pt] text-gray-600'; // Aumentado de 7.5pt
-                    footer.innerHTML = `<div class="w-full h-px bg-gray-300 mb-2"></div>
-                    <div class="flex justify-between items-start">
-                        <div class="w-2/3 pr-4"><p class="font-bold text-gray-800 text-[9.5pt]">${data.companyName}</p><p class="mt-1">${data.companyAddress}</p></div>
-                        <div class="w-1/3 text-right"><p>${data.companyPhone}</p><p class="mt-1">${data.companyEmail}</p></div>
-                    </div>`;
-                    return footer;
-                };
-
-                // PÃ¡gina 1: Capa
-                const coverPageWrapper = createPageWrapper();
-                coverPageWrapper.firstElementChild.innerHTML = `
-                <div style="display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center; height: 100%; padding: 15mm;">
-                    <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                        <img src="${data.companyLogoUrl}" alt="Logo" style="max-height: 280px; margin-bottom: 30px;">
-                        <h1 style="font-family: 'Montserrat', sans-serif; font-size: 22pt; font-weight: 800; line-height: 1.2; color: var(--dark-gray);">${data.reportTitle}</h1>
-                    </div>
-                    <div style="flex-shrink: 0; width: 100%;">
-                        <p style="font-size: 13pt; font-weight: bold; margin: 0;">${data.clientName || ''}</p>
-                        <p style="font-size: 10pt; margin-top: 5px;">${data.clientAddress}</p>
-                        <p style="font-size: 10pt; margin-top: 20px;">${data.signatureCity}, ${new Date(data.reportDate + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
-                    </div>
-                </div>`;
-                pages.push(coverPageWrapper);
-
-                // ConteÃºdo principal
-                const contentParts = [
-                    `<h3 class="report-section-title">1. OBJETIVO / SOLICITAÃ‡ÃƒO</h3><p>${data.textObjeto.replace(/\n/g, '</p><p>')}</p>`,
-                    `<h3 class="report-section-title">2. SERVIÃ‡OS EXECUTADOS</h3><p>${data.textAnalise.replace(/\n/g, '</p><p>')}</p>`,
-                    `<h3 class="report-section-title">3. DIAGNÃ“STICO / OBSERVAÃ‡Ã•ES</h3><p>${data.textDiagnostico.replace(/\n/g, '</p><p>')}</p>`,
-                ];
-
-                let currentPageWrapper = createPageWrapper();
-                let contentDiv = document.createElement('div');
-                contentDiv.className = 'report-content';
-                currentPageWrapper.firstElementChild.appendChild(contentDiv);
-
-                const tempDiv = document.createElement('div');
-                tempDiv.style.visibility = 'hidden';
-                tempDiv.style.position = 'absolute';
-                tempDiv.style.width = '186mm'; // 210mm - 2*12mm
-                document.body.appendChild(tempDiv);
-
-                const MAX_CONTENT_HEIGHT_PX = (297 - 55 - 30 - 24) * 3.78;
-
-                contentParts.forEach(partHTML => {
-                    tempDiv.innerHTML = contentDiv.innerHTML + partHTML;
-                    if (tempDiv.offsetHeight > MAX_CONTENT_HEIGHT_PX) {
-                        pages.push(currentPageWrapper);
-                        currentPageWrapper = createPageWrapper();
-                        contentDiv = document.createElement('div');
-                        contentDiv.className = 'report-content';
-                        contentDiv.innerHTML = partHTML;
-                        currentPageWrapper.firstElementChild.appendChild(contentDiv);
-                    } else {
-                        contentDiv.innerHTML += partHTML;
-                    }
-                });
-                pages.push(currentPageWrapper);
-                document.body.removeChild(tempDiv);
-
-                // PÃ¡ginas de Fotos
-                if (data.photos.length > 0) {
-                    for (let i = 0; i < data.photos.length; i += 4) {
-                        const photoChunk = data.photos.slice(i, i + 4);
-                        const photoPageWrapper = createPageWrapper();
-                        photoPageWrapper.firstElementChild.innerHTML = `<div class="report-content"><h3 class="report-section-title">4. REGISTROS FOTOGRÃFICOS</h3>
-                        <div class="grid grid-cols-2 gap-4 mt-4">
-                            ${photoChunk.map(p => `
-                                <div class="border p-1 rounded-md shadow-sm flex flex-col">
-                                    <img src="${p.src}" class="w-full h-40 rounded-sm bg-gray-100" style="object-fit: contain;">
-                                    <p class="text-center text-sm italic mt-1 p-1">${p.description || ''}</p> 
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>`;
-                        // Aumentado de text-xs para text-sm ^
-                        pages.push(photoPageWrapper);
-                    }
-                }
-
-                // PÃ¡gina de ConclusÃ£o
-                const conclusionPageWrapper = createPageWrapper();
-                conclusionPageWrapper.firstElementChild.innerHTML = `<div class="report-content flex flex-col">
-                    <h3 class="report-section-title">5. CONCLUSÃƒO / RECOMENDAÃ‡Ã•ES</h3>
-                    <p>${data.finalConclusion.replace(/\n/g, '</p><p>')}</p>
-                    <div class="signature-container">
-                        <div class="inline-flex flex-col items-center">
-                            <img src="${data.engineerSignatureUrl}" alt="Assinatura" class="signature-image">
-                            <div class="signature-line"></div>
-                            <p class="mt-2">${data.engineerName}</p>
-                            <p class="text-sm">TÃ©cnico de ManutenÃ§Ã£o</p>
-                            <p class="text-sm font-bold">Doc: ${data.creaNumber}</p>
-                        </div>
-                        <p class="text-center mt-8 text-sm">${data.signatureCity}, ${new Date(data.signatureDate + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}.</p>
-                    </div>
-                </div>`;
-                pages.push(conclusionPageWrapper);
-
-                // PÃ¡ginas de Anexos (ART, etc.)
-                if (data.artUrls && data.artUrls.length > 0) {
-                    data.artUrls.forEach(url => {
-                        const artPageWrapper = createPageWrapper();
-                        artPageWrapper.firstElementChild.innerHTML = `<div class="report-content flex flex-col items-center justify-center">
-                        <h3 class="report-section-title w-full">ANEXO ADICIONAL</h3>
-                        <img src="${url}" alt="Anexo" class="max-w-full max-h-[240mm] object-contain">
-                    </div>`;
-                        pages.push(artPageWrapper);
-                    });
-                }
-
-                // Adiciona cabeÃ§alhos e rodapÃ©s
-                const totalPages = pages.length;
-                pages.forEach((wrapper, index) => {
-                    if (index > 0) { // NÃ£o adiciona em capa
-                        const page = wrapper.firstElementChild;
-                        page.insertBefore(createHeader(index + 1, totalPages), page.firstChild);
-                        page.appendChild(createFooter());
-                    }
-                });
-
-                return pages;
-            }
-
-            // --- GERAÃ‡ÃƒO DE PDF (MODIFICADO) ---
-            async function downloadPDF() {
-                const downloadBtn = document.getElementById('downloadPdfBtn');
-                const downloadBtnText = downloadBtn.querySelector('span');
-                if (isGeneratingPDF) return;
-
-                isGeneratingPDF = true;
-                const originalText = downloadBtnText.textContent;
-                downloadBtn.disabled = true;
-                downloadBtnText.textContent = 'Processando...';
-
-                const loader = document.getElementById('pdf-loader');
-                const loaderMessage = document.getElementById('loader-message');
-                loaderMessage.textContent = 'Preparando renderizaÃ§Ã£o...';
-                loader.style.display = 'flex';
-
-                // ETAPA 1: Gerar os dados e os elementos da pÃ¡gina
-                const data = await getFormData();
-                const allPages = createReportPages(data);
-                const renderTarget = document.getElementById('pdf-render-target');
-                renderTarget.innerHTML = ''; // Limpa o alvo
-                allPages.forEach(pageElement => renderTarget.appendChild(pageElement));
-
-                // Pequeno delay para garantir que o DOM foi atualizado
-                await new Promise(resolve => setTimeout(resolve, 300));
-
-                // ETAPA 2: Selecionar os elementos recÃ©m-criados no alvo oculto
-                const originalPageContainers = renderTarget.querySelectorAll('.report-page-container');
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                const pdfWidth = 210;
-                const pdfHeight = 297;
-
-                try {
-                    // A classe 'pdf-render-mode-container' jÃ¡ aplica os estilos corretos
-
-                    for (let i = 0; i < originalPageContainers.length; i++) {
-                        loaderMessage.textContent = `Processando pÃ¡gina ${i + 1} de ${originalPageContainers.length}...`;
-                        const pageContainer = originalPageContainers[i];
-
-                        await new Promise(resolve => setTimeout(resolve, 50));
-
-                        const canvas = await html2canvas(pageContainer, {
-                            scale: 3,
-                            useCORS: true,
-                            logging: false
-                        });
-
-                        if (i > 0) pdf.addPage();
-
-                        const imgData = canvas.toDataURL('image/jpeg', 0.92);
-                        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
-                    }
-                    const reportNumber = document.getElementById('reportNumber').value.replace(/[\/\\]/g, '-') || 'relatorio-manutencao';
-                    pdf.save(`${reportNumber}.pdf`);
-                    showStatus('PDF gerado com sucesso!');
-
-                } catch (error) {
-                    console.error("Erro ao gerar PDF:", error);
-                    showStatus('Ocorreu um erro ao gerar o PDF.', false);
-                } finally {
-                    // ETAPA 3: Limpar o alvo de renderizaÃ§Ã£o
-                    renderTarget.innerHTML = '';
-
-                    isGeneratingPDF = false;
-                    downloadBtn.disabled = false;
-                    downloadBtnText.textContent = originalText;
-                    loader.style.display = 'none';
-                }
-            }
-
-            // --- MANIPULAÃ‡ÃƒO DO FORMULÃRIO E UI ---
-            function showStatus(message, isSuccess = true) {
-                const statusEl = document.getElementById('statusMessage');
-                statusEl.textContent = message;
-                statusEl.className = `text-center mb-4 h-6 ${isSuccess ? 'text-green-600' : 'text-red-600'}`;
-                setTimeout(() => { statusEl.textContent = ''; }, 4000);
-            }
-
-            function addPhoto(data = {}) {
-                const template = document.getElementById('photoTemplate').content.cloneNode(true);
-                const photoItem = template.querySelector('.photo-item');
-                const fileInput = photoItem.querySelector('.photo-file');
-                const imgPreview = photoItem.querySelector('img');
-                const descriptionInput = photoItem.querySelector('.photo-description');
-
-                if (data.src) {
-                    imgPreview.src = data.src;
-                    imgPreview.dataset.src = data.src;
-                    imgPreview.classList.remove('hidden');
-                }
-                if (data.description) descriptionInput.value = data.description;
-
-                fileInput.addEventListener('change', async (e) => {
-                    if (e.target.files[0]) {
-                        const dataUrl = await fileToDataURL(e.target.files[0]);
-                        imgPreview.src = dataUrl;
-                        imgPreview.dataset.src = dataUrl;
-                        imgPreview.classList.remove('hidden');
-                        // updateAndRender(); // Removido
-                    }
-                });
-                photoItem.querySelector('.remove-photo-btn').addEventListener('click', () => {
-                    photoItem.remove();
-                    // updateAndRender(); // Removido
-                });
-                // Listener de input da descriÃ§Ã£o removido - nÃ£o Ã© mais necessÃ¡rio atualizar ao vivo
-                document.getElementById('photosContainer').appendChild(photoItem);
-            }
-
-            function showCustomConfirm(message, callback) {
-                const oldModal = document.getElementById('customConfirmModal');
-                if (oldModal) oldModal.remove();
-
-                const modal = document.createElement('div');
-                modal.id = 'customConfirmModal';
-                modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4';
-                modal.innerHTML = `
-                <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
-                    <p class="text-lg text-gray-800 mb-4">${message}</p>
-                    <div class="flex justify-end gap-4">
-                        <button id="confirmCancel" class="py-2 px-4 rounded-lg bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold">Cancelar</button>
-                        <button id="confirmOk" class="py-2 px-4 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold">Confirmar</button>
-                    </div>
-                </div>
-            `;
-                document.body.appendChild(modal);
-
-                document.getElementById('confirmOk').onclick = () => {
-                    callback(true);
-                    modal.remove();
-                };
-                document.getElementById('confirmCancel').onclick = () => {
-                    callback(false);
-                    modal.remove();
-                };
-            }
-
-            function clearForm(confirmFirst = true) {
-                if (confirmFirst) {
-                    showCustomConfirm('Tem certeza? Todos os dados nÃ£o salvos serÃ£o perdidos.', (confirmed) => {
-                        if (confirmed) {
-                            performClear();
-                        }
-                    });
-                } else {
-                    performClear();
-                }
-            }
-
-            function performClear() {
-                document.getElementById('reportForm').reset();
-                document.getElementById('photosContainer').innerHTML = '';
-                document.querySelectorAll('input[type="file"]').forEach(input => {
-                    input.value = '';
-                    delete input.dataset.src;
-                    delete input.dataset.artUrls;
-                });
-                addInitialItems();
-                showStatus('FormulÃ¡rio limpo.');
-            }
-
-            function addInitialItems() {
-                addPhoto();
-                const today = new Date().toISOString().split('T')[0];
-                document.getElementById('reportDate').value = today;
-                document.getElementById('signatureDate').value = today;
-                // setTimeout(updateAndRender, 50); // Removido
-            }
-
-            async function saveDataToFile() {
-                try {
-                    const data = await getFormData(true);
-                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `relatorio-${data.reportNumber.replace(/[\/\\]/g, '-') || 'backup'}.json`;
-                    a.click();
-                    URL.revokeObjectURL(url);
-                    showStatus('Dados salvos com sucesso!');
-                } catch (e) { showStatus('Erro ao salvar os dados.', false); console.error(e); }
-            }
-
-            function handleFileImport(event) {
-                const file = event.target.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    try {
-                        const data = JSON.parse(e.target.result);
-                        populateForm(data);
-                    } catch { showStatus('Arquivo JSON invÃ¡lido.', false); }
-                };
-                reader.readAsText(file);
-                event.target.value = '';
-            }
-
-            function populateForm(data) {
-                clearForm(false);
-                Object.keys(data).forEach(key => {
-                    const el = document.getElementById(key);
-                    if (el && typeof data[key] === 'string' && !el.type.startsWith('file')) {
-                        el.value = data[key];
-                    }
-                });
-
-                document.getElementById('companyLogo').dataset.src = data.companyLogoUrl || '';
-                document.getElementById('engineerSignature').dataset.src = data.engineerSignatureUrl || '';
-                document.getElementById('artPdf').dataset.artUrls = JSON.stringify(data.artUrls || []);
-
-                document.getElementById('photosContainer').innerHTML = '';
-                if (data.photos && data.photos.length > 0) {
-                    data.photos.forEach(p => addPhoto(p));
-                } else {
-                    addPhoto();
-                }
-                // updateAndRender(); // Removido
-                showStatus('Dados importados com sucesso!');
-            }
-
-            // --- EVENT LISTENERS (COM CORREÃ‡ÃƒO '?.') ---
-            document.getElementById('addPhotoBtn')?.addEventListener('click', () => addPhoto());
-            document.getElementById('downloadPdfBtn')?.addEventListener('click', downloadPDF);
-            document.getElementById('previewBtn')?.addEventListener('click', previewInNewTab); // Novo listener
-            document.getElementById('saveFileBtn')?.addEventListener('click', saveDataToFile);
-            document.getElementById('importFileBtn')?.addEventListener('click', () => document.getElementById('importFileInput').click());
-            document.getElementById('importFileInput')?.addEventListener('change', handleFileImport);
-            document.getElementById('clearFormBtn')?.addEventListener('click', () => clearForm(true));
-
-            addInitialItems();
+    <body class="preview-tab-body">`;
+        allPages.forEach(pageWrapper => {
+        htmlContent += pageWrapper.outerHTML;
         });
-    </script>
-</body>
+        htmlContent += `</body>
 
-</html>
+</html>`;
 
+// Transforma o HTML em um Blob URL para abrir
+const blob = new Blob([htmlContent], { type: 'text/html' });
+const url = URL.createObjectURL(blob);
+
+// Abre (ou reutiliza) a aba com o nome 'reportPreview'
+const newTab = window.open(url, 'reportPreview');
+
+// Foca na aba
+if (newTab) {
+newTab.focus();
+}
+// Revoga a URL antiga após um tempo (o navegador já deve ter lido)
+setTimeout(() => URL.revokeObjectURL(url), 100);
+}
+
+// --- RENDERIZAÇãO (AGORA SÓ PARA GERAR OS ELEMENTOS) ---
+function createReportPages(data) {
+const pages = [];
+let pageCounter = 0;
+
+const createPageWrapper = () => {
+const wrapper = document.createElement('div');
+wrapper.className = 'report-page-container';
+const page = document.createElement('div');
+page.className = 'report-page';
+wrapper.appendChild(page);
+return wrapper;
+};
+
+const createHeader = (pageNum, totalPages) => {
+const header = document.createElement('header');
+header.className = 'report-header text-[9pt]'; // Aumentado de 8pt
+header.innerHTML = `<table class="w-full" style="border-collapse: collapse; border: 2px solid #333;">
+    <tbody>
+        <tr>
+            <td class="w-1/4 p-2 align-middle text-center" rowspan="4" style="border-right: 2px solid #333;"><img
+                    src="${data.companyLogoUrl}" class="max-h-36 object-contain inline-block"></td>
+            <td class="p-1 text-center font-bold" colspan="2" style="font-family: 'Montserrat', sans-serif;">
+                ${data.reportTitle}</td>
+        </tr>
+        <tr>
+            <td class="p-1" colspan="2" style="border-top: 2px solid #333;"><strong>SOLICITANTE:</strong>
+                ${data.clientName}</td>
+        </tr>
+        <tr>
+            <td class="p-1" colspan="2" style="border-top: 2px solid #333;"><strong>ENDEREÇO:</strong>
+                ${data.clientAddress}</td>
+        </tr>
+        <tr>
+            <td class="p-1" style="border-top: 2px solid #333;"><strong>NÂº RELATÓRIO:</strong> ${data.reportNumber}
+            </td>
+            <td class="p-1" style="border-top: 2px solid #333; border-left: 2px solid #333;"><strong>PÃGINA:</strong>
+                ${pageNum} de ${totalPages}</td>
+        </tr>
+    </tbody>
+</table>`;
+return header;
+};
+
+const createFooter = () => {
+const footer = document.createElement('footer');
+footer.className = 'report-footer text-[8.5pt] text-gray-600'; // Aumentado de 7.5pt
+footer.innerHTML = `<div class="w-full h-px bg-gray-300 mb-2"></div>
+<div class="flex justify-between items-start">
+    <div class="w-2/3 pr-4">
+        <p class="font-bold text-gray-800 text-[9.5pt]">${data.companyName}</p>
+        <p class="mt-1">${data.companyAddress}</p>
+    </div>
+    <div class="w-1/3 text-right">
+        <p>${data.companyPhone}</p>
+        <p class="mt-1">${data.companyEmail}</p>
+    </div>
+</div>`;
+return footer;
+};
+
+// Página 1: Capa
+const coverPageWrapper = createPageWrapper();
+coverPageWrapper.firstElementChild.innerHTML = `
+<div
+    style="display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center; height: 100%; padding: 15mm;">
+    <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <img src="${data.companyLogoUrl}" alt="Logo" style="max-height: 280px; margin-bottom: 30px;">
+        <h1
+            style="font-family: 'Montserrat', sans-serif; font-size: 22pt; font-weight: 800; line-height: 1.2; color: var(--dark-gray);">
+            ${data.reportTitle}</h1>
+    </div>
+    <div style="flex-shrink: 0; width: 100%;">
+        <p style="font-size: 13pt; font-weight: bold; margin: 0;">${data.clientName || ''}</p>
+        <p style="font-size: 10pt; margin-top: 5px;">${data.clientAddress}</p>
+        <p style="font-size: 10pt; margin-top: 20px;">${data.signatureCity}, ${new Date(data.reportDate +
+            'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+    </div>
+</div>`;
+pages.push(coverPageWrapper);
+
+// Conteúdo principal
+const contentParts = [
+`<h3 class="report-section-title">1. OBJETIVO / SOLICITAÇãO</h3>
+<p>${data.textObjeto.replace(/\n/g, '</p>
+<p>')}</p>`,
+`<h3 class="report-section-title">2. SERVIÇOS EXECUTADOS</h3>
+<p>${data.textAnalise.replace(/\n/g, '</p>
+<p>')}</p>`,
+`<h3 class="report-section-title">3. DIAGNÓSTICO / OBSERVAÇÃ•ES</h3>
+<p>${data.textDiagnostico.replace(/\n/g, '</p>
+<p>')}</p>`,
+];
+
+let currentPageWrapper = createPageWrapper();
+let contentDiv = document.createElement('div');
+contentDiv.className = 'report-content';
+currentPageWrapper.firstElementChild.appendChild(contentDiv);
+
+const tempDiv = document.createElement('div');
+tempDiv.style.visibility = 'hidden';
+tempDiv.style.position = 'absolute';
+tempDiv.style.width = '186mm'; // 210mm - 2*12mm
+document.body.appendChild(tempDiv);
+
+const MAX_CONTENT_HEIGHT_PX = (297 - 55 - 30 - 24) * 3.78;
+
+contentParts.forEach(partHTML => {
+tempDiv.innerHTML = contentDiv.innerHTML + partHTML;
+if (tempDiv.offsetHeight > MAX_CONTENT_HEIGHT_PX) {
+pages.push(currentPageWrapper);
+currentPageWrapper = createPageWrapper();
+contentDiv = document.createElement('div');
+contentDiv.className = 'report-content';
+contentDiv.innerHTML = partHTML;
+currentPageWrapper.firstElementChild.appendChild(contentDiv);
+} else {
+contentDiv.innerHTML += partHTML;
+}
+});
+pages.push(currentPageWrapper);
+document.body.removeChild(tempDiv);
+
+// Páginas de Fotos
+if (data.photos.length > 0) {
+for (let i = 0; i < data.photos.length; i +=4) { const photoChunk=data.photos.slice(i, i + 4); const
+    photoPageWrapper=createPageWrapper(); photoPageWrapper.firstElementChild.innerHTML=`<div class="report-content">
+    <h3 class="report-section-title">4. REGISTROS FOTOGRÃFICOS</h3>
+    <div class="grid grid-cols-2 gap-4 mt-4">
+        ${photoChunk.map(p => `
+        <div class="border p-1 rounded-md shadow-sm flex flex-col">
+            <img src="${p.src}" class="w-full h-40 rounded-sm bg-gray-100" style="object-fit: contain;">
+            <p class="text-center text-sm italic mt-1 p-1">${p.description || ''}</p>
+        </div>
+        `).join('')}
+    </div>
+    </div>`;
+    // Aumentado de text-xs para text-sm ^
+    pages.push(photoPageWrapper);
+    }
+    }
+
+    // Página de Conclusão
+    const conclusionPageWrapper = createPageWrapper();
+    conclusionPageWrapper.firstElementChild.innerHTML = `<div class="report-content flex flex-col">
+        <h3 class="report-section-title">5. CONCLUSãO / RECOMENDAÇÃ•ES</h3>
+        <p>${data.finalConclusion.replace(/\n/g, '</p>
+        <p>')}</p>
+        <div class="signature-container">
+            <div class="inline-flex flex-col items-center">
+                <img src="${data.engineerSignatureUrl}" alt="Assinatura" class="signature-image">
+                <div class="signature-line"></div>
+                <p class="mt-2">${data.engineerName}</p>
+                <p class="text-sm">Técnico de Manutenção</p>
+                <p class="text-sm font-bold">Doc: ${data.creaNumber}</p>
+            </div>
+            <p class="text-center mt-8 text-sm">${data.signatureCity}, ${new Date(data.signatureDate +
+                'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}.</p>
+        </div>
+    </div>`;
+    pages.push(conclusionPageWrapper);
+
+    // Páginas de Anexos (ART, etc.)
+    if (data.artUrls && data.artUrls.length > 0) {
+    data.artUrls.forEach(url => {
+    const artPageWrapper = createPageWrapper();
+    artPageWrapper.firstElementChild.innerHTML = `<div class="report-content flex flex-col items-center justify-center">
+        <h3 class="report-section-title w-full">ANEXO ADICIONAL</h3>
+        <img src="${url}" alt="Anexo" class="max-w-full max-h-[240mm] object-contain">
+    </div>`;
+    pages.push(artPageWrapper);
+    });
+    }
+
+    // Adiciona cabeçalhos e rodapés
+    const totalPages = pages.length;
+    pages.forEach((wrapper, index) => {
+    if (index > 0) { // Não adiciona em capa
+    const page = wrapper.firstElementChild;
+    page.insertBefore(createHeader(index + 1, totalPages), page.firstChild);
+    page.appendChild(createFooter());
+    }
+    });
+
+    return pages;
+    }
+
+    // --- GERAÇãO DE PDF (MODIFICADO) ---
+    async function downloadPDF() {
+    const downloadBtn = document.getElementById('downloadPdfBtn');
+    const downloadBtnText = downloadBtn.querySelector('span');
+    if (isGeneratingPDF) return;
+
+    isGeneratingPDF = true;
+    const originalText = downloadBtnText.textContent;
+    downloadBtn.disabled = true;
+    downloadBtnText.textContent = 'Processando...';
+
+    const loader = document.getElementById('pdf-loader');
+    const loaderMessage = document.getElementById('loader-message');
+    loaderMessage.textContent = 'Preparando renderização...';
+    loader.style.display = 'flex';
+
+    // ETAPA 1: Gerar os dados e os elementos da página
+    const data = await getFormData();
+    const allPages = createReportPages(data);
+    const renderTarget = document.getElementById('pdf-render-target');
+    renderTarget.innerHTML = ''; // Limpa o alvo
+    allPages.forEach(pageElement => renderTarget.appendChild(pageElement));
+
+    // Pequeno delay para garantir que o DOM foi atualizado
+    await new Promise(resolve => setTimeout(resolve, 300));
+
+    // ETAPA 2: Selecionar os elementos recém-criados no alvo oculto
+    const originalPageContainers = renderTarget.querySelectorAll('.report-page-container');
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdfWidth = 210;
+    const pdfHeight = 297;
+
+    try {
+    // A classe 'pdf-render-mode-container' já aplica os estilos corretos
+
+    for (let i = 0; i < originalPageContainers.length; i++) { loaderMessage.textContent=`Processando página ${i + 1} de
+        ${originalPageContainers.length}...`; const pageContainer=originalPageContainers[i]; await new Promise(resolve=>
+        setTimeout(resolve, 50));
+
+        const canvas = await html2canvas(pageContainer, {
+        scale: 3,
+        useCORS: true,
+        logging: false
+        });
+
+        if (i > 0) pdf.addPage();
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.92);
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+        }
+        const reportNumber = document.getElementById('reportNumber').value.replace(/[\/\\]/g, '-') ||
+        'relatorio-manutencao';
+        pdf.save(`${reportNumber}.pdf`);
+        showStatus('PDF gerado com sucesso!');
+
+        } catch (error) {
+        console.error("Erro ao gerar PDF:", error);
+        showStatus('Ocorreu um erro ao gerar o PDF.', false);
+        } finally {
+        // ETAPA 3: Limpar o alvo de renderização
+        renderTarget.innerHTML = '';
+
+        isGeneratingPDF = false;
+        downloadBtn.disabled = false;
+        downloadBtnText.textContent = originalText;
+        loader.style.display = 'none';
+        }
+        }
+
+        // --- MANIPULAÇãO DO FORMULÃRIO E UI ---
+        function showStatus(message, isSuccess = true) {
+        const statusEl = document.getElementById('statusMessage');
+        statusEl.textContent = message;
+        statusEl.className = `text-center mb-4 h-6 ${isSuccess ? 'text-green-600' : 'text-red-600'}`;
+        setTimeout(() => { statusEl.textContent = ''; }, 4000);
+        }
+
+        function addPhoto(data = {}) {
+        const template = document.getElementById('photoTemplate').content.cloneNode(true);
+        const photoItem = template.querySelector('.photo-item');
+        const fileInput = photoItem.querySelector('.photo-file');
+        const imgPreview = photoItem.querySelector('img');
+        const descriptionInput = photoItem.querySelector('.photo-description');
+
+        if (data.src) {
+        imgPreview.src = data.src;
+        imgPreview.dataset.src = data.src;
+        imgPreview.classList.remove('hidden');
+        }
+        if (data.description) descriptionInput.value = data.description;
+
+        fileInput.addEventListener('change', async (e) => {
+        if (e.target.files[0]) {
+        const dataUrl = await fileToDataURL(e.target.files[0]);
+        imgPreview.src = dataUrl;
+        imgPreview.dataset.src = dataUrl;
+        imgPreview.classList.remove('hidden');
+        // updateAndRender(); // Removido
+        }
+        });
+        photoItem.querySelector('.remove-photo-btn').addEventListener('click', () => {
+        photoItem.remove();
+        // updateAndRender(); // Removido
+        });
+        // Listener de input da descrição removido - não é mais necessário atualizar ao vivo
+        document.getElementById('photosContainer').appendChild(photoItem);
+        }
+
+        function showCustomConfirm(message, callback) {
+        const oldModal = document.getElementById('customConfirmModal');
+        if (oldModal) oldModal.remove();
+
+        const modal = document.createElement('div');
+        modal.id = 'customConfirmModal';
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4';
+        modal.innerHTML = `
+        <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
+            <p class="text-lg text-gray-800 mb-4">${message}</p>
+            <div class="flex justify-end gap-4">
+                <button id="confirmCancel"
+                    class="py-2 px-4 rounded-lg bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold">Cancelar</button>
+                <button id="confirmOk"
+                    class="py-2 px-4 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold">Confirmar</button>
+            </div>
+        </div>
+        `;
+        document.body.appendChild(modal);
+
+        document.getElementById('confirmOk').onclick = () => {
+        callback(true);
+        modal.remove();
+        };
+        document.getElementById('confirmCancel').onclick = () => {
+        callback(false);
+        modal.remove();
+        };
+        }
+
+        function clearForm(confirmFirst = true) {
+        if (confirmFirst) {
+        showCustomConfirm('Tem certeza? Todos os dados não salvos serão perdidos.', (confirmed) => {
+        if (confirmed) {
+        performClear();
+        }
+        });
+        } else {
+        performClear();
+        }
+        }
+
+        function performClear() {
+        document.getElementById('reportForm').reset();
+        document.getElementById('photosContainer').innerHTML = '';
+        document.querySelectorAll('input[type="file"]').forEach(input => {
+        input.value = '';
+        delete input.dataset.src;
+        delete input.dataset.artUrls;
+        });
+        addInitialItems();
+        showStatus('Formulário limpo.');
+        }
+
+        function addInitialItems() {
+        addPhoto();
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('reportDate').value = today;
+        document.getElementById('signatureDate').value = today;
+        // setTimeout(updateAndRender, 50); // Removido
+        }
+
+        async function saveDataToFile() {
+        try {
+        const data = await getFormData(true);
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `relatorio-${data.reportNumber.replace(/[\/\\]/g, '-') || 'backup'}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showStatus('Dados salvos com sucesso!');
+        } catch (e) { showStatus('Erro ao salvar os dados.', false); console.error(e); }
+        }
+
+        function handleFileImport(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+        try {
+        const data = JSON.parse(e.target.result);
+        populateForm(data);
+        } catch { showStatus('Arquivo JSON inválido.', false); }
+        };
+        reader.readAsText(file);
+        event.target.value = '';
+        }
+
+        function populateForm(data) {
+        clearForm(false);
+        Object.keys(data).forEach(key => {
+        const el = document.getElementById(key);
+        if (el && typeof data[key] === 'string' && !el.type.startsWith('file')) {
+        el.value = data[key];
+        }
+        });
+
+        document.getElementById('companyLogo').dataset.src = data.companyLogoUrl || '';
+        document.getElementById('engineerSignature').dataset.src = data.engineerSignatureUrl || '';
+        document.getElementById('artPdf').dataset.artUrls = JSON.stringify(data.artUrls || []);
+
+        document.getElementById('photosContainer').innerHTML = '';
+        if (data.photos && data.photos.length > 0) {
+        data.photos.forEach(p => addPhoto(p));
+        } else {
+        addPhoto();
+        }
+        // updateAndRender(); // Removido
+        showStatus('Dados importados com sucesso!');
+        }
+
+        // --- EVENT LISTENERS (COM CORREÇãO '?.') ---
+        document.getElementById('addPhotoBtn')?.addEventListener('click', () => addPhoto());
+        document.getElementById('downloadPdfBtn')?.addEventListener('click', downloadPDF);
+        document.getElementById('previewBtn')?.addEventListener('click', previewInNewTab); // Novo listener
+        document.getElementById('saveFileBtn')?.addEventListener('click', saveDataToFile);
+        document.getElementById('importFileBtn')?.addEventListener('click', () =>
+        document.getElementById('importFileInput').click());
+        document.getElementById('importFileInput')?.addEventListener('change', handleFileImport);
+        document.getElementById('clearFormBtn')?.addEventListener('click', () => clearForm(true));
+
+        addInitialItems();
+        });
+        </script>
+        </body>
+
+        </html>

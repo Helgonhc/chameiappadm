@@ -442,7 +442,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div><label for="reportTitle" class="form-label">TÃ¯Â¾Æ’Ã¯Â½Â­tulo Principal do Laudo</label><input
                             type="text" id="reportTitle" class="form-input text-lg font-semibold"
-                            value="LAUDO DE INSPEÃ¯Â¾Æ’Ã¯Â¿Â½Ã£â€šÂ° DE SPDA"></div>
+                            value="LAUDO DE INSPEÃ¯Â¾Æ’Ã¯Â¿Â½ãâ€šÂ° DE SPDA"></div>
                     <div><label for="reportSubtitle" class="form-label">SubtÃ¯Â¾Æ’Ã¯Â½Â­tulo</label><input type="text"
                             id="reportSubtitle" class="form-input"
                             value="Sistema de ProteÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o contra Descargas AtmosfÃ¯Â¾Æ’Ã¯Â½Â©ricas"></div>
@@ -725,7 +725,7 @@
 
         let debounceTimer;
 
-        // --- LÃ¯Â¾Æ’Ã¦â€¢ÂµICA DO FORMULÃ¯Â¾Æ’Ã£Æ’Â½IO (ADICIONAR/REMOVER ELEMENTOS) ---
+        // --- LÃ¯Â¾Æ’Ã¦â€¢ÂµICA DO FORMULÃ¯Â¾Æ’ãÆ’Â½IO (ADICIONAR/REMOVER ELEMENTOS) ---
         function addEquipment(data = {}) {
             const container = document.getElementById('equipmentContainer');
             const template = document.getElementById('equipmentTemplate').content.cloneNode(true);
@@ -783,7 +783,7 @@
             });
         }
 
-        // --- COLETA E MANIPULAÃ¯Â¾Æ’Ã¯Â¿Â½Ã£â€šÂ° DE DADOS ---
+        // --- COLETA E MANIPULAÃ¯Â¾Æ’Ã¯Â¿Â½ãâ€šÂ° DE DADOS ---
         function fileToDataURL(file) {
             return new Promise(resolve => {
                 if (!file) { resolve(null); return; }
@@ -913,7 +913,7 @@
             showStatus('Dados importados com sucesso!', true);
         }
 
-        // --- LÃ¯Â¾Æ’Ã¦â€¢ÂµICA DE GERAÃ¯Â¾Æ’Ã¯Â¿Â½Ã£â€šÂ° DO RELATÃ¯Â¾Æ’Ã¨Â¿Â­IO ---
+        // --- LÃ¯Â¾Æ’Ã¦â€¢ÂµICA DE GERAÃ¯Â¾Æ’Ã¯Â¿Â½ãâ€šÂ° DO RELATÃ¯Â¾Æ’Ã¨Â¿Â­IO ---
         async function updatePreview() {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(async () => {
@@ -995,10 +995,10 @@
             contents.push({ isCover: true, content: getCoverPageContent(data.general) });
 
             const textSections = [
-                { title: 'DECISÃ¯Â¾Æ’Ã£â€šÂ° NORMATIVA', content: data.textSections.textDecisaoNormativa },
+                { title: 'DECISÃ¯Â¾Æ’ãâ€šÂ° NORMATIVA', content: data.textSections.textDecisaoNormativa },
                 { title: 'CARACTERÃ¯Â¾Æ’Ã¦â€¹ËœTICAS GERAIS', content: data.textSections.textCaracteristicasGerais },
-                { title: 'OBJETIVO DAS INSPEÃ¯Â¾Æ’Ã¯Â¿Â½Ã©Â«Â­S', content: data.textSections.textObjetivoInspecao },
-                { title: 'INSPEÃ¯Â¾Æ’Ã¯Â¿Â½Ã£â€šÂ°', content: data.textSections.textInspecao },
+                { title: 'OBJETIVO DAS INSPEÃ¯Â¾Æ’Ã¯Â¿Â½éÂ«Â­S', content: data.textSections.textObjetivoInspecao },
+                { title: 'INSPEÃ¯Â¾Æ’Ã¯Â¿Â½ãâ€šÂ°', content: data.textSections.textInspecao },
             ];
 
             textSections.forEach(sec => {
@@ -1008,7 +1008,7 @@
             });
 
             const captacaoSection = {
-                title: `${sectionCounter++}. CAPTAÃ¯Â¾Æ’Ã¯Â¿Â½Ã£â€šÂ°`,
+                title: `${sectionCounter++}. CAPTAÃ¯Â¾Æ’Ã¯Â¿Â½ãâ€šÂ°`,
                 content: data.textSections.textCaptacao,
                 anexoUrls: data.general.captacaoAnexoUrls
             };
@@ -1050,7 +1050,7 @@
                 <td style="width: 25%; border: 1px solid #333; padding: 5px; text-align: center;"><strong>LAUDO SPDA</strong></td>
             </tr>
             <tr>
-                <td colspan="2" style="border: 1px solid #333; padding: 5px;"><strong>ENDEREÃ¯Â¾Æ’Ã¢â€˜Â¯:</strong><br>${d.clientAddress}</td>
+                <td colspan="2" style="border: 1px solid #333; padding: 5px;"><strong>ENDEREÃ¯Â¾Æ’ââ€˜Â¯:</strong><br>${d.clientAddress}</td>
             </tr>
             <tr>
                 <td style="border: 1px solid #333; padding: 5px;"><strong>NÃ¯Â¾â€šÃ¯Â½Âº LAUDO:</strong> ${d.reportNumber}</td>
@@ -1182,7 +1182,7 @@
             const signatureImg = d.engineerSignatureUrl ? `<img src="${d.engineerSignatureUrl}" alt="Assinatura" style="max-height: 70px; margin-bottom: 5px;">` : '<div style="height: 1px; width: 250px; background-color: #374151; margin: 70px auto 5px auto;"></div>';
             const date = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
             return `<div style="display: flex; flex-direction: column; height: 100%;">
-                    <h3 class="report-section-title">CONCLUSÃ¯Â¾Æ’Ã£â€šÂ° TÃ¯Â¾Æ’Ã©Å¸Â»NICA GERAL</h3>
+                    <h3 class="report-section-title">CONCLUSÃ¯Â¾Æ’ãâ€šÂ° TÃ¯Â¾Æ’éÅ¸Â»NICA GERAL</h3>
                     <div style="flex-grow: 1;">
                         <p>${d.finalConclusion.replace(/\n/g, '<br><br>') || 'Nenhuma conclusÃ¯Â¾Æ’Ã¯Â½Â£o fornecida.'}</p>
                     </div>
@@ -1204,7 +1204,7 @@
                 </div>`;
         }
 
-        // PERSISTÃ¯Â¾Æ’Ã¥Å Â¾CIA E INICIALIZAÃ¯Â¾Æ’Ã¯Â¿Â½Ã£â€šÂ°
+        // PERSISTÃ¯Â¾Æ’Ã¥Å Â¾CIA E INICIALIZAÃ¯Â¾Æ’Ã¯Â¿Â½ãâ€šÂ°
         async function saveDataToFile() {
             try {
                 const dataToSave = await getFormData(true);
@@ -1284,12 +1284,12 @@
                 visualNotes: 'EqualizaÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o de potencial realizada em caixas de ligaÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o com barramento de cobre para inspeÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o e equalizaÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o de carcaÃ¯Â¾Æ’Ã¯Â½Â§as metÃ¯Â¾Æ’Ã¯Â½Â¡licas de equipamentos.'
             });
 
-            document.getElementById('textDecisaoNormativa').value = `DECISÃ¯Â¾Æ’Ã£â€šÂ° NORMATIVA NÃ¯Â¾â€šÃ¯Â½Âº 70, DE 26 DE OUTUBRO DE 2001\nDispÃ¯Â¾Æ’Ã¯Â½Âµe sobre a fiscalizaÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o dos serviÃ¯Â¾Æ’Ã¯Â½Â§os tÃ¯Â¾Æ’Ã¯Â½Â©cnicos referentes aos sistemas de proteÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o contra descargas atmosfÃ¯Â¾Æ’Ã¯Â½Â©ricas (paraÃ§ÂªÂ¶Ã©â‚¬â€aios).\nO CONSELHO FEDERAL DE ENGENHARIA, ARQUITETURA E AGRONOMIAÃ§ÂªÂ¶Ã©Â¼Å½ONFEA, no uso das atribuiÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Âµes que lhe confere o inciso III do art. 10 do Regimento do CONFEA, aprovado pela ResoluÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o nÃ¯Â¾â€šÃ¯Â½Âº 373, de 16 de dezembro de 1992, e Considerando a ResoluÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o nÃ¯Â¾â€šÃ¯Â½Âº 218, de 29 de junho de 1973, que discrimina as atividades das diferentes modalidades profissionais da Engenharia, Arquitetura e Agronomia;\nConsiderando, tambÃ¯Â¾Æ’Ã¯Â½Â©m, a necessidade de fixar procedimentos visando a uniformidade de aÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o por parte dos Creas quanto ao registro de ART de projetos, fabricaÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o, instalaÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o e manutenÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o de SPDA, face Ã¯Â¾Æ’Ã¯Â¿Â½s peculiaridades e o desenvolvimento tecnolÃ¯Â¾Æ’Ã¯Â½Â³gico desses sistemas que, quando instalados de forma incorreta, podem causar acidentes, inclusive com vÃ¯Â¾Æ’Ã¯Â½Â­timas fatais, e sÃ¯Â¾Æ’Ã¯Â½Â©rios danos a bens mÃ¯Â¾Æ’Ã¯Â½Â³veis e imÃ¯Â¾Æ’Ã¯Â½Â³veis,\nDECIDE:\nArt. 1Ã¯Â¾â€šÃ¯Â½Âº As atividades de projeto, instalaÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o e manutenÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o, vistoria, laudo, perÃ¯Â¾Æ’Ã¯Â½Â­cia e parecer referentes a Sistemas de ProteÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o contra Descargas AtmosfÃ¯Â¾Æ’Ã¯Â½Â©ricas-SPDA, deverÃ¯Â¾Æ’Ã¯Â½Â£o ser executadas por pessoas fÃ¯Â¾Æ’Ã¯Â½Â­sicas ou jurÃ¯Â¾Æ’Ã¯Â½Â­dicas devidamente registradas nos Creas.`;
-            document.getElementById('textCaracteristicasGerais').value = `Ã¯Â¾Æ’Ã¨Â¡Â¡em 4 Ã§ÂªÂ¶Ã¯Â¿Â½ NBR 5419\n\n4.1 Deve ser lembrado que um SPDA nÃ¯Â¾Æ’Ã¯Â½Â£o impede a ocorrÃ¯Â¾Æ’Ã¯Â½Âªncia das descargas atmosfÃ¯Â¾Æ’Ã¯Â½Â©ricas.\n4.2 Um SPDA projetado e instalado conforme esta Norma nÃ¯Â¾Æ’Ã¯Â½Â£o pode assegurar a proteÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o absoluta de uma estrutura, de pessoas e bens. Entretanto, a aplicaÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o desta Norma reduz de forma significativa os riscos de danos devidos Ã¯Â¾Æ’Ã¯Â¿Â½s descargas atmosfÃ¯Â¾Æ’Ã¯Â½Â©ricas.`;
+            document.getElementById('textDecisaoNormativa').value = `DECISÃ¯Â¾Æ’ãâ€šÂ° NORMATIVA NÃ¯Â¾â€šÃ¯Â½Âº 70, DE 26 DE OUTUBRO DE 2001\nDispÃ¯Â¾Æ’Ã¯Â½Âµe sobre a fiscalizaÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o dos serviÃ¯Â¾Æ’Ã¯Â½Â§os tÃ¯Â¾Æ’Ã¯Â½Â©cnicos referentes aos sistemas de proteÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o contra descargas atmosfÃ¯Â¾Æ’Ã¯Â½Â©ricas (paraçÂªÂ¶éâ‚¬â€aios).\nO CONSELHO FEDERAL DE ENGENHARIA, ARQUITETURA E AGRONOMIAçÂªÂ¶éÂ¼Å½ONFEA, no uso das atribuiÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Âµes que lhe confere o inciso III do art. 10 do Regimento do CONFEA, aprovado pela ResoluÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o nÃ¯Â¾â€šÃ¯Â½Âº 373, de 16 de dezembro de 1992, e Considerando a ResoluÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o nÃ¯Â¾â€šÃ¯Â½Âº 218, de 29 de junho de 1973, que discrimina as atividades das diferentes modalidades profissionais da Engenharia, Arquitetura e Agronomia;\nConsiderando, tambÃ¯Â¾Æ’Ã¯Â½Â©m, a necessidade de fixar procedimentos visando a uniformidade de aÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o por parte dos Creas quanto ao registro de ART de projetos, fabricaÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o, instalaÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o e manutenÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o de SPDA, face Ã¯Â¾Æ’Ã¯Â¿Â½s peculiaridades e o desenvolvimento tecnolÃ¯Â¾Æ’Ã¯Â½Â³gico desses sistemas que, quando instalados de forma incorreta, podem causar acidentes, inclusive com vÃ¯Â¾Æ’Ã¯Â½Â­timas fatais, e sÃ¯Â¾Æ’Ã¯Â½Â©rios danos a bens mÃ¯Â¾Æ’Ã¯Â½Â³veis e imÃ¯Â¾Æ’Ã¯Â½Â³veis,\nDECIDE:\nArt. 1Ã¯Â¾â€šÃ¯Â½Âº As atividades de projeto, instalaÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o e manutenÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o, vistoria, laudo, perÃ¯Â¾Æ’Ã¯Â½Â­cia e parecer referentes a Sistemas de ProteÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o contra Descargas AtmosfÃ¯Â¾Æ’Ã¯Â½Â©ricas-SPDA, deverÃ¯Â¾Æ’Ã¯Â½Â£o ser executadas por pessoas fÃ¯Â¾Æ’Ã¯Â½Â­sicas ou jurÃ¯Â¾Æ’Ã¯Â½Â­dicas devidamente registradas nos Creas.`;
+            document.getElementById('textCaracteristicasGerais').value = `Ã¯Â¾Æ’Ã¨Â¡Â¡em 4 çÂªÂ¶Ã¯Â¿Â½ NBR 5419\n\n4.1 Deve ser lembrado que um SPDA nÃ¯Â¾Æ’Ã¯Â½Â£o impede a ocorrÃ¯Â¾Æ’Ã¯Â½Âªncia das descargas atmosfÃ¯Â¾Æ’Ã¯Â½Â©ricas.\n4.2 Um SPDA projetado e instalado conforme esta Norma nÃ¯Â¾Æ’Ã¯Â½Â£o pode assegurar a proteÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o absoluta de uma estrutura, de pessoas e bens. Entretanto, a aplicaÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o desta Norma reduz de forma significativa os riscos de danos devidos Ã¯Â¾Æ’Ã¯Â¿Â½s descargas atmosfÃ¯Â¾Æ’Ã¯Â½Â©ricas.`;
             document.getElementById('textObjetivoInspecao').value = `O presente documento tem por objetivo atestar as condiÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Âµes tÃ¯Â¾Æ’Ã¯Â½Â©cnicas da malha de aterramento do Sistema de ProteÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o contra Descargas AtmosfÃ¯Â¾Æ’Ã¯Â½Â©ricas (SPDA).\nEste item nÃ¯Â¾Æ’Ã¯Â½Â£o se aplica aos subsistemas do SPDA instalados, que tenham seus acessos impossibilitados por estarem embutidos no concreto armado (ferragens estruturais) ou reboco.\n\nAs inspeÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Âµes visam a assegurar que:\na) o SPDA estÃ¯Â¾Æ’Ã¯Â½Â¡ conforme o projeto;\nb) todos os componentes do SPDA estÃ¯Â¾Æ’Ã¯Â½Â£o em bom estado, as conexÃ¯Â¾Æ’Ã¯Â½Âµes e fixaÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Âµes estÃ¯Â¾Æ’Ã¯Â½Â£o firmes e livres de corrosÃ¯Â¾Æ’Ã¯Â½Â£o;\nc) o valor da resistÃ¯Â¾Æ’Ã¯Â½Âªncia de aterramento seja compatÃ¯Â¾Æ’Ã¯Â½Â­vel com o arranjo e com as dimensÃ¯Â¾Æ’Ã¯Â½Âµes do subsistema de aterramento, e com a resistividade do solo.`;
-            document.getElementById('textInspecao').value = `Em visita tÃ¯Â¾Æ’Ã¯Â½Â©cnica realizada na data informada, foi feita uma inspeÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o visual em todos os pontos do telhado a fim de identificar possÃ¯Â¾Æ’Ã¯Â½Â­veis pontos de colisÃ¯Â¾Æ’Ã¯Â½Â£o por raios (descargas atmosfÃ¯Â¾Æ’Ã¯Â½Â©ricas) nos seguintes locais:\n- Cabine primÃ¯Â¾Æ’Ã¯Â½Â¡ria\n- Torre caixa dÃ§ÂªÂ¶Ã¥â€¦Â®gua;\n- Casa de mÃ¯Â¾Æ’Ã¯Â½Â¡quinas;\n- Cabine secundaria G1;\n- SubestaÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o 01\n- Portaria\n- GalpÃ¯Â¾Æ’Ã¯Â½Â£o 01\n- GalpÃ¯Â¾Æ’Ã¯Â½Â£o 02`;
+            document.getElementById('textInspecao').value = `Em visita tÃ¯Â¾Æ’Ã¯Â½Â©cnica realizada na data informada, foi feita uma inspeÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o visual em todos os pontos do telhado a fim de identificar possÃ¯Â¾Æ’Ã¯Â½Â­veis pontos de colisÃ¯Â¾Æ’Ã¯Â½Â£o por raios (descargas atmosfÃ¯Â¾Æ’Ã¯Â½Â©ricas) nos seguintes locais:\n- Cabine primÃ¯Â¾Æ’Ã¯Â½Â¡ria\n- Torre caixa dçÂªÂ¶Ã¥â€¦Â®gua;\n- Casa de mÃ¯Â¾Æ’Ã¯Â½Â¡quinas;\n- Cabine secundaria G1;\n- SubestaÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o 01\n- Portaria\n- GalpÃ¯Â¾Æ’Ã¯Â½Â£o 01\n- GalpÃ¯Â¾Æ’Ã¯Â½Â£o 02`;
 
-            const captacaoText = `Constamos que o sistema de captaÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o dos galpÃ¯Â¾Æ’Ã¯Â½Âµes caracteriza-se como CAPTAÃ¯Â¾Æ’Ã¯Â¿Â½Ã£â€šÂ° NATURAL conforme item 5.1.1.4 da NBR 5419.\nAs descidas sÃ¯Â¾Æ’Ã¯Â½Â£o feitas por Re-bar embutidas nos pilares de concreto.\ndescidas naturais conforme NBR5419\n\n5.1.1.4 Captores naturais\n5.1.1.4.1 Quaisquer elementos condutores expostos, isto Ã¯Â¾Æ’Ã¯Â½Â©, que do ponto de vista fÃ¯Â¾Æ’Ã¯Â½Â­sico possam ser atingidos pelos raios, devem ser considerados como parte do SPDA.`;
+            const captacaoText = `Constamos que o sistema de captaÃ¯Â¾Æ’Ã¯Â½Â§Ã¯Â¾Æ’Ã¯Â½Â£o dos galpÃ¯Â¾Æ’Ã¯Â½Âµes caracteriza-se como CAPTAÃ¯Â¾Æ’Ã¯Â¿Â½ãâ€šÂ° NATURAL conforme item 5.1.1.4 da NBR 5419.\nAs descidas sÃ¯Â¾Æ’Ã¯Â½Â£o feitas por Re-bar embutidas nos pilares de concreto.\ndescidas naturais conforme NBR5419\n\n5.1.1.4 Captores naturais\n5.1.1.4.1 Quaisquer elementos condutores expostos, isto Ã¯Â¾Æ’Ã¯Â½Â©, que do ponto de vista fÃ¯Â¾Æ’Ã¯Â½Â­sico possam ser atingidos pelos raios, devem ser considerados como parte do SPDA.`;
             document.getElementById('textCaptacao').value = captacaoText;
         }
 

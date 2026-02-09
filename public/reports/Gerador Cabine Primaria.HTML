@@ -62,7 +62,7 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
         }
 
-        /* Estilos do RelatÃ³rio Gerado (Preview) */
+        /* Estilos do Relatório Gerado (Preview) */
         .report-page-container {
             width: 100%;
             max-width: 210mm;
@@ -79,7 +79,7 @@
             background: white;
             width: 100%;
             aspect-ratio: 210 / 297;
-            /* ProporÃ§Ã£o A4 para o preview */
+            /* Proporção A4 para o preview */
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
@@ -146,7 +146,7 @@
             font-weight: 600;
         }
 
-        /* Classe especial para forÃ§ar dimensÃµes corretas na hora de gerar o PDF */
+        /* Classe especial para forçar dimensões corretas na hora de gerar o PDF */
         .pdf-render-mode .report-page-container {
             width: 794px !important;
             /* A4 width @ 96 DPI */
@@ -271,7 +271,8 @@
                 font-size: 20pt !important;
             }
         }
-    </style>`n
+    </style>
+
     <script>
         // Protecao Anti-Copia ChameiApp
         document.addEventListener('contextmenu', e => e.preventDefault());
@@ -295,7 +296,7 @@
                 </div>
 
                 <div class="form-section flex items-center justify-between flex-wrap gap-4">
-                    <h2 class="text-lg font-semibold mb-0 border-b-0 pb-0">AÃ§Ãµes de Dados</h2>
+                    <h2 class="text-lg font-semibold mb-0 border-b-0 pb-0">Ações de Dados</h2>
                     <div class="flex gap-2 flex-wrap">
                         <button type="button" id="importFileBtn"
                             class="bg-teal-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-teal-700 transition-colors">Importar
@@ -306,7 +307,7 @@
                         <input type="file" id="importFileInput" class="hidden" accept=".json,.txt">
                         <button type="button" id="clearFormBtn"
                             class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors">Limpar
-                            FormulÃ¡rio</button>
+                            Formulário</button>
                     </div>
                 </div>
                 <div id="statusMessage" class="text-center mb-4 h-6"></div>
@@ -362,7 +363,7 @@
 
                     <div class="form-section">
                         <div class="flex justify-between items-center">
-                            <h2 class="section-title mb-0 pb-0 border-b-0">Itens de InspeÃ§Ã£o Visual</h2>
+                            <h2 class="section-title mb-0 pb-0 border-b-0">Itens de Inspeção Visual</h2>
                             <button type="button" id="addVisualItemBtn"
                                 class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">Adicionar
                                 Item</button>
@@ -372,7 +373,7 @@
 
                     <div class="form-section">
                         <div class="flex justify-between items-center mb-6">
-                            <h2 class="section-title mb-0 pb-0 border-b-0">Ensaios ElÃ©tricos</h2>
+                            <h2 class="section-title mb-0 pb-0 border-b-0">Ensaios Elétricos</h2>
                             <button type="button" id="addEquipmentBtn"
                                 class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">Adicionar
                                 Equipamento</button>
@@ -397,13 +398,13 @@
                         </div>
                         <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-800 p-4 rounded-r-lg mb-6"
                             role="alert">
-                            <p class="font-bold">Resumo PrÃ¡tico para Laudo</p>
+                            <p class="font-bold">Resumo Prático para Laudo</p>
                             <p class="text-sm mt-2">
-                                â€œOs contatos de disjuntores de mÃ©dia tensÃ£o devem apresentar resistÃªncia tÃ­pica
+                                â€œOs contatos de disjuntores de média tensão devem apresentar resistência tÃ­pica
                                 inferior
-                                a 100 ÂµÎ©, nÃ£o devendo haver diferenÃ§as significativas entre os polos. Valores acima
-                                deste limite ou com variaÃ§Ãµes superiores a 20% entre fases indicam necessidade de
-                                intervenÃ§Ã£o/manutenÃ§Ã£o.â€
+                                a 100 ÂµÎ©, não devendo haver diferenças significativas entre os polos. Valores acima
+                                deste limite ou com variações superiores a 20% entre fases indicam necessidade de
+                                intervenção/manutenção.â€
                             </p>
                         </div>
                         <div id="equipmentsContainer" class="space-y-8">
@@ -412,7 +413,7 @@
 
                     <div class="form-section">
                         <div class="flex justify-between items-center">
-                            <h2 class="section-title mb-0 pb-0 border-b-0">Anexos FotogrÃ¡ficos</h2>
+                            <h2 class="section-title mb-0 pb-0 border-b-0">Anexos Fotográficos</h2>
                             <button type="button" id="addPhotoBtn"
                                 class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">Adicionar
                                 Foto</button>
@@ -421,10 +422,10 @@
                     </div>
 
                     <div class="form-section">
-                        <h2 class="section-title">ConclusÃ£o e ResponsÃ¡vel</h2>
+                        <h2 class="section-title">Conclusão e Responsável</h2>
                         <div class="mt-6"><label for="finalConclusion" class="form-label">Texto da
-                                ConclusÃ£o</label><textarea id="finalConclusion" rows="6"
-                                class="form-textarea">O planejamento e a execuÃ§Ã£o dos serviÃ§os apresentaram excelentes resultados. Foi realizada uma inspeÃ§Ã£o minuciosa, seguindo rigorosamente os princÃ­pios e critÃ©rios dos testes aplicÃ¡veis. Todas as informaÃ§Ãµes sobre a localizaÃ§Ã£o e identificaÃ§Ã£o foram fornecidas pelo tÃ©cnico responsÃ¡vel pela execuÃ§Ã£o do serviÃ§o.</textarea>
+                                Conclusão</label><textarea id="finalConclusion" rows="6"
+                                class="form-textarea">O planejamento e a execução dos serviços apresentaram excelentes resultados. Foi realizada uma inspeção minuciosa, seguindo rigorosamente os princÃ­pios e critérios dos testes aplicáveis. Todas as informações sobre a localização e identificação foram fornecidas pelo técnico responsável pela execução do serviço.</textarea>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                             <div><label for="engineerSignature" class="form-label">Upload da Assinatura</label><input
@@ -471,19 +472,19 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                 <div class="md:col-span-2">
                     <label class="form-label text-sm">Item</label>
-                    <input type="text" class="form-input item-description" placeholder="DescriÃ§Ã£o do item">
+                    <input type="text" class="form-input item-description" placeholder="Descrição do item">
                 </div>
                 <div>
                     <label class="form-label text-sm">Resultado</label>
                     <select class="form-select item-status">
-                        <option value="SatisfatÃ³rio">SatisfatÃ³rio</option>
-                        <option value="InsatisfatÃ³rio">InsatisfatÃ³rio</option>
-                        <option value="NÃ£o se aplica">NÃ£o se aplica</option>
+                        <option value="Satisfatório">Satisfatório</option>
+                        <option value="Insatisfatório">Insatisfatório</option>
+                        <option value="Não se aplica">Não se aplica</option>
                     </select>
                 </div>
             </div>
             <div class="reason-container hidden mt-3">
-                <label class="form-label text-sm text-red-600">Motivo (se insatisfatÃ³rio):</label>
+                <label class="form-label text-sm text-red-600">Motivo (se insatisfatório):</label>
                 <textarea class="form-textarea item-reason" rows="2"
                     placeholder="Descreva o problema encontrado..."></textarea>
             </div>
@@ -498,21 +499,21 @@
                 <div class="md:col-span-2">
                     <label class="form-label">Tipo de Equipamento</label>
                     <input type="text" class="form-input equipment-type"
-                        placeholder="Ex: Disjuntor de MÃ©dia TensÃ£o PVO" value="Disjuntor de MÃ©dia TensÃ£o PVO">
+                        placeholder="Ex: Disjuntor de Média Tensão PVO" value="Disjuntor de Média Tensão PVO">
                 </div>
                 <div><input type="text" class="form-input equipment-fabricante" placeholder="Fabricante"></div>
                 <div><input type="text" class="form-input equipment-modelo" placeholder="Modelo/Tipo"></div>
                 <div><input type="text" class="form-input equipment-ano" placeholder="Ano"></div>
-                <div><input type="text" class="form-input equipment-serie" placeholder="NÂº de SÃ©rie"></div>
-                <div><input type="text" class="form-input equipment-tensao" placeholder="TensÃ£o Nominal (kV)"></div>
+                <div><input type="text" class="form-input equipment-serie" placeholder="NÂº de Série"></div>
+                <div><input type="text" class="form-input equipment-tensao" placeholder="Tensão Nominal (kV)"></div>
                 <div><input type="number" class="form-input equipment-corrente" placeholder="Corrente Nominal (A)">
                 </div>
             </div>
             <div class="mt-6">
-                <h4 class="font-semibold text-md mb-2">Resultados do Ensaio de ResistÃªncia</h4>
+                <h4 class="font-semibold text-md mb-2">Resultados do Ensaio de Resistência</h4>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="form-label text-sm">Valor MÃ¡ximo Rec. (ÂµÎ©)</label>
+                        <label class="form-label text-sm">Valor Máximo Rec. (ÂµÎ©)</label>
                         <input type="number" class="form-input equipment-max-value" placeholder="Ex: 100">
                     </div>
                 </div>
@@ -522,12 +523,12 @@
                     <div><input type="number" class="form-input equipment-t" placeholder="Fase T / T-Massa"></div>
                 </div>
                 <select class="form-select mt-4 equipment-resultado">
-                    <option value="SatisfatÃ³rio">SatisfatÃ³rio</option>
-                    <option value="InsatisfatÃ³rio">InsatisfatÃ³rio</option>
-                    <option value="NÃ£o se aplica">NÃ£o se aplica</option>
+                    <option value="Satisfatório">Satisfatório</option>
+                    <option value="Insatisfatório">Insatisfatório</option>
+                    <option value="Não se aplica">Não se aplica</option>
                 </select>
                 <div class="reason-container hidden mt-3">
-                    <label class="form-label text-sm text-red-600">Motivo (se insatisfatÃ³rio):</label>
+                    <label class="form-label text-sm text-red-600">Motivo (se insatisfatório):</label>
                     <textarea class="form-textarea equipment-reason" rows="2"
                         placeholder="Descreva o problema encontrado..."></textarea>
                 </div>
@@ -538,7 +539,7 @@
     <template id="photoTemplate">
         <div class="photo-item border p-4 rounded-lg">
             <div class="flex justify-between items-center mb-4">
-                <label class="form-label mb-0">DescriÃ§Ã£o da Foto</label>
+                <label class="form-label mb-0">Descrição da Foto</label>
                 <button type="button"
                     class="remove-photo-btn text-red-600 hover:text-red-800 text-sm font-semibold">Remover</button>
             </div>
@@ -546,7 +547,7 @@
             <div class="mt-4"><label class="form-label">Arquivo de Imagem</label><input type="file"
                     class="form-input photo-file" accept="image/*"></div>
             <img class="mt-2 h-40 w-full object-contain rounded-md hidden bg-gray-100 p-1" src=""
-                alt="PrÃ©-visualizaÃ§Ã£o">
+                alt="Pré-visualização">
         </div>
     </template>
 
@@ -576,7 +577,7 @@
             const escalaMedicaoSelect = document.getElementById('escalaMedicao');
             let debounceTimer;
 
-            // --- FunÃ§Ãµes ---
+            // --- Funções ---
 
             function getUnitFromScale(scaleString) {
                 if (scaleString.includes('ÂµÎ©')) return 'ÂµÎ©';
@@ -602,7 +603,7 @@
             }
 
             function addVisualItem(data = {}) {
-                const { description = '', status = 'SatisfatÃ³rio', reason = '' } = data;
+                const { description = '', status = 'Satisfatório', reason = '' } = data;
                 const templateContent = visualItemTemplate.content.cloneNode(true);
                 const visualItem = templateContent.querySelector('.visual-item');
                 const statusSelect = visualItem.querySelector('.item-status');
@@ -615,7 +616,7 @@
                 reasonTextarea.value = reason;
 
                 const toggleReasonField = () => {
-                    if (statusSelect.value === 'InsatisfatÃ³rio') {
+                    if (statusSelect.value === 'Insatisfatório') {
                         reasonContainer.classList.remove('hidden');
                     } else {
                         reasonContainer.classList.add('hidden');
@@ -635,10 +636,10 @@
 
             function addEquipment(data = {}) {
                 const {
-                    type = 'Disjuntor de MÃ©dia TensÃ£o PVO',
+                    type = 'Disjuntor de Média Tensão PVO',
                     fabricante = '', modelo = '', ano = '', serie = '',
                     tensao = '', corrente = '', maxValue = '', r = '', s = '', t = '',
-                    resultado = 'SatisfatÃ³rio', reason = ''
+                    resultado = 'Satisfatório', reason = ''
                 } = data;
 
                 const templateContent = equipmentTemplate.content.cloneNode(true);
@@ -667,7 +668,7 @@
                 reasonTextarea.value = reason;
 
                 const toggleReasonField = () => {
-                    if (statusSelect.value === 'InsatisfatÃ³rio') {
+                    if (statusSelect.value === 'Insatisfatório') {
                         reasonContainer.classList.remove('hidden');
                     } else {
                         reasonContainer.classList.add('hidden');
@@ -711,10 +712,10 @@
                     }
 
                     if (isUnsatisfactory) {
-                        statusSelect.value = 'InsatisfatÃ³rio';
+                        statusSelect.value = 'Insatisfatório';
                     } else {
-                        if (statusSelect.value !== 'NÃ£o se aplica') {
-                            statusSelect.value = 'SatisfatÃ³rio';
+                        if (statusSelect.value !== 'Não se aplica') {
+                            statusSelect.value = 'Satisfatório';
                         }
                     }
                     toggleReasonField();
@@ -893,7 +894,7 @@
                 const pages = [];
                 let currentPage = 1;
 
-                // --- PÃ¡gina 1: Capa ---
+                // --- Página 1: Capa ---
                 const coverPage = document.createElement('div');
                 coverPage.className = 'report-page-container';
                 coverPage.innerHTML = `
@@ -902,7 +903,7 @@
                         <img src="${data.companyLogoUrl || 'https://placehold.co/400x150/f0f0f0/CCCCCC?text=Sua+Empresa'}" alt="Logo da Empresa" class="max-h-32 w-auto mx-auto mb-16 object-contain">
                     </div>
                     <div class="flex-grow flex flex-col justify-center items-center">
-                        <h1 class="text-2xl font-bold">LAUDO DE MANUTENÃ‡ÃƒO EM CABINE PRIMÃRIA</h1>
+                        <h1 class="text-2xl font-bold">LAUDO DE MANUTENÇãO EM CABINE PRIMÃRIA</h1>
                         <p class="text-lg mt-2">${new Date(data.reportDate + 'T00:00:00').toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }).toUpperCase()}</p>
                     </div>
                     <div class="flex-shrink-0 mt-16">
@@ -911,40 +912,40 @@
                 </div>`;
                 pages.push(coverPage);
 
-                // --- PÃ¡gina 2: IntroduÃ§Ã£o, Objetivo, Procedimentos ---
+                // --- Página 2: Introdução, Objetivo, Procedimentos ---
                 const introPage = document.createElement('div');
                 introPage.className = 'report-page-container';
                 introPage.innerHTML = `
                 <div class="report-page">
                     ${createHeader(data, currentPage++)}
                     <div class="report-content">
-                        <h3 class="report-section-title">1. INTRODUÃ‡ÃƒO</h3>
+                        <h3 class="report-section-title">1. INTRODUÇãO</h3>
                         <p>${data.introText}</p>
                         <h3 class="report-section-title">2. OBJETIVO</h3>
                         <p>${data.objectiveText}</p>
                         <h3 class="report-section-title">3. PROCEDIMENTOS EXECUTADOS</h3>
                         <ul class="list-disc list-inside space-y-1 text-sm">
-                            <li>VerificaÃ§Ã£o da conformidade dos materiais e equipamentos.</li>
-                            <li>Testes de operaÃ§Ãµes e funcionamento.</li>
-                            <li>VerificaÃ§Ã£o visual da montagem e estado dos componentes.</li>
-                            <li>VerificaÃ§Ã£o da presenÃ§a de umidade, vazamentos e infiltraÃ§Ãµes.</li>
-                            <li>Limpeza e reaperto geral de parafusos e conexÃµes.</li>
-                            <li>VerificaÃ§Ã£o de equipamento de seguranÃ§a e combate a incÃªndio.</li>
-                            <li>MediÃ§Ã£o de resistÃªncia de isolamento e contato.</li>
+                            <li>Verificação da conformidade dos materiais e equipamentos.</li>
+                            <li>Testes de operações e funcionamento.</li>
+                            <li>Verificação visual da montagem e estado dos componentes.</li>
+                            <li>Verificação da presença de umidade, vazamentos e infiltrações.</li>
+                            <li>Limpeza e reaperto geral de parafusos e conexões.</li>
+                            <li>Verificação de equipamento de segurança e combate a incêndio.</li>
+                            <li>Medição de resistência de isolamento e contato.</li>
                         </ul>
                     </div>
                     ${createFooter(data)}
                 </div>`;
                 pages.push(introPage);
 
-                // --- PÃ¡gina 3: Resultados da InspeÃ§Ã£o Visual ---
+                // --- Página 3: Resultados da Inspeção Visual ---
                 const visualResultsPage = document.createElement('div');
                 visualResultsPage.className = 'report-page-container';
                 visualResultsPage.innerHTML = `
                 <div class="report-page">
                     ${createHeader(data, currentPage++)}
                     <div class="report-content">
-                        <h3 class="report-section-title">4. RESULTADOS OBTIDOS - INSPEÃ‡ÃƒO VISUAL</h3>
+                        <h3 class="report-section-title">4. RESULTADOS OBTIDOS - INSPEÇãO VISUAL</h3>
                         <table>
                             <thead>
                                 <tr>
@@ -957,7 +958,7 @@
                                     <tr>
                                         <td>
                                             ${item.description}
-                                            ${item.status === 'InsatisfatÃ³rio' && item.reason ? `<br><small style="color: #c53030; font-style: italic;"><strong>Motivo:</strong> ${item.reason}</small>` : ''}
+                                            ${item.status === 'Insatisfatório' && item.reason ? `<br><small style="color: #c53030; font-style: italic;"><strong>Motivo:</strong> ${item.reason}</small>` : ''}
                                         </td>
                                         <td>${item.status}</td>
                                     </tr>
@@ -969,7 +970,7 @@
                 </div>`;
                 pages.push(visualResultsPage);
 
-                // --- PÃ¡gina 4: Ensaios ElÃ©tricos ---
+                // --- Página 4: Ensaios Elétricos ---
                 const electricTestPage = document.createElement('div');
                 electricTestPage.className = 'report-page-container';
 
@@ -982,17 +983,17 @@
                                 <td><strong>Fabricante:</strong> ${eq.fabricante || 'N/A'}</td>
                                 <td><strong>Modelo/Tipo:</strong> ${eq.modelo || 'N/A'}</td>
                                 <td><strong>Ano:</strong> ${eq.ano || 'N/A'}</td>
-                                <td><strong>SÃ©rie:</strong> ${eq.serie || 'N/A'}</td>
+                                <td><strong>Série:</strong> ${eq.serie || 'N/A'}</td>
                             </tr>
                              <tr>
-                                <td><strong>TensÃ£o:</strong> ${eq.tensao || 'N/A'} kV</td>
+                                <td><strong>Tensão:</strong> ${eq.tensao || 'N/A'} kV</td>
                                 <td colspan="3"><strong>Corrente:</strong> ${eq.corrente || 'N/A'} A</td>
                             </tr>
                         </tbody>
                     </table>
-                    <h5 class="font-semibold mt-2 text-xs">ResistÃªncia de Contato (Valor MÃ¡x. Rec.: ${eq.maxValue} ÂµÎ©)</h5>
+                    <h5 class="font-semibold mt-2 text-xs">Resistência de Contato (Valor Máx. Rec.: ${eq.maxValue} ÂµÎ©)</h5>
                     <table>
-                        <thead><tr><th>Fase</th><th>ResistÃªncia (${getUnitFromScale(data.escalaMedicao)})</th></tr></thead>
+                        <thead><tr><th>Fase</th><th>Resistência (${getUnitFromScale(data.escalaMedicao)})</th></tr></thead>
                         <tbody>
                             <tr><td>Fase R / R-Massa</td><td>${eq.r || 'N/A'}</td></tr>
                             <tr><td>Fase S / S-Massa</td><td>${eq.s || 'N/A'}</td></tr>
@@ -1000,7 +1001,7 @@
                             <tr><td class="font-bold">Resultado</td><td class="font-bold">${eq.resultado}</td></tr>
                         </tbody>
                     </table>
-                    ${eq.resultado === 'InsatisfatÃ³rio' && eq.reason ? `<div style="font-size: 0.8em; color: #c53030; margin-top: 4px; border: 1px solid #fed7d7; background-color: #fff5f5; padding: 4px; border-radius: 4px;"><strong>Motivo:</strong> ${eq.reason}</div>` : ''}
+                    ${eq.resultado === 'Insatisfatório' && eq.reason ? `<div style="font-size: 0.8em; color: #c53030; margin-top: 4px; border: 1px solid #fed7d7; background-color: #fff5f5; padding: 4px; border-radius: 4px;"><strong>Motivo:</strong> ${eq.reason}</div>` : ''}
                 </div>
             `).join('');
 
@@ -1008,26 +1009,26 @@
                 <div class="report-page">
                     ${createHeader(data, currentPage++)}
                     <div class="report-content">
-                        <h3 class="report-section-title">5. ENSAIOS ELÃ‰TRICOS</h3>
-                        <p class="text-xs"><strong>Equipamento Utilizado:</strong> MicrommÃ­metro ${data.micrommimetro || 'NÃ£o informado'} | <strong>Escala:</strong> ${data.escalaMedicao || 'NÃ£o informada'}</p>
+                        <h3 class="report-section-title">5. ENSAIOS ELÉTRICOS</h3>
+                        <p class="text-xs"><strong>Equipamento Utilizado:</strong> MicrommÃ­metro ${data.micrommimetro || 'Não informado'} | <strong>Escala:</strong> ${data.escalaMedicao || 'Não informada'}</p>
                         ${equipmentsHtml.length > 0 ? equipmentsHtml : '<p>Nenhum equipamento ensaiado.</p>'}
                     </div>
                     ${createFooter(data)}
                 </div>`;
                 pages.push(electricTestPage);
 
-                // --- PÃ¡ginas de Anexos FotogrÃ¡ficos ---
+                // --- Páginas de Anexos Fotográficos ---
                 const photos = data.photos.filter(p => p.src);
                 for (let i = 0; i < photos.length; i += 4) {
                     const photoChunk = photos.slice(i, i + 4);
                     const photoPage = document.createElement('div');
                     photoPage.className = 'report-page-container';
 
-                    // CORREÃ‡ÃƒO AQUI: max-w-full max-h-full para evitar esticamento no PDF
+                    // CORREÇãO AQUI: max-w-full max-h-full para evitar esticamento no PDF
                     let photoGridHtml = photoChunk.map(photo => `
                     <div class="border p-1 rounded-md shadow-sm flex flex-col" style="page-break-inside: avoid;">
                         <div class="w-full bg-gray-100 rounded-sm overflow-hidden flex items-center justify-center" style="aspect-ratio: 4 / 3;">
-                             <img src="${photo.src}" class="max-w-full max-h-full object-contain mx-auto my-auto" style="width: auto; height: auto;" alt="${photo.description || 'Anexo FotogrÃ¡fico'}">
+                             <img src="${photo.src}" class="max-w-full max-h-full object-contain mx-auto my-auto" style="width: auto; height: auto;" alt="${photo.description || 'Anexo Fotográfico'}">
                         </div>
                         <p class="text-center text-[9px] italic p-1 flex-shrink-0">${photo.description || '&nbsp;'}</p>
                     </div>
@@ -1047,7 +1048,7 @@
                     pages.push(photoPage);
                 }
 
-                // --- PÃ¡ginas da ART ---
+                // --- Páginas da ART ---
                 if (data.artUrls && data.artUrls.length > 0) {
                     data.artUrls.forEach((url, index) => {
                         const artPage = document.createElement('div');
@@ -1065,14 +1066,14 @@
                     });
                 }
 
-                // --- PÃ¡gina Final: ConclusÃ£o ---
+                // --- Página Final: Conclusão ---
                 const conclusionPage = document.createElement('div');
                 conclusionPage.className = 'report-page-container';
                 conclusionPage.innerHTML = `
                 <div class="report-page">
                     ${createHeader(data, currentPage)}
                     <div class="report-content">
-                        <h3 class="report-section-title">8. CONCLUSÃƒO</h3>
+                        <h3 class="report-section-title">8. CONCLUSãO</h3>
                         <p>${data.finalConclusion}</p>
                         <div class="mt-auto pt-12 text-center">
                             <div class="inline-flex flex-col items-center">
@@ -1100,14 +1101,14 @@
                                 <td class="w-1/4 p-2 border-r-2 border-gray-800 align-middle text-center" rowspan="3">
                                     <img src="${data.companyLogoUrl || 'https://placehold.co/200x80/f0f0f0/CCCCCC?text=Logo'}" class="max-h-20 w-auto object-contain inline-block">
                                 </td>
-                                <td class="p-1 text-center font-bold" colspan="3">LAUDO TÃ‰CNICO</td>
+                                <td class="p-1 text-center font-bold" colspan="3">LAUDO TÉCNICO</td>
                             </tr>
                             <tr>
                                 <td class="p-1 border-t-2 border-gray-800" colspan="2"><strong>CLIENTE:</strong> ${data.clientName}</td>
                                 <td class="p-1 border-t-2 border-l-2 border-gray-800"><strong>PÃGINA:</strong> ${pageNumber}</td>
                             </tr>
                             <tr>
-                                <td class="p-1 border-t-2 border-gray-800" colspan="2"><strong>ENDEREÃ‡O:</strong> ${data.clientAddress}</td>
+                                <td class="p-1 border-t-2 border-gray-800" colspan="2"><strong>ENDEREÇO:</strong> ${data.clientAddress}</td>
                                 <td class="p-1 border-t-2 border-l-2 border-gray-800"><strong>DATA:</strong> ${new Date(data.reportDate + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
                             </tr>
                              <tr>
@@ -1155,7 +1156,7 @@
                 downloadPdfBtn.disabled = true;
                 downloadBtnText.textContent = 'Processando...';
 
-                // Adiciona a classe para forÃ§ar as dimensÃµes corretas para o render
+                // Adiciona a classe para forçar as dimensões corretas para o render
                 reportOutputContainer.classList.add('pdf-render-mode');
 
                 const pages = reportOutput.querySelectorAll('.report-page-container');
@@ -1183,7 +1184,7 @@
                     console.error("Erro ao gerar PDF:", error);
                     alert(`Ocorreu um erro ao gerar o PDF. Verifique o console para mais detalhes.`);
                 } finally {
-                    // Remove a classe para restaurar o preview, ocorrendo erro ou nÃ£o
+                    // Remove a classe para restaurar o preview, ocorrendo erro ou não
                     reportOutputContainer.classList.remove('pdf-render-mode');
                     downloadPdfBtn.disabled = false;
                     downloadBtnText.textContent = originalText;
@@ -1222,7 +1223,7 @@
 
             function populateForm(savedData) {
                 if (!savedData) {
-                    showStatus('Dados invÃ¡lidos para importaÃ§Ã£o.', false);
+                    showStatus('Dados inválidos para importação.', false);
                     return;
                 }
                 try {
@@ -1252,7 +1253,7 @@
                     showStatus('Dados importados com sucesso!', true);
                     updateAndRender();
                 } catch (error) {
-                    console.error("Erro ao popular formulÃ¡rio:", error);
+                    console.error("Erro ao popular formulário:", error);
                     showStatus('Falha ao importar. Verifique o formato do arquivo.', false);
                 }
             }
@@ -1268,7 +1269,7 @@
                         populateForm(data);
                     } catch (error) {
                         console.error("Erro ao ler o arquivo JSON:", error);
-                        showStatus('Arquivo invÃ¡lido. Selecione um arquivo JSON gerado por esta aplicaÃ§Ã£o.', false);
+                        showStatus('Arquivo inválido. Selecione um arquivo JSON gerado por esta aplicação.', false);
                     }
                 };
                 reader.readAsText(file);
@@ -1277,7 +1278,7 @@
             }
 
             function addInitialItems() {
-                const initialItems = ["Luvas para alta tensÃ£o", "Vara de manobra elÃ©trica", "IluminaÃ§Ã£o SubestaÃ§Ã£o PrimÃ¡ria", "IluminaÃ§Ã£o de emergÃªncia SubestaÃ§Ã£o PrimÃ¡ria", "Estrado de borracha", "Tomadas/iluminaÃ§Ã£o", "Extintor de incÃªndio"];
+                const initialItems = ["Luvas para alta tensão", "Vara de manobra elétrica", "Iluminação Subestação Primária", "Iluminação de emergência Subestação Primária", "Estrado de borracha", "Tomadas/iluminação", "Extintor de incêndio"];
                 initialItems.forEach(item => addVisualItem({ description: item }));
                 addPhoto();
                 addEquipment();
@@ -1286,7 +1287,7 @@
             }
 
             function clearForm(confirmFirst = true) {
-                if (confirmFirst && !confirm('Tem certeza que deseja limpar todo o formulÃ¡rio?')) {
+                if (confirmFirst && !confirm('Tem certeza que deseja limpar todo o formulário?')) {
                     return;
                 }
                 reportForm.reset();
@@ -1298,11 +1299,11 @@
 
                 updateAndRender();
                 if (confirmFirst) {
-                    showStatus('FormulÃ¡rio limpo.', true);
+                    showStatus('Formulário limpo.', true);
                 }
             }
 
-            // --- InicializaÃ§Ã£o do script ---
+            // --- Inicialização do script ---
             addInitialItems();
             updateAndRender();
 
@@ -1322,7 +1323,7 @@
             clearFormBtn.addEventListener('click', () => clearForm(true));
             escalaMedicaoSelect.addEventListener('change', updateAllEquipmentUnits);
 
-            // --- SincronizaÃ§Ã£o de Rolagem ---
+            // --- Sincronização de Rolagem ---
             const formScroller = document.getElementById('formContainer');
             const previewScroller = document.getElementById('reportOutput');
 
