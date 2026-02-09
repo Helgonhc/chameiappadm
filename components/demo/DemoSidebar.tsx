@@ -23,22 +23,23 @@ export default function DemoSidebar({ onSearchClick, unreadCount = 3, collapsed,
     };
 
     const menuItems = [
-        { name: 'Dashboard', href: '/demo', icon: LayoutDashboard },
-        { name: 'Insights & BI', href: '/demo/performance', icon: TrendingUp },
-        { name: 'Clientes', href: '/demo/clients', icon: Building2 },
-        { name: 'Documentos', href: '/demo/documents', icon: FolderOpen },
-        { name: 'Equipamentos', href: '/demo/equipments', icon: Wrench },
-        { name: 'Ordens de Serviço', href: '/demo/orders', icon: ClipboardList },
-        { name: 'Chamados', href: '/demo/tickets', icon: Ticket },
-        { name: 'Orçamentos', href: '/demo/quotes', icon: Calculator },
-        { name: 'Manutenções Periódicas', href: '/demo/maintenance', icon: Calendar },
-        { name: 'Solicitações Manutenção', href: '/demo/maintenance-requests', icon: FileCheck },
-        { name: 'Agenda', href: '/demo/agenda', icon: Calendar },
-        { name: 'Banco de Horas', href: '/demo/overtime', icon: Clock },
-        { name: 'Estoque', href: '/demo/inventory', icon: Package },
-        { name: 'Chat', href: '/demo/chat', icon: MessageSquare },
-        { name: 'Notificações', href: '/demo/notifications', icon: Bell, hasBadge: true },
-        { name: 'Levantamento de Cargas', href: '/demo/load-survey', icon: Zap },
+        { name: 'Dashboard', href: '/demo', icon: LayoutDashboard, color: 'text-indigo-500' },
+        { name: 'Insights & BI', href: '/demo/performance', icon: TrendingUp, color: 'text-purple-500' },
+        { name: 'Geradores', href: '/demo/reports', icon: Zap, color: 'text-emerald-400' },
+        { name: 'Clientes', href: '/demo/clients', icon: Building2, color: 'text-blue-500' },
+        { name: 'Documentos', href: '/demo/documents', icon: FolderOpen, color: 'text-amber-500' },
+        { name: 'Equipamentos', href: '/demo/equipments', icon: Wrench, color: 'text-emerald-500' },
+        { name: 'Ordens de Serviço', href: '/demo/orders', icon: ClipboardList, color: 'text-cyan-500' },
+        { name: 'Chamados', href: '/demo/tickets', icon: Ticket, color: 'text-red-500' },
+        { name: 'Orçamentos', href: '/demo/quotes', icon: Calculator, color: 'text-green-500' },
+        { name: 'Manutenções Periódicas', href: '/demo/maintenance', icon: Calendar, color: 'text-pink-500' },
+        { name: 'Solicitações Manutenção', href: '/demo/maintenance-requests', icon: FileCheck, color: 'text-orange-500' },
+        { name: 'Agenda', href: '/demo/agenda', icon: Calendar, color: 'text-violet-500' },
+        { name: 'Banco de Horas', href: '/demo/overtime', icon: Clock, color: 'text-teal-500' },
+        { name: 'Estoque', href: '/demo/inventory', icon: Package, color: 'text-rose-500' },
+        { name: 'Chat', href: '/demo/chat', icon: MessageSquare, color: 'text-sky-500' },
+        { name: 'Notificações', href: '/demo/notifications', icon: Bell, hasBadge: true, color: 'text-yellow-500' },
+        { name: 'Levantamento de Cargas', href: '/demo/load-survey', icon: Zap, color: 'text-amber-600' },
     ];
 
     const adminItems = [
@@ -106,7 +107,7 @@ export default function DemoSidebar({ onSearchClick, unreadCount = 3, collapsed,
                             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group relative ${isActive ? 'bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20' : 'text-slate-400 hover:bg-white/5 hover:text-white'} ${collapsed ? 'justify-center' : ''}`}
                         >
                             {isActive && <div className="absolute left-0 w-1 h-4 bg-emerald-500 rounded-r-full" />}
-                            <div className="flex-shrink-0">
+                            <div className={`flex-shrink-0 ${item.color}`}>
                                 <item.icon size={18} />
                             </div>
                             {!collapsed && <span className="text-[11px] uppercase tracking-wider">{item.name}</span>}

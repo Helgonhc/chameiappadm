@@ -45,11 +45,12 @@ export default function DemoDashboardPage() {
     return (
         <div className="space-y-6 animate-fadeIn pb-20">
             {/* 1. Header */}
-            <div>
-                <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
+            <div className="mb-8">
+                <h1 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tight leading-none mb-2 italic uppercase">
                     Olá, Administrador! 👋
                 </h1>
-                <p className="text-gray-500 dark:text-gray-400">Aqui está o resumo operacional de hoje</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Aqui está o resumo operacional de hoje</p>
+                <div className="h-px w-full bg-gradient-to-r from-emerald-500/20 via-transparent to-transparent mt-4" />
             </div>
 
             {/* 2. Lembretes / Próximos Agendamentos */}
@@ -61,8 +62,8 @@ export default function DemoDashboardPage() {
                     <div key={app.id} className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm border-l-4 border-l-indigo-500 relative overflow-hidden group">
                         <div className="flex items-start justify-between">
                             <div className="space-y-1">
-                                <p className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider flex items-center gap-1">
-                                    <Calendar size={10} /> {app.date} às {app.time}
+                                <p className="text-[9px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest flex items-center gap-1">
+                                    <Calendar size={10} /> 08 de Fev às {app.time}
                                 </p>
                                 <h4 className="font-bold text-gray-800 dark:text-white text-sm">{app.title}</h4>
                                 <p className="text-xs text-gray-500 dark:text-gray-400">{app.client}</p>
@@ -157,8 +158,8 @@ export default function DemoDashboardPage() {
                                     <stat.icon size={20} />
                                 </div>
                                 <div>
-                                    <p className="text-2xl font-bold text-gray-800 dark:text-white leading-none mb-1">{stat.count}</p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase font-bold tracking-tight">{stat.label}</p>
+                                    <p className="text-3xl font-black text-gray-900 dark:text-white leading-none mb-1.5">{stat.count}</p>
+                                    <p className="text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">{stat.label}</p>
                                 </div>
                             </div>
                         </>
@@ -286,7 +287,7 @@ export default function DemoDashboardPage() {
                                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">{order.c}</p>
                                 </div>
                                 <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${order.s === 'completed' ? 'bg-emerald-100 text-emerald-700' :
-                                        order.s === 'in_progress' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'
+                                    order.s === 'in_progress' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'
                                     }`}>
                                     {order.s === 'completed' ? 'Concluído' : order.s === 'in_progress' ? 'Em Execução' : 'Pendente'}
                                 </span>

@@ -15,9 +15,9 @@ export function SystemPreview() {
                     </p>
                 </div>
 
-                <div className="relative mx-auto max-w-[1000px] group">
+                <div className="relative mx-auto max-w-[850px] group transition-all duration-500">
                     {/* Tablet Mockup Shell */}
-                    <div className="relative bg-slate-800 rounded-[3rem] p-4 shadow-2xl border-[12px] border-slate-700 shadow-emerald-500/10 transition-all duration-700 hover:shadow-emerald-500/20 hover:-translate-y-2">
+                    <div className="relative bg-slate-800 rounded-[2.5rem] p-3 shadow-2xl border-[8px] border-slate-700 shadow-emerald-500/10 transition-all duration-700 hover:shadow-emerald-500/20 hover:-translate-y-2">
                         {/* Device Buttons */}
                         <div className="absolute -left-[16px] top-24 w-[4px] h-12 bg-slate-600 rounded-l-md" />
                         <div className="absolute -left-[16px] top-40 w-[4px] h-12 bg-slate-600 rounded-l-md" />
@@ -30,7 +30,7 @@ export function SystemPreview() {
                         </div>
 
                         {/* Screen Content */}
-                        <div className="relative bg-white dark:bg-slate-950 rounded-[2rem] overflow-hidden aspect-[4/3] w-full border border-slate-700/50">
+                        <div className="relative bg-white dark:bg-slate-950 rounded-[1.8rem] overflow-hidden aspect-[4/3] w-full border border-slate-700/50">
                             <Suspense fallback={
                                 <div className="absolute inset-0 flex items-center justify-center bg-slate-900">
                                     <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
