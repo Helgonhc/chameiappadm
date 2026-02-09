@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Laudo de Cabine PrimÃ¡ria</title>
+    <title>Gerador de Laudo de Cabine Primária</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -189,6 +189,7 @@
                 box-shadow: none;
                 border: none;
                 font-size: 11pt;
+                overflow: hidden;
             }
         }
 
@@ -270,7 +271,8 @@
                 font-size: 20pt !important;
             }
         }
-    </style>`n    <script>
+    </style>`n
+    <script>
         // Protecao Anti-Copia ChameiApp
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => {
@@ -288,7 +290,7 @@
         <div id="formContainer" class="no-print overflow-y-auto pr-4">
             <div class="max-w-2xl mx-auto">
                 <div class="text-center mb-10">
-                    <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Gerador de Laudo de Cabine PrimÃ¡ria</h1>
+                    <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Gerador de Laudo de Cabine Primária</h1>
                     <p class="text-gray-600 mt-2">Preencha os campos para gerar o laudo.</p>
                 </div>
 
@@ -319,26 +321,26 @@
                             <div><label for="clientName" class="form-label">Nome do Cliente</label><input type="text"
                                     id="clientName" class="form-input" placeholder="Digite o nome do cliente..."
                                     required></div>
-                            <div class="md:col-span-2"><label for="clientAddress" class="form-label">EndereÃ§o do
+                            <div class="md:col-span-2"><label for="clientAddress" class="form-label">Endereço do
                                     Cliente</label><input type="text" id="clientAddress" class="form-input"
-                                    placeholder="Digite o endereÃ§o do cliente..." required></div>
-                            <div><label for="reportNumber" class="form-label">NÂº do Laudo</label><input type="text"
+                                    placeholder="Digite o endereço do cliente..." required></div>
+                            <div><label for="reportNumber" class="form-label">Nº do Laudo</label><input type="text"
                                     id="reportNumber" class="form-input" placeholder="Ex: 2025/001" required></div>
-                            <div><label for="reportRevision" class="form-label">RevisÃ£o</label><input type="text"
+                            <div><label for="reportRevision" class="form-label">Revisão</label><input type="text"
                                     id="reportRevision" class="form-input" placeholder="Rev. 0"></div>
-                            <div><label for="refProcesso" class="form-label">NÂº Ref. de Processo</label><input
+                            <div><label for="refProcesso" class="form-label">Nº Ref. de Processo</label><input
                                     type="text" id="refProcesso" class="form-input" placeholder="Opcional"></div>
-                            <div><label for="reportDate" class="form-label">Data da ManutenÃ§Ã£o</label><input type="date"
+                            <div><label for="reportDate" class="form-label">Data da Manutenção</label><input type="date"
                                     id="reportDate" class="form-input" required></div>
                             <div class="md:col-span-2"><label for="companyName" class="form-label">Nome da Sua Empresa
-                                    (RodapÃ©)</label><input type="text" id="companyName" class="form-input"
+                                    (Rodapé)</label><input type="text" id="companyName" class="form-input"
                                     placeholder="Digite o Nome da Sua Empresa..." required></div>
-                            <div class="md:col-span-2"><label for="companyAddress" class="form-label">EndereÃ§o da Sua
-                                    Empresa (RodapÃ©)</label><input type="text" id="companyAddress" class="form-input"
-                                    placeholder="Digite o endereÃ§o completo da sua empresa..." required></div>
-                            <div><label for="companyPhone" class="form-label">Telefone (RodapÃ©)</label><input type="tel"
+                            <div class="md:col-span-2"><label for="companyAddress" class="form-label">Endereço da Sua
+                                    Empresa (Rodapé)</label><input type="text" id="companyAddress" class="form-input"
+                                    placeholder="Digite o endereço completo da sua empresa..." required></div>
+                            <div><label for="companyPhone" class="form-label">Telefone (Rodapé)</label><input type="tel"
                                     id="companyPhone" class="form-input" placeholder="(xx) xxxxx-xxxx" required></div>
-                            <div><label for="companyEmail" class="form-label">E-mail (RodapÃ©)</label><input type="email"
+                            <div><label for="companyEmail" class="form-label">E-mail (Rodapé)</label><input type="email"
                                     id="companyEmail" class="form-input" placeholder="seu@email.com" required></div>
                         </div>
                     </div>
@@ -350,16 +352,13 @@
                     </div>
 
                     <div class="form-section">
-                        <h2 class="section-title">Textos do RelatÃ³rio</h2>
-                        <div><label for="introText" class="form-label">IntroduÃ§Ã£o</label><textarea id="introText"
+                        <h2 class="section-title">Textos do Relatório</h2>
+                        <div><label for="introText" class="form-label">Introdução</label><textarea id="introText"
                                 rows="5"
-                                class="form-textarea">Este laudo tÃ©cnico apresenta os resultados da manutenÃ§Ã£o preventiva realizada na cabine primÃ¡ria de mÃ©dia tensÃ£o, em conformidade com as recomendaÃ§Ãµes da norma ABNT NBR 14039. A subestaÃ§Ã£o, como ponto central de recebimento e distribuiÃ§Ã£o de energia elÃ©trica, requer inspeÃ§Ãµes periÃ³dicas para garantir sua operaÃ§Ã£o segura, confiÃ¡vel e eficiente, prevenindo falhas que possam resultar em interrupÃ§Ãµes de fornecimento e riscos operacionais.</textarea>
+                                class="form-textarea">Este laudo técnico apresenta os resultados da manutenção preventiva realizada na cabine primária de média tensão, em conformidade com as recomendações da norma ABNT NBR 14039. A subestação, como ponto central de recebimento e distribuição de energia elétrica, requer inspeções periódicas para garantir sua operação segura, confiável e eficiente, prevenindo falhas que possam resultar em interrupções de fornecimento e riscos operacionais.</textarea>
                         </div>
                         <div class="mt-4"><label for="objectiveText" class="form-label">Objetivo</label><textarea
-                                id="objectiveText" rows="5"
-                                class="form-textarea">O objetivo principal desta manutenÃ§Ã£o Ã© assegurar que todos os componentes da cabine primÃ¡ria estejam em perfeitas condiÃ§Ãµes de funcionamento. Isso inclui a verificaÃ§Ã£o da integridade fÃ­sica e operacional dos equipamentos, a limpeza tÃ©cnica de barramentos e isoladores, o reaperto de todas as conexÃµes para eliminar pontos de aquecimento, a realizaÃ§Ã£o de ensaios elÃ©tricos para avaliar a condiÃ§Ã£o dos ativos e a emissÃ£o de um relatÃ³rio documentado para fins de conformidade e histÃ³rico.</textarea>
-                        </div>
-                    </div>
+                                id="objectiveText" rows="5" </div>
 
                     <div class="form-section">
                         <div class="flex justify-between items-center">
@@ -400,7 +399,8 @@
                             role="alert">
                             <p class="font-bold">Resumo PrÃ¡tico para Laudo</p>
                             <p class="text-sm mt-2">
-                                â€œOs contatos de disjuntores de mÃ©dia tensÃ£o devem apresentar resistÃªncia tÃ­pica inferior
+                                â€œOs contatos de disjuntores de mÃ©dia tensÃ£o devem apresentar resistÃªncia tÃ­pica
+                                inferior
                                 a 100 ÂµÎ©, nÃ£o devendo haver diferenÃ§as significativas entre os polos. Valores acima
                                 deste limite ou com variaÃ§Ãµes superiores a 20% entre fases indicam necessidade de
                                 intervenÃ§Ã£o/manutenÃ§Ã£o.â€
@@ -448,7 +448,7 @@
         <div id="reportOutputContainer" class="flex flex-col h-full">
             <div
                 class="no-print bg-gray-800 text-white p-4 flex justify-between items-center sticky top-0 z-50 shadow-lg rounded-t-lg flex-shrink-0">
-                <h3 class="font-bold text-lg">PrÃ©-visualizaÃ§Ã£o ao Vivo</h3>
+                <h3 class="font-bold text-lg">Pré-visualização ao Vivo</h3>
                 <button id="downloadPdfBtn"
                     class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-wait">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -497,8 +497,8 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="md:col-span-2">
                     <label class="form-label">Tipo de Equipamento</label>
-                    <input type="text" class="form-input equipment-type" placeholder="Ex: Disjuntor de MÃ©dia TensÃ£o PVO"
-                        value="Disjuntor de MÃ©dia TensÃ£o PVO">
+                    <input type="text" class="form-input equipment-type"
+                        placeholder="Ex: Disjuntor de MÃ©dia TensÃ£o PVO" value="Disjuntor de MÃ©dia TensÃ£o PVO">
                 </div>
                 <div><input type="text" class="form-input equipment-fabricante" placeholder="Fabricante"></div>
                 <div><input type="text" class="form-input equipment-modelo" placeholder="Modelo/Tipo"></div>
@@ -1340,4 +1340,3 @@
 </body>
 
 </html>
-
