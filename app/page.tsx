@@ -17,6 +17,7 @@ import { Pricing } from '@/components/landing/Pricing';
 import { FAQ } from '@/components/landing/FAQ';
 import { Footer } from '@/components/landing/Footer';
 import { DemoModal } from '@/components/landing/DemoModal';
+import { SystemPreview } from '@/components/landing/SystemPreview';
 
 function LandingContent() {
   const searchParams = useSearchParams();
@@ -87,6 +88,8 @@ function LandingContent() {
           setShowDemoModal={() => openDemoWithPlan('Start')}
           scrollToSection={scrollToSection}
         />
+
+        <SystemPreview />
 
         <Features />
 
