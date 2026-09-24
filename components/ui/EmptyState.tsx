@@ -9,8 +9,8 @@ interface EmptyStateProps {
 }
 
 export const EmptyState: React.FC<EmptyStateProps> = ({
-  title = 'Nenhuma oferta encontrada no momento',
-  description = 'Não encontramos oportunidades para o filtro selecionado. Tente pesquisar por outro termo ou explore todas as categorias.',
+  title = 'Nenhuma oferta cadastrada no momento',
+  description = 'Não encontramos oportunidades ativas para este filtro. Volte em breve para conferir novas ofertas verificadas.',
   actionText = 'Ver todas as ofertas',
   actionHref = '/ofertas',
 }) => {
@@ -39,7 +39,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       </p>
 
       {actionHref && (
-        <Link href={actionHref} className="btn-precim-primary">
+        <Link href={actionHref} className="btn-chamei-primary">
           {actionText}
         </Link>
       )}

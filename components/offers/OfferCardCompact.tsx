@@ -10,7 +10,7 @@ interface OfferCardCompactProps {
 
 export const OfferCardCompact: React.FC<OfferCardCompactProps> = ({ offer }) => {
   return (
-    <div className="card-precim p-3 flex items-center gap-3 bg-white hover:border-[var(--color-brand-primary-600)] transition-all">
+    <div className="card-chamei p-3 flex items-center gap-3 bg-white hover:border-[var(--color-brand-primary-600)] transition-all">
       <div className="relative w-20 h-20 shrink-0 bg-neutral-100 rounded overflow-hidden p-1">
         <Image
           src={offer.image_url}
@@ -44,7 +44,7 @@ export const OfferCardCompact: React.FC<OfferCardCompactProps> = ({ offer }) => 
         href={`/go/${offer.id}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="btn-precim-accent text-[11px] px-2.5 py-1.5 shrink-0 self-center font-bold"
+        className="btn-chamei-accent text-[11px] px-2.5 py-1.5 shrink-0 self-center font-bold"
       >
         <span>Ver</span>
       </a>

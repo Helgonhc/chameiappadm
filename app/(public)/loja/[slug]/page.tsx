@@ -44,7 +44,7 @@ export default async function MerchantPage({ params }: MerchantPageProps) {
           href={merchant.website_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="btn-precim-primary text-xs font-bold shrink-0"
+          className="btn-chamei-primary text-xs font-bold shrink-0"
         >
           Visitar {merchant.name} →
         </a>

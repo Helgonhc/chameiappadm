@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { OfferService } from '../../../../lib/services/offer.service';
-import { MarkerPrecim } from '../../../../components/ui/MarkerPrecim';
+import { ChameiMarker } from '../../../../components/ui/ChameiMarker';
 import { PriceTag } from '../../../../components/ui/PriceTag';
 import { CopyCouponButton } from '../../../../components/offers/CopyCouponButton';
 import { OfferCardCompact } from '../../../../components/offers/OfferCardCompact';
@@ -26,12 +26,18 @@ export async function generateMetadata({ params }: OfferDetailPageProps): Promis
     };
   }
 
+  const canonicalUrl = `${SITE_CONFIG.domain}/ofertas/${offer.slug}`;
+
   return {
     title: `${offer.title} | ${SITE_CONFIG.name}`,
     description: offer.description || `Confira a oferta de ${offer.title} no ${SITE_CONFIG.name}.`,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
       title: `${offer.title} — R$ ${offer.current_price.toFixed(2)}`,
       description: offer.description || `Preço verificado no ${SITE_CONFIG.name}.`,
+      url: canonicalUrl,
       images: [
         {
           url: offer.image_url,
@@ -57,19 +63,17 @@ export default async function OfferDetailPage({ params }: OfferDetailPageProps) 
     .filter((o) => o.id !== offer.id && (o.category_id === offer.category_id || o.merchant_id === offer.merchant_id))
     .slice(0, 4);
 
-  // JSON-LD Dados Estruturados
+  // JSON-LD Dados Estruturados Estritos (Apenas dados reais existentes)
   const jsonLd = {
     '@context': 'https://schema.org/',
     '@type': 'Product',
     name: offer.title,
     image: [offer.image_url],
-    description: offer.description,
+    description: offer.description || undefined,
     offers: {
       '@type': 'Offer',
       priceCurrency: 'BRL',
       price: offer.current_price,
-      itemCondition: 'https://schema.org/NewCondition',
-      availability: 'https://schema.org/InStock',
       url: `${SITE_CONFIG.domain}/go/${offer.id}`,
     },
   };
@@ -105,7 +109,7 @@ export default async function OfferDetailPage({ params }: OfferDetailPageProps) 
         <div className="bg-white rounded-xl border border-[var(--color-neutral-200)] shadow-card overflow-hidden p-6 md:p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
             
-            {/* Lado Esquerdo: Imagem Ampliada */}
+            {/* Lado Esquerdo: Imagem */}
             <div className="relative w-full h-72 md:h-96 bg-neutral-50 rounded-lg p-6 flex items-center justify-center border border-neutral-100 overflow-hidden">
               <Image
                 src={offer.image_url}
@@ -116,7 +120,7 @@ export default async function OfferDetailPage({ params }: OfferDetailPageProps) 
                 priority
               />
               <div className="absolute top-3 left-3 z-10">
-                <MarkerPrecim size="md" label="OFERTA VERIFICADA" />
+                <ChameiMarker size="md" label="OFERTA VERIFICADA" />
               </div>
             </div>
 
@@ -136,7 +140,7 @@ export default async function OfferDetailPage({ params }: OfferDetailPageProps) 
                   )}
                   {offer.free_shipping && (
                     <span className="text-xs font-bold text-emerald-700 bg-emerald-100 px-3 py-1 rounded">
-                      ✓ Frete Grátis Disponível
+                      ✓ Frete Grátis
                     </span>
                   )}
                 </div>
@@ -155,7 +159,7 @@ export default async function OfferDetailPage({ params }: OfferDetailPageProps) 
               <div className="space-y-6 pt-4 border-t border-[var(--color-neutral-200)]">
                 <div>
                   <span className="text-xs text-[var(--color-neutral-500)] font-medium block mb-1">
-                    Preço verificado no agregador:
+                    Preço verificado no portal:
                   </span>
                   <PriceTag
                     currentPrice={offer.current_price}
@@ -167,7 +171,7 @@ export default async function OfferDetailPage({ params }: OfferDetailPageProps) 
                 {offer.coupon_code && (
                   <div className="bg-purple-50 border border-purple-200 p-4 rounded-lg space-y-2">
                     <span className="text-xs font-bold text-purple-900 block">
-                      🎟️ Cupom de desconto exclusivo:
+                      🎟️ Cupom de desconto ativo:
                     </span>
                     <CopyCouponButton code={offer.coupon_code} />
                   </div>
@@ -179,9 +183,9 @@ export default async function OfferDetailPage({ params }: OfferDetailPageProps) 
                     href={`/go/${offer.id}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn-precim-accent w-full text-center text-base font-extrabold justify-center py-4 rounded-lg shadow-md"
+                    className="btn-chamei-accent w-full text-center text-base font-extrabold justify-center py-4 rounded-lg shadow-md"
                   >
-                    <span>Ir para a loja oficial ({offer.merchant?.name || 'Parceiro'})</span>
+                    <span>Ir para a loja ({offer.merchant?.name || 'Parceiro'})</span>
                     <svg
                       width="20"
                       height="20"
@@ -198,7 +202,7 @@ export default async function OfferDetailPage({ params }: OfferDetailPageProps) 
                     </svg>
                   </a>
                   <p className="text-[11px] text-[var(--color-neutral-500)] text-center">
-                    Você será redirecionado com segurança para o site oficial do comerciante.
+                    Você será redirecionado para o site oficial da loja com segurança.
                   </p>
                 </div>
               </div>

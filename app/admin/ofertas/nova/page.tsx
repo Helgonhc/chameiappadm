@@ -34,7 +34,6 @@ export default function NovaOfertaPage() {
     setErrors({});
     setSuccessMessage('');
 
-    // Gerar slug automático se vazio
     const autoSlug = formData.slug?.trim()
       ? formData.slug.trim()
       : formData.title
@@ -66,7 +65,6 @@ export default function NovaOfertaPage() {
 
     setIsSubmitting(true);
 
-    // Simulação de salvamento no Supabase
     setTimeout(() => {
       setIsSubmitting(false);
       setSuccessMessage('Oferta cadastrada com sucesso! Redirecionando...');
@@ -84,7 +82,7 @@ export default function NovaOfertaPage() {
             Cadastrar Nova Oferta Real
           </h1>
           <p className="text-xs text-neutral-500 mt-1">
-            Preencha as informações do produto oficial obtido na Amazon ou Mercado Livre.
+            Preencha as informações da promoção obtida na Amazon Brasil ou Mercado Livre.
           </p>
         </div>
 
@@ -103,7 +101,7 @@ export default function NovaOfertaPage() {
               type="text"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              placeholder="Ex: Smart TV 50 4K UHD LED Samsung 50CU7700"
+              placeholder="Ex: Smart TV 50 4K UHD LED Samsung"
               className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5 focus:ring-2 focus:ring-[var(--color-brand-primary-700)] focus:outline-none"
               required
             />
@@ -180,7 +178,7 @@ export default function NovaOfertaPage() {
                 type="url"
                 value={formData.image_url}
                 onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                placeholder="https://images.unsplash.com/..."
+                placeholder="https://..."
                 className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5"
                 required
               />
@@ -188,7 +186,7 @@ export default function NovaOfertaPage() {
             </div>
 
             <div>
-              <label className="block mb-1">URL Direta de Destino do Produto (Loja Parceira) *</label>
+              <label className="block mb-1">URL Direta de Destino do Produto (destination_url) *</label>
               <input
                 type="url"
                 value={formData.destination_url}
@@ -201,12 +199,23 @@ export default function NovaOfertaPage() {
             </div>
 
             <div>
+              <label className="block mb-1">URL de Afiliado Aprovada (affiliate_url) (Opcional)</label>
+              <input
+                type="url"
+                value={formData.affiliate_url || ''}
+                onChange={(e) => setFormData({ ...formData, affiliate_url: e.target.value })}
+                placeholder="https://amzn.to/..."
+                className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5"
+              />
+            </div>
+
+            <div>
               <label className="block mb-1">Cupom de Desconto (Opcional)</label>
               <input
                 type="text"
                 value={formData.coupon_code || ''}
                 onChange={(e) => setFormData({ ...formData, coupon_code: e.target.value })}
-                placeholder="Ex: PRECIM10"
+                placeholder="Ex: CHAMEI10"
                 className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5"
               />
             </div>
@@ -219,7 +228,7 @@ export default function NovaOfertaPage() {
               rows={4}
               value={formData.description || ''}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Resumo das especificações do produto..."
+              placeholder="Resumo das especificações..."
               className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5"
             />
           </div>
@@ -233,7 +242,7 @@ export default function NovaOfertaPage() {
                 onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
                 className="w-4 h-4 text-[var(--color-brand-primary-700)] rounded"
               />
-              <span>Marcar como Destaque Principal (Hero)</span>
+              <span>Marcar como Destaque Principal</span>
             </label>
 
             <label className="flex items-center gap-2 cursor-pointer">
@@ -258,7 +267,7 @@ export default function NovaOfertaPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="btn-precim-primary text-xs font-bold"
+              className="btn-chamei-primary text-xs font-bold"
             >
               {isSubmitting ? 'Cadastrando...' : 'Salvar e Publicar Oferta'}
             </button>

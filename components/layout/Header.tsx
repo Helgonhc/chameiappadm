@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { SITE_CONFIG } from '../../lib/config/site.config';
-import { MarkerPrecim } from '../ui/MarkerPrecim';
+import { ChameiMarker } from '../ui/ChameiMarker';
 
 export const Header: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -39,7 +39,7 @@ export const Header: React.FC = () => {
           
           {/* Logo & Marca nominal */}
           <Link href="/" className="flex items-center gap-2 shrink-0 group">
-            <MarkerPrecim size="sm" label="PRECIM" className="bg-[var(--color-brand-accent-500)] text-white" />
+            <ChameiMarker size="sm" label="CHAMEIAPP" className="bg-[var(--color-brand-accent-500)] text-white" />
             <div className="flex flex-col">
               <span className="font-extrabold text-xl tracking-tight text-white group-hover:text-[var(--color-brand-accent-400)] transition-colors">
                 {SITE_CONFIG.name}
@@ -63,7 +63,7 @@ export const Header: React.FC = () => {
             <button
               type="submit"
               className="absolute right-2 top-1/2 -translate-y-1/2 text-emerald-200 hover:text-white p-1"
-              aria-label="Pesquisar"
+              aria-label="Pesquisar ofertas"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="11" cy="11" r="8" />
@@ -96,7 +96,7 @@ export const Header: React.FC = () => {
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="p-2 text-emerald-100 hover:text-white focus:outline-none"
-              aria-label="Abrir Menu"
+              aria-label="Abrir Menu de Navegação"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 {isMobileMenuOpen ? (
@@ -122,6 +122,7 @@ export const Header: React.FC = () => {
             <button
               type="submit"
               className="absolute right-2 top-1/2 -translate-y-1/2 text-emerald-200 p-1"
+              aria-label="Pesquisar no CHAMEIAPP"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="11" cy="11" r="8" />
@@ -173,7 +174,7 @@ export const Header: React.FC = () => {
           <Link
             href="/admin/login"
             onClick={() => setIsMobileMenuOpen(false)}
-            className="block text-center mt-4 btn-precim-accent w-full text-xs font-bold"
+            className="block text-center mt-4 btn-chamei-accent w-full text-xs font-bold"
           >
             Painel Administrativo
           </Link>

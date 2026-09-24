@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { SITE_CONFIG } from '../../lib/config/site.config';
-import { MarkerPrecim } from '../ui/MarkerPrecim';
+import { ChameiMarker } from '../ui/ChameiMarker';
 
 export const Footer: React.FC = () => {
   return (
@@ -12,7 +12,7 @@ export const Footer: React.FC = () => {
           {/* Coluna 1: Marca & Visão */}
           <div className="md:col-span-2 space-y-4">
             <div className="flex items-center gap-2">
-              <MarkerPrecim size="sm" label="PRECIM" className="bg-[var(--color-brand-accent-500)] text-white" />
+              <ChameiMarker size="sm" label="CHAMEIAPP" className="bg-[var(--color-brand-accent-500)] text-white" />
               <span className="font-extrabold text-2xl tracking-tight">
                 {SITE_CONFIG.name}
               </span>
@@ -20,8 +20,11 @@ export const Footer: React.FC = () => {
             <p className="text-sm text-emerald-100 leading-relaxed max-w-md">
               {SITE_CONFIG.subtagline}
             </p>
-            <div className="text-xs text-emerald-200/80 bg-[var(--color-brand-primary-800)] p-3 rounded border border-[var(--color-brand-primary-700)] max-w-md">
-              <strong>💡 Isenção e Transparência:</strong> O {SITE_CONFIG.name} é um agregador independente. Não vendemos produtos diretamente nem processamos pagamentos. Ao clicar em nossas ofertas, você é redirecionado para lojas parceiras oficiais.
+            <div className="text-xs text-emerald-200/90 bg-[var(--color-brand-primary-800)] p-3 rounded border border-[var(--color-brand-primary-700)] max-w-md space-y-1">
+              <strong>💡 Divulgação de Afiliados:</strong>
+              <p>
+                O {SITE_CONFIG.name} é um portal independente agregador de ofertas. Participamos de programas de afiliados, incluindo o Programa de Associados da Amazon (Tracking ID: {SITE_CONFIG.amazonAssociateTag}) e o Programa de Afiliados do Mercado Livre. Ao clicar nos links e concluir uma compra, podemos receber uma comissão sem qualquer custo adicional para você.
+              </p>
             </div>
           </div>
 
@@ -38,7 +41,7 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <Link href="/loja/amazon" className="text-emerald-100 hover:text-white transition-colors">
-                  Ofertas Amazon
+                  Ofertas Amazon Brasil
                 </Link>
               </li>
               <li>
@@ -48,7 +51,7 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <Link href="/como-funciona" className="text-emerald-100 hover:text-white transition-colors">
-                  Como Selecionamos Ofertas
+                  Como Funciona o Agregador
                 </Link>
               </li>
             </ul>
@@ -87,7 +90,7 @@ export const Footer: React.FC = () => {
         {/* Rodapé Inferior */}
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-emerald-200/70 gap-4">
           <p>
-            © {new Date().getFullYear()} {SITE_CONFIG.legalName}. Todos os direitos reservados. {SITE_CONFIG.region}.
+            © {new Date().getFullYear()} {SITE_CONFIG.legalName || SITE_CONFIG.name}. Todos os direitos reservados. {SITE_CONFIG.region}.
           </p>
           <p className="font-medium text-emerald-200">
             &quot;{SITE_CONFIG.tagline}&quot;

@@ -4,7 +4,7 @@ import { SITE_CONFIG } from '../../../lib/config/site.config';
 
 export const metadata = {
   title: `Como Funciona | ${SITE_CONFIG.name}`,
-  description: `Entenda didaticamente o funcionamento do agregador de ofertas ${SITE_CONFIG.name}.`,
+  description: `Entenda o funcionamento do agregador de ofertas ${SITE_CONFIG.name}.`,
 };
 
 export default function ComoFuncionaPage() {
@@ -13,13 +13,13 @@ export default function ComoFuncionaPage() {
       <div className="bg-white p-8 rounded-xl border border-[var(--color-neutral-200)] shadow-card space-y-6">
         <div className="space-y-2 border-b border-[var(--color-neutral-200)] pb-6">
           <span className="text-xs font-bold text-[var(--color-brand-primary-700)] uppercase tracking-wider">
-            Guia Didático
+            Funcionamento do Agregador
           </span>
           <h1 className="text-3xl font-black text-[var(--color-neutral-900)]">
             Como Funciona o {SITE_CONFIG.name}
           </h1>
           <p className="text-sm text-[var(--color-neutral-700)]">
-            Entenda passo a passo como ajudamos você a economizar tempo e dinheiro.
+            Entenda como organizamos as ofertas e direcionamos você para as lojas oficiais.
           </p>
         </div>
 
@@ -29,10 +29,10 @@ export default function ComoFuncionaPage() {
               1
             </div>
             <h3 className="font-bold text-lg text-[var(--color-neutral-900)]">
-              1. Monitoramento & Seleção
+              1. Seleção de Ofertas
             </h3>
             <p className="text-xs text-[var(--color-neutral-700)] leading-relaxed">
-              Varremos os maiores ecommerces do Brasil (como Amazon Brasil e Mercado Livre) em busca de quedas reais de preço e cupons ativos.
+              Registramos produtos com promoções ativas na Amazon Brasil, Mercado Livre e principais varejistas online.
             </p>
           </div>
 
@@ -41,10 +41,10 @@ export default function ComoFuncionaPage() {
               2
             </div>
             <h3 className="font-bold text-lg text-[var(--color-neutral-900)]">
-              2. Validação e Publicação
+              2. Validação e Informações
             </h3>
             <p className="text-xs text-[var(--color-neutral-700)] leading-relaxed">
-              Verificamos se o produto tem boa reputação, entrega confiável e frete justo antes de ser publicado na nossa vitrine.
+              Exibimos o preço atualizado, eventual preço anterior riscado, cupom de desconto quando existente e condições de frete.
             </p>
           </div>
 
@@ -56,7 +56,7 @@ export default function ComoFuncionaPage() {
               3. Clique e Redirecionamento
             </h3>
             <p className="text-xs text-[var(--color-neutral-700)] leading-relaxed">
-              Ao clicar no botão &quot;Ver oferta na loja&quot;, você é redirecionado via link seguro diretamente para o checkout ou página oficial do produto.
+              Ao clicar em &quot;Ir para a loja&quot;, você é levado com segurança diretamente para o site oficial do comerciante.
             </p>
           </div>
 
@@ -65,16 +65,16 @@ export default function ComoFuncionaPage() {
               4
             </div>
             <h3 className="font-bold text-lg text-[var(--color-neutral-900)]">
-              4. Compra Segura na Loja Oficial
+              4. Compra na Loja Parceira
             </h3>
             <p className="text-xs text-[var(--color-neutral-700)] leading-relaxed">
-              Toda a transação, pagamento e entrega são realizados diretamente pelo marketplace oficial. Nós não retemos seus dados de cartão ou endereço.
+              A compra, o pagamento e a entrega ocorrem integralmente no ambiente seguro da loja oficial.
             </p>
           </div>
         </div>
 
         <div className="pt-6 text-center">
-          <Link href="/ofertas" className="btn-precim-primary">
+          <Link href="/ofertas" className="btn-chamei-primary">
             Explorar ofertas verificadas agora →
           </Link>
         </div>

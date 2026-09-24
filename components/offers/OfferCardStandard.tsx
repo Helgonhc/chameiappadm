@@ -2,7 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Offer } from '../../lib/types/database';
-import { MarkerPrecim } from '../ui/MarkerPrecim';
+import { ChameiMarker } from '../ui/ChameiMarker';
 import { PriceTag } from '../ui/PriceTag';
 import { CopyCouponButton } from './CopyCouponButton';
 
@@ -12,7 +12,7 @@ interface OfferCardStandardProps {
 
 export const OfferCardStandard: React.FC<OfferCardStandardProps> = ({ offer }) => {
   return (
-    <div className="card-precim flex flex-col justify-between overflow-hidden bg-white h-full relative group">
+    <div className="card-chamei flex flex-col justify-between overflow-hidden bg-white h-full relative group">
       <div>
         {/* Container da Imagem */}
         <div className="relative w-full h-48 bg-neutral-100 p-4 flex items-center justify-center overflow-hidden">
@@ -24,7 +24,7 @@ export const OfferCardStandard: React.FC<OfferCardStandardProps> = ({ offer }) =
             className="object-contain group-hover:scale-105 transition-transform duration-300"
           />
           <div className="absolute top-2 left-2 z-10">
-            <MarkerPrecim size="sm" label="OFERTA" />
+            <ChameiMarker size="sm" label="OFERTA" />
           </div>
           {offer.free_shipping && (
             <div className="absolute bottom-2 right-2 z-10 bg-emerald-700 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-xs">
@@ -76,7 +76,7 @@ export const OfferCardStandard: React.FC<OfferCardStandardProps> = ({ offer }) =
           href={`/go/${offer.id}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="btn-precim-primary w-full text-center text-xs font-bold justify-center"
+          className="btn-chamei-primary w-full text-center text-xs font-bold justify-center"
         >
           <span>Ir para a loja</span>
           <svg

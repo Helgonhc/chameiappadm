@@ -2,7 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Offer } from '../../lib/types/database';
-import { MarkerPrecim } from '../ui/MarkerPrecim';
+import { ChameiMarker } from '../ui/ChameiMarker';
 import { PriceTag } from '../ui/PriceTag';
 import { CopyCouponButton } from './CopyCouponButton';
 
@@ -12,7 +12,7 @@ interface OfferCardFeaturedProps {
 
 export const OfferCardFeatured: React.FC<OfferCardFeaturedProps> = ({ offer }) => {
   return (
-    <div className="card-precim overflow-hidden border-2 border-[var(--color-brand-primary-600)] bg-white p-4 md:p-6 mb-8 relative">
+    <div className="card-chamei overflow-hidden border-2 border-[var(--color-brand-primary-600)] bg-white p-4 md:p-6 mb-8 relative">
       <div className="flex flex-col md:flex-row items-center gap-6">
         {/* Imagem do Produto */}
         <div className="relative w-full md:w-80 h-64 md:h-72 shrink-0 bg-neutral-100 rounded-lg overflow-hidden flex items-center justify-center p-4">
@@ -25,7 +25,7 @@ export const OfferCardFeatured: React.FC<OfferCardFeaturedProps> = ({ offer }) =
             priority
           />
           <div className="absolute top-3 left-3 z-10">
-            <MarkerPrecim label="DESTAQUE DO DIA" size="md" />
+            <ChameiMarker label="DESTAQUE DO DIA" size="md" />
           </div>
         </div>
 
@@ -81,7 +81,7 @@ export const OfferCardFeatured: React.FC<OfferCardFeaturedProps> = ({ offer }) =
                 href={`/go/${offer.id}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-precim-accent text-center justify-center font-bold"
+                className="btn-chamei-accent text-center justify-center font-bold"
               >
                 <span>Ver oferta na loja</span>
                 <svg

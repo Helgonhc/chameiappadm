@@ -21,27 +21,29 @@ export default function DivulgacaoAfiliadosPage() {
 
         <div className="prose prose-emerald max-w-none text-sm leading-relaxed text-[var(--color-neutral-700)] space-y-4">
           <p>
-            Em conformidade com as diretrizes de transparência e defesa do consumidor, o <strong>{SITE_CONFIG.name}</strong> declara que é um portal agregador de ofertas participante de programas de afiliados oficiais de grandes empresas do varejo eletrônico, incluindo (mas não se limitando a) o <strong>Programa de Associados da Amazon Brasil</strong> e o <strong>Programa de Afiliados do Mercado Livre</strong>.
+            O <strong>{SITE_CONFIG.name}</strong> é um portal agregador de ofertas e promoções. Em cumprimento às boas práticas comerciais e de transparência com o consumidor, declaramos que participamos de programas de afiliados oficiais do varejo e-commerce, incluindo:
           </p>
+
+          <ul className="list-disc pl-5 space-y-2">
+            <li>
+              <strong>Programa de Associados da Amazon Brasil:</strong> Como participantes do Programa de Associados da Amazon (Tracking ID: <code>{SITE_CONFIG.amazonAssociateTag}</code>), divulgamos links de produtos disponíveis na Amazon Brasil (<code>https://www.amazon.com.br/</code>).
+            </li>
+            <li>
+              <strong>Programa de Afiliados do Mercado Livre:</strong> Divulgamos links de produtos disponíveis no Mercado Livre (<code>https://www.mercadolivre.com.br/</code>).
+            </li>
+          </ul>
 
           <h2 className="text-lg font-bold text-[var(--color-neutral-900)] pt-2">
             Como Funciona o Comissionamento?
           </h2>
           <p>
-            Quando você clica em um link de oferta publicado em nosso site e efetua uma compra na loja de destino, o comerciante parceiro nos paga uma pequena comissão pela indicação.
+            Quando você clica em um link de oferta publicado no {SITE_CONFIG.name} e conclui uma compra no site do comerciante parceiro, podemos receber uma pequena comissão de indicação.
           </p>
           <ul className="list-disc pl-5 space-y-1">
-            <li><strong>Sem Custo Adicional:</strong> O valor do produto para você é exatamente o mesmo, com ou sem a comissão de afiliado.</li>
-            <li><strong>Isenção de Influência:</strong> Nosso processo de seleção e indicação de ofertas prioriza a relevância da promoção e o desconto real, não a margem de comissão.</li>
-            <li><strong>Independência:</strong> O {SITE_CONFIG.name} não é proprietário nem possui vínculo de controle sobre os marketplaces citados.</li>
+            <li><strong>Sem Custo Adicional:</strong> O valor do produto é exatamente o mesmo anunciado pela loja parceira, não existindo qualquer acréscimo para você.</li>
+            <li><strong>Independência:</strong> O {SITE_CONFIG.name} não é proprietário nem possui vínculo de controle sobre os ecommerces parceiros.</li>
+            <li><strong>Isenção de Preço e Estoque:</strong> Os preços, fretes e disponibilidade de estoque são de inteira responsabilidade das lojas parceiras no momento da finalização da compra.</li>
           </ul>
-
-          <h2 className="text-lg font-bold text-[var(--color-neutral-900)] pt-2">
-            Compromisso com o Leitor
-          </h2>
-          <p>
-            Esta receita é o que nos permite manter a infraestrutura do site ativa, a curadoria constante e o acesso 100% gratuito para todos os visitantes sem a necessidade de cadastros pagos ou anúncios visuais intrusivos.
-          </p>
         </div>
       </div>
     </div>

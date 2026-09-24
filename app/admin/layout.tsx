@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { SITE_CONFIG } from '../../lib/config/site.config';
-import { MarkerPrecim } from '../../components/ui/MarkerPrecim';
+import { ChameiMarker } from '../../components/ui/ChameiMarker';
 
 export const metadata = {
   title: `Painel Admin | ${SITE_CONFIG.name}`,
@@ -21,7 +21,7 @@ export default function AdminLayout({
       {/* Navbar do Admin */}
       <header className="bg-[var(--color-neutral-900)] text-white px-6 py-4 flex items-center justify-between border-b border-neutral-800">
         <div className="flex items-center gap-3">
-          <MarkerPrecim size="sm" label="ADMIN" className="bg-[var(--color-brand-accent-500)]" />
+          <ChameiMarker size="sm" label="ADMIN" className="bg-[var(--color-brand-accent-500)]" />
           <Link href="/admin/dashboard" className="font-bold text-lg hover:text-[var(--color-brand-accent-400)]">
             {SITE_CONFIG.name} Admin
           </Link>
@@ -32,7 +32,7 @@ export default function AdminLayout({
             Dashboard
           </Link>
           <Link href="/admin/ofertas/nova" className="px-3 py-1.5 rounded bg-[var(--color-brand-primary-700)] text-white hover:bg-[var(--color-brand-primary-600)]">
-            + Nova Oferta
+            + Nova Oferta Real
           </Link>
           <Link href="/" target="_blank" className="text-neutral-400 hover:text-white">
             Ver Site Público ↗
@@ -46,7 +46,7 @@ export default function AdminLayout({
       </main>
 
       <footer className="bg-neutral-900 text-neutral-400 text-xs py-4 px-6 text-center border-t border-neutral-800">
-        Painel Restrito — {SITE_CONFIG.legalName}
+        Painel Restrito — {SITE_CONFIG.legalName || SITE_CONFIG.name}
       </footer>
     </div>
   );

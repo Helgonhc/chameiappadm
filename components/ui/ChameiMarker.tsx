@@ -1,12 +1,12 @@
 import React from 'react';
 
-interface MarkerPrecimProps {
+interface ChameiMarkerProps {
   label?: string;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
 }
 
-export const MarkerPrecim: React.FC<MarkerPrecimProps> = ({
+export const ChameiMarker: React.FC<ChameiMarkerProps> = ({
   label = 'OFERTA VERIFICADA',
   size = 'md',
   className = '',
@@ -37,7 +37,6 @@ export const MarkerPrecim: React.FC<MarkerPrecimProps> = ({
         xmlns="http://www.w3.org/2000/svg"
         className="shrink-0"
       >
-        {/* Relevo / Montanhas estilizadas */}
         <path
           d="M3 17L9 7L13 13L17 7L21 17H3Z"
           fill="var(--color-brand-accent-400)"
@@ -45,7 +44,6 @@ export const MarkerPrecim: React.FC<MarkerPrecimProps> = ({
           strokeWidth="1.5"
           strokeLinejoin="round"
         />
-        {/* Marcador Descendente (Seta de Queda de Preço) */}
         <path
           d="M12 12V21M12 21L9 18M12 21L15 18"
           stroke="var(--color-white)"

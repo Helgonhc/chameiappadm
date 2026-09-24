@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { SITE_CONFIG } from '../../../lib/config/site.config';
-import { MarkerPrecim } from '../../../components/ui/MarkerPrecim';
+import { ChameiMarker } from '../../../components/ui/ChameiMarker';
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState('');
@@ -23,7 +23,6 @@ export default function AdminLoginPage() {
 
     setIsLoading(true);
 
-    // Simulação de login administrativo
     setTimeout(() => {
       setIsLoading(false);
       router.push('/admin/dashboard');
@@ -34,7 +33,7 @@ export default function AdminLoginPage() {
     <div className="max-w-md mx-auto py-12">
       <div className="bg-white p-8 rounded-xl border border-neutral-200 shadow-card space-y-6">
         <div className="text-center space-y-2">
-          <MarkerPrecim size="sm" label="ÁREA RESTRITA" className="mx-auto" />
+          <ChameiMarker size="sm" label="ÁREA RESTRITA" className="mx-auto" />
           <h1 className="text-2xl font-black text-neutral-900">
             Acesso Administrativo
           </h1>
@@ -81,7 +80,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="btn-precim-primary w-full text-center justify-center font-bold py-3"
+            className="btn-chamei-primary w-full text-center justify-center font-bold py-3"
           >
             {isLoading ? 'Autenticando...' : 'Entrar no Painel'}
           </button>

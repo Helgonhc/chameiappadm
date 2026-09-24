@@ -34,7 +34,6 @@ export default function ContatoPage() {
 
     setIsSubmitting(true);
 
-    // Simulação de envio com sucesso
     setTimeout(() => {
       setIsSubmitting(false);
       setIsSuccess(true);
@@ -53,7 +52,7 @@ export default function ContatoPage() {
             Fale Conosco
           </h1>
           <p className="text-sm text-[var(--color-neutral-700)]">
-            Dúvidas, sugestões de ofertas ou parcerias? Envie uma mensagem para a equipe do {SITE_CONFIG.name}.
+            Dúvidas ou sugestões? Envie uma mensagem para a equipe do {SITE_CONFIG.name}.
           </p>
         </div>
 
@@ -68,7 +67,7 @@ export default function ContatoPage() {
             </p>
             <button
               onClick={() => setIsSuccess(false)}
-              className="btn-precim-primary text-xs"
+              className="btn-chamei-primary text-xs"
             >
               Enviar outra mensagem
             </button>
@@ -111,7 +110,7 @@ export default function ContatoPage() {
                 type="text"
                 value={formData.subject}
                 onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                placeholder="Ex: Sugestão de produto ou dúvida"
+                placeholder="Ex: Sugestão de oferta ou dúvida"
                 className="w-full border border-neutral-300 rounded-md p-2.5 text-sm focus:ring-2 focus:ring-[var(--color-brand-primary-700)] focus:outline-none"
               />
               {errors.subject && <p className="text-xs text-red-600 mt-1">{errors.subject}</p>}
@@ -134,7 +133,7 @@ export default function ContatoPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="btn-precim-accent w-full text-center justify-center font-bold"
+              className="btn-chamei-accent w-full text-center justify-center font-bold"
             >
               {isSubmitting ? 'Enviando...' : 'Enviar Mensagem'}
             </button>

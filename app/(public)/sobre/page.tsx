@@ -1,10 +1,10 @@
 import React from 'react';
 import { SITE_CONFIG } from '../../../lib/config/site.config';
-import { MarkerPrecim } from '../../../components/ui/MarkerPrecim';
+import { ChameiMarker } from '../../../components/ui/ChameiMarker';
 
 export const metadata = {
   title: `Sobre Nós | ${SITE_CONFIG.name}`,
-  description: `Conheça a história e transparência do portal ${SITE_CONFIG.name}.`,
+  description: `Conheça a história e proposta de valor do portal ${SITE_CONFIG.name}.`,
 };
 
 export default function SobrePage() {
@@ -12,7 +12,7 @@ export default function SobrePage() {
     <div className="max-w-4xl mx-auto space-y-8 py-4">
       <div className="bg-white p-8 rounded-xl border border-[var(--color-neutral-200)] shadow-card space-y-6">
         <div className="space-y-2 border-b border-[var(--color-neutral-200)] pb-6">
-          <MarkerPrecim size="sm" label="TRANSPARÊNCIA & PROPÓSITO" />
+          <ChameiMarker size="sm" label="TRANSPARÊNCIA & PROPÓSITO" />
           <h1 className="text-3xl font-black text-[var(--color-neutral-900)]">
             Sobre o {SITE_CONFIG.name}
           </h1>
@@ -23,29 +23,29 @@ export default function SobrePage() {
 
         <div className="prose prose-emerald max-w-none text-sm leading-relaxed text-[var(--color-neutral-700)] space-y-4">
           <p>
-            O <strong>{SITE_CONFIG.name}</strong> nasceu do desejo de simplificar a busca por boas oportunidades de compra na internet brasileira. Em um ambiente repleto de promoções maquiadas, nosso objetivo é oferecer um portal limpo, direto e confiável.
+            O <strong>{SITE_CONFIG.name}</strong> é um portal independente agregador de ofertas e promoções. Nosso objetivo é apresentar produtos com descontos reais de grandes lojas virtuais como Amazon Brasil e Mercado Livre, de forma rápida, limpa e transparente.
           </p>
 
           <h2 className="text-xl font-bold text-[var(--color-neutral-900)] pt-4">
-            Nossa Filosofia de Trabalho
+            Princípios do CHAMEIAPP
           </h2>
           <ul className="list-disc pl-5 space-y-2">
             <li>
-              <strong>Apenas Ofertas Reais:</strong> Não divulgamos descontos fictícios de &quot;metade do dobro&quot;. Verificamos o histórico recente de preços antes de publicar.
+              <strong>Validação de Preço:</strong> Não divulgamos descontos mascarados ou irrelevantes.
             </li>
             <li>
-              <strong>Curadoria Humana e Responsável:</strong> Selecionamos produtos de alta utilidade e marcas reconhecidas em parceiros oficiais como Amazon e Mercado Livre.
+              <strong>Links Diretos e Seguros:</strong> O usuário é redirecionado diretamente para o site oficial do comerciante.
             </li>
             <li>
-              <strong>Total Respeito ao Usuário:</strong> Sem pop-ups invasivos, sem rastreamento abusivo de dados pessoais e sem cobrança de taxas.
+              <strong>Navegação sem Poluição:</strong> Sem anúncios gráficos intrusivos ou cadastros obrigatórios.
             </li>
           </ul>
 
           <h2 className="text-xl font-bold text-[var(--color-neutral-900)] pt-4">
-            Como Mantemos o Portal
+            Transparência de Afiliados
           </h2>
           <p>
-            Para manter o serviço gratuito e sem anúncios poluentes, participamos de programas de afiliados oficiais. Quando você clica em um link e conclui uma compra na loja parceira, podemos receber uma comissão. Isso não altera em nada o valor que você paga pelo produto.
+            Participamos de programas de afiliados comerciais (como o Programa de Associados da Amazon). Ao realizar uma compra por meio dos nossos links, o portal pode receber uma comissão sem qualquer alteração no preço pago pelo comprador.
           </p>
         </div>
       </div>

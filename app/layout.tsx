@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   },
   description: SITE_CONFIG.subtagline,
   keywords: ['ofertas', 'descontos', 'promoções', 'cupons de desconto', 'amazon', 'mercado livre', 'compras online'],
-  authors: [{ name: SITE_CONFIG.legalName }],
+  authors: [{ name: SITE_CONFIG.legalName || SITE_CONFIG.name }],
   openGraph: {
     type: 'website',
     locale: 'pt_BR',

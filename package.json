@@ -1,12 +1,13 @@
 {
-  "name": "precim-app",
+  "name": "chameiapp-web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
+    "test": "tsx --test tests/unit.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -21,6 +22,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.0",
     "@tailwindcss/postcss": "^4.0.7",
     "@types/node": "^22.13.4",
     "@types/react": "^19.0.10",
@@ -29,6 +31,7 @@
     "eslint-config-next": "^15.1.7",
     "postcss": "^8.5.2",
     "tailwindcss": "^4.0.7",
+    "tsx": "^4.19.2",
     "typescript": "^5.7.3"
   }
 }

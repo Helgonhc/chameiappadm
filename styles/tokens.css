@@ -1,18 +1,18 @@
-/* PRECIM Design System Tokens - CSS Nativo */
+/* CHAMEIAPP Design System Tokens - CSS Nativo */
 
 :root {
   /* Tipografia */
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* Brand Primary - Verde Relevo (Florestas e Montanhas de Minas) */
+  /* Brand Primary - Verde Relevo */
   --color-brand-primary-900: #0D281F;
   --color-brand-primary-800: #143D30;
   --color-brand-primary-700: #1B4D3E;
   --color-brand-primary-600: #256B57;
   --color-brand-primary-100: #E6F2EE;
 
-  /* Brand Accent - Ocre Ouro (Preço, Oportunidade e Riqueza) */
+  /* Brand Accent - Ocre Ouro (Preço, Oportunidade e Destaques) */
   --color-brand-accent-600: #B45309;
   --color-brand-accent-500: #D97706;
   --color-brand-accent-400: #F59E0B;

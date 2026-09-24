@@ -21,7 +21,7 @@ export default function PoliticaPrivacidadePage() {
 
         <div className="prose prose-emerald max-w-none text-sm leading-relaxed text-[var(--color-neutral-700)] space-y-4">
           <p>
-            A sua privacidade é de extrema importância para o <strong>{SITE_CONFIG.name}</strong> ({SITE_CONFIG.legalName}). Esta política descreve como coletamos, usamos e protegemos as informações fornecidas por você em conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018 - LGPD).
+            A sua privacidade é de extrema importância para o <strong>{SITE_CONFIG.name}</strong>. Esta política descreve como coletamos, usamos e protegemos as informações fornecidas por você em conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018 - LGPD).
           </p>
 
           <h2 className="text-lg font-bold text-[var(--color-neutral-900)] pt-2">

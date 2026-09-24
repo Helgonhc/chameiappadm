@@ -1,6 +1,5 @@
 import { supabase, isSupabaseConfigured } from '../db/supabase';
 import { Offer } from '../types/database';
-import { SEED_OFFERS } from './seed-data';
 
 export interface OfferFilters {
   categorySlug?: string;
@@ -12,7 +11,8 @@ export interface OfferFilters {
 export const OfferService = {
   async getPublishedOffers(filters: OfferFilters = {}): Promise<Offer[]> {
     if (!isSupabaseConfigured || !supabase) {
-      return this.filterLocalOffers(SEED_OFFERS, filters);
+      // Regra estrita: Não utilizar catálogo embutido como fallback silencioso.
+      return [];
     }
 
     try {
@@ -32,8 +32,9 @@ export const OfferService = {
 
       const { data, error } = await query;
 
-      if (error || !data || data.length === 0) {
-        return this.filterLocalOffers(SEED_OFFERS, filters);
+      if (error || !data) {
+        console.error('[OfferService] Erro ao buscar ofertas no Supabase:', error);
+        return [];
       }
 
       let results = data as Offer[];
@@ -47,20 +48,21 @@ export const OfferService = {
       }
 
       return this.sortOffers(results, filters.sortBy);
-    } catch {
-      return this.filterLocalOffers(SEED_OFFERS, filters);
+    } catch (err) {
+      console.error('[OfferService Exceção]', err);
+      return [];
     }
   },
 
   async getFeaturedOffer(): Promise<Offer | null> {
     const offers = await this.getPublishedOffers();
     const featured = offers.find(o => o.featured);
-    return featured || offers[0] || null;
+    return featured || null;
   },
 
   async getOfferBySlug(slug: string): Promise<Offer | null> {
     if (!isSupabaseConfigured || !supabase) {
-      return SEED_OFFERS.find(o => o.slug === slug) || null;
+      return null;
     }
 
     try {
@@ -72,21 +74,22 @@ export const OfferService = {
           merchant:merchants(*)
         `)
         .eq('slug', slug)
+        .eq('status', 'published')
         .single();
 
       if (error || !data) {
-        return SEED_OFFERS.find(o => o.slug === slug) || null;
+        return null;
       }
 
       return data as Offer;
     } catch {
-      return SEED_OFFERS.find(o => o.slug === slug) || null;
+      return null;
     }
   },
 
   async getOfferById(id: string): Promise<Offer | null> {
     if (!isSupabaseConfigured || !supabase) {
-      return SEED_OFFERS.find(o => o.id === id) || null;
+      return null;
     }
 
     try {
@@ -101,43 +104,21 @@ export const OfferService = {
         .single();
 
       if (error || !data) {
-        return SEED_OFFERS.find(o => o.id === id) || null;
+        return null;
       }
 
       return data as Offer;
     } catch {
-      return SEED_OFFERS.find(o => o.id === id) || null;
+      return null;
     }
-  },
-
-  filterLocalOffers(offers: Offer[], filters: OfferFilters): Offer[] {
-    let result = [...offers];
-
-    if (filters.categorySlug) {
-      result = result.filter(o => o.category?.slug === filters.categorySlug);
-    }
-
-    if (filters.merchantSlug) {
-      result = result.filter(o => o.merchant?.slug === filters.merchantSlug);
-    }
-
-    if (filters.searchQuery) {
-      const query = filters.searchQuery.toLowerCase();
-      result = result.filter(o =>
-        o.title.toLowerCase().includes(query) ||
-        o.description?.toLowerCase().includes(query)
-      );
-    }
-
-    return this.sortOffers(result, filters.sortBy);
   },
 
   sortOffers(offers: Offer[], sortBy?: 'recent' | 'price_asc' | 'price_desc'): Offer[] {
     if (sortBy === 'price_asc') {
-      return offers.sort((a, b) => a.current_price - b.current_price);
+      return [...offers].sort((a, b) => a.current_price - b.current_price);
     }
     if (sortBy === 'price_desc') {
-      return offers.sort((a, b) => b.current_price - a.current_price);
+      return [...offers].sort((a, b) => b.current_price - a.current_price);
     }
     return offers;
   }

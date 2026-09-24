@@ -11,7 +11,7 @@
   }
 }
 
-/* Utilitários Estilizados com Identidade Própria PRECIM */
+/* Utilitários Estilizados com Identidade Própria CHAMEIAPP */
 .font-price {
   font-family: var(--font-mono);
   font-weight: 700;
@@ -22,7 +22,7 @@
   background: linear-gradient(135deg, var(--color-brand-primary-900) 0%, var(--color-brand-primary-700) 100%);
 }
 
-.marker-precim-badge {
+.chamei-marker-badge {
   background-color: var(--color-brand-primary-700);
   color: var(--color-white);
   font-weight: 700;
@@ -36,7 +36,7 @@
   gap: 4px;
 }
 
-.card-precim {
+.card-chamei {
   background-color: var(--color-white);
   border: 1px solid var(--color-neutral-200);
   border-radius: var(--radius-lg);
@@ -44,13 +44,13 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.card-precim:hover {
+.card-chamei:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-hover);
   border-color: var(--color-brand-primary-600);
 }
 
-.btn-precim-primary {
+.btn-chamei-primary {
   background-color: var(--color-brand-primary-700);
   color: var(--color-white);
   font-weight: 600;
@@ -64,11 +64,11 @@
   min-height: 44px;
 }
 
-.btn-precim-primary:hover {
+.btn-chamei-primary:hover {
   background-color: var(--color-brand-primary-800);
 }
 
-.btn-precim-accent {
+.btn-chamei-accent {
   background-color: var(--color-brand-accent-500);
   color: var(--color-white);
   font-weight: 700;
@@ -82,6 +82,6 @@
   min-height: 48px;
 }
 
-.btn-precim-accent:hover {
+.btn-chamei-accent:hover {
   background-color: var(--color-brand-accent-600);
 }
