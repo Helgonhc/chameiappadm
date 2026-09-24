@@ -1,0 +1,49 @@
+import React from 'react';
+import Link from 'next/link';
+import { Category } from '../../lib/types/database';
+
+interface CategoryBarProps {
+  categories: Category[];
+  activeCategorySlug?: string;
+}
+
+export const CategoryBar: React.FC<CategoryBarProps> = ({
+  categories,
+  activeCategorySlug,
+}) => {
+  return (
+    <div className="bg-white border-b border-[var(--color-neutral-200)] sticky top-16 md:top-20 z-30 shadow-xs">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center gap-2 py-2.5 overflow-x-auto no-scrollbar scroll-smooth">
+          <Link
+            href="/ofertas"
+            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+              !activeCategorySlug
+                ? 'bg-[var(--color-brand-primary-700)] text-white shadow-xs'
+                : 'bg-neutral-100 text-[var(--color-neutral-700)] hover:bg-neutral-200'
+            }`}
+          >
+            🔥 Todas as Ofertas
+          </Link>
+
+          {categories.map((cat) => {
+            const isActive = activeCategorySlug === cat.slug;
+            return (
+              <Link
+                key={cat.id}
+                href={`/categoria/${cat.slug}`}
+                className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                  isActive
+                    ? 'bg-[var(--color-brand-primary-700)] text-white shadow-xs'
+                    : 'bg-neutral-100 text-[var(--color-neutral-700)] hover:bg-neutral-200 hover:text-[var(--color-neutral-900)]'
+                }`}
+              >
+                {cat.name}
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+};

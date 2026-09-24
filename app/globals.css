@@ -1,0 +1,87 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-neutral-50);
+    color: var(--color-neutral-900);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Utilitários Estilizados com Identidade Própria PRECIM */
+.font-price {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.bg-brand-gradient {
+  background: linear-gradient(135deg, var(--color-brand-primary-900) 0%, var(--color-brand-primary-700) 100%);
+}
+
+.marker-precim-badge {
+  background-color: var(--color-brand-primary-700);
+  color: var(--color-white);
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.card-precim {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-neutral-200);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card-precim:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--color-brand-primary-600);
+}
+
+.btn-precim-primary {
+  background-color: var(--color-brand-primary-700);
+  color: var(--color-white);
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color 0.15s ease;
+  min-height: 44px;
+}
+
+.btn-precim-primary:hover {
+  background-color: var(--color-brand-primary-800);
+}
+
+.btn-precim-accent {
+  background-color: var(--color-brand-accent-500);
+  color: var(--color-white);
+  font-weight: 700;
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color 0.15s ease;
+  min-height: 48px;
+}
+
+.btn-precim-accent:hover {
+  background-color: var(--color-brand-accent-600);
+}
