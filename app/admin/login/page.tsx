@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { createBrowserClient } from '@supabase/ssr';
 import { SITE_CONFIG } from '../../../lib/config/site.config';
 import { ChameiMarker } from '../../../components/ui/ChameiMarker';
 
@@ -11,36 +12,94 @@ export default function AdminLoginPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const redirectUrl = searchParams.get('redirect') || '/admin/dashboard';
+  const paramError = searchParams.get('error');
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
     if (!email || !password) {
-      setError('Preencha todos os campos.');
+      setError('Preencha e-mail e senha.');
       return;
     }
 
     setIsLoading(true);
 
-    setTimeout(() => {
+    try {
+      if (!supabaseUrl || !supabaseAnonKey) {
+        // Modo fallback em dev se Supabase não estiver configurado
+        if (process.env.NODE_ENV !== 'production') {
+          router.push(redirectUrl);
+          return;
+        }
+        setError('Supabase não está configurado neste ambiente.');
+        setIsLoading(false);
+        return;
+      }
+
+      const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
+
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (authError || !data.user) {
+        setError(authError?.message || 'E-mail ou senha inválidos.');
+        setIsLoading(false);
+        return;
+      }
+
+      // Verificar se é admin no app_metadata, user_metadata ou na tabela profiles
+      const role = data.user.app_metadata?.role || data.user.user_metadata?.role;
+
+      if (role !== 'admin') {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', data.user.id)
+          .single();
+
+        if (!profile || profile.role !== 'admin') {
+          setError('Acesso negado: Este usuário não possui privilégios de Administrador.');
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      // Redirecionar para o painel admin
+      router.push(redirectUrl);
+      router.refresh();
+    } catch (err: any) {
+      setError(err?.message || 'Ocorreu um erro ao realizar o login.');
       setIsLoading(false);
-      router.push('/admin/dashboard');
-    }, 800);
+    }
   };
 
   return (
-    <div className="max-w-md mx-auto py-12">
-      <div className="bg-white p-8 rounded-xl border border-neutral-200 shadow-card space-y-6">
+    <div className="max-w-md mx-auto py-12 px-4">
+      <div className="bg-white p-8 rounded-xl border border-slate-200 shadow-md space-y-6">
         <div className="text-center space-y-2">
           <ChameiMarker size="sm" label="ÁREA RESTRITA" className="mx-auto" />
-          <h1 className="text-2xl font-black text-neutral-900">
+          <h1 className="text-2xl font-black text-slate-900">
             Acesso Administrativo
           </h1>
-          <p className="text-xs text-neutral-500">
-            Gerenciamento de ofertas do {SITE_CONFIG.name}
+          <p className="text-xs text-slate-500">
+            Painel de Gestão e Radar do {SITE_CONFIG.name}
           </p>
         </div>
+
+        {paramError === 'acesso-negado-sem-permissao' && !error && (
+          <div className="bg-amber-50 text-amber-800 p-3 rounded text-xs font-semibold border border-amber-200">
+            Sua conta precisa de permissão de Administrador para acessar esta área.
+          </div>
+        )}
 
         {error && (
           <div className="bg-red-50 text-red-700 p-3 rounded text-xs font-semibold border border-red-200">
@@ -50,21 +109,21 @@ export default function AdminLoginPage() {
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-neutral-700 mb-1">
+            <label className="block text-xs font-bold text-slate-700 mb-1">
               E-mail do Administrador
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@chameiapp.com.br"
-              className="w-full border border-neutral-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-[var(--color-brand-primary-700)] focus:outline-none"
+              placeholder="seuemail@exemplo.com"
+              className="w-full border border-slate-300 rounded p-2.5 text-sm text-slate-900 focus:ring-2 focus:ring-[var(--color-signal-primary)] focus:outline-none"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-neutral-700 mb-1">
+            <label className="block text-xs font-bold text-slate-700 mb-1">
               Senha de Acesso
             </label>
             <input
@@ -72,7 +131,7 @@ export default function AdminLoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full border border-neutral-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-[var(--color-brand-primary-700)] focus:outline-none"
+              className="w-full border border-slate-300 rounded p-2.5 text-sm text-slate-900 focus:ring-2 focus:ring-[var(--color-signal-primary)] focus:outline-none"
               required
             />
           </div>
@@ -80,12 +139,22 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="btn-chamei-primary w-full text-center justify-center font-bold py-3"
+            className="w-full bg-[var(--color-signal-primary)] hover:bg-[var(--color-signal-hover)] text-white font-bold py-3 px-4 rounded transition-colors text-sm disabled:opacity-50 cursor-pointer"
           >
             {isLoading ? 'Autenticando...' : 'Entrar no Painel'}
           </button>
         </form>
+
+        <div className="text-center pt-2">
+          <a
+            href="/"
+            className="text-xs text-slate-500 hover:text-slate-800 transition-colors"
+          >
+            ← Voltar para o Portal CHAMEIAPP
+          </a>
+        </div>
       </div>
     </div>
   );
 }
+
