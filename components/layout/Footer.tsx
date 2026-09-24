@@ -1,57 +1,49 @@
 import React from 'react';
 import Link from 'next/link';
-import { SITE_CONFIG } from '../../lib/config/site.config';
-import { ChameiMarker } from '../ui/ChameiMarker';
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="bg-[var(--color-brand-primary-900)] text-white border-t border-[var(--color-brand-primary-800)] pt-12 pb-8 mt-16">
+    <footer className="bg-slate-900 text-white border-t border-slate-800 pt-10 pb-8 mt-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8 border-b border-[var(--color-brand-primary-800)]">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8 border-b border-slate-800">
           
           {/* Coluna 1: Marca & Visão */}
-          <div className="md:col-span-2 space-y-4">
-            <div className="flex items-center gap-2">
-              <ChameiMarker size="sm" label="CHAMEIAPP" className="bg-[var(--color-brand-accent-500)] text-white" />
-              <span className="font-extrabold text-2xl tracking-tight">
-                {SITE_CONFIG.name}
-              </span>
-            </div>
-            <p className="text-sm text-emerald-100 leading-relaxed max-w-md">
-              {SITE_CONFIG.subtagline}
+          <div className="md:col-span-2 space-y-3">
+            <span className="font-black text-2xl tracking-tight text-white block">
+              CHAMEI<span className="text-[var(--color-signal-primary)]">APP</span>
+            </span>
+            <p className="text-xs text-slate-400 leading-relaxed max-w-md">
+              Portal agregador de ofertas e comparação de preços reais das principais lojas online.
             </p>
-            <div className="text-xs text-emerald-200/90 bg-[var(--color-brand-primary-800)] p-3 rounded border border-[var(--color-brand-primary-700)] max-w-md space-y-1">
-              <strong>💡 Divulgação de Afiliados:</strong>
-              <p>
-                O {SITE_CONFIG.name} é um portal independente agregador de ofertas. Participamos de programas de afiliados, incluindo o Programa de Associados da Amazon (Tracking ID: {SITE_CONFIG.amazonAssociateTag}) e o Programa de Afiliados do Mercado Livre. Ao clicar nos links e concluir uma compra, podemos receber uma comissão sem qualquer custo adicional para você.
-              </p>
-            </div>
+            <p className="text-xs text-slate-400 leading-relaxed max-w-md">
+              Participamos de programas de afiliados. Ao clicar nos links de produtos e concluir uma compra, podemos receber comissão de afiliados sem custo adicional para o comprador.
+            </p>
           </div>
 
           {/* Coluna 2: Navegação Rápida */}
           <div>
-            <h4 className="font-bold text-sm text-[var(--color-brand-accent-400)] uppercase tracking-wider mb-3">
-              Plataforma
+            <h4 className="font-bold text-xs text-slate-400 uppercase tracking-wider mb-3">
+              Ofertas
             </h4>
-            <ul className="space-y-2 text-sm">
+            <ul className="space-y-2 text-xs">
               <li>
-                <Link href="/ofertas" className="text-emerald-100 hover:text-white transition-colors">
+                <Link href="/ofertas" className="text-slate-300 hover:text-white transition-colors">
                   Todas as Ofertas
                 </Link>
               </li>
               <li>
-                <Link href="/loja/amazon" className="text-emerald-100 hover:text-white transition-colors">
-                  Ofertas Amazon Brasil
+                <Link href="/categoria/tecnologia" className="text-slate-300 hover:text-white transition-colors">
+                  Tecnologia
                 </Link>
               </li>
               <li>
-                <Link href="/loja/mercado-livre" className="text-emerald-100 hover:text-white transition-colors">
-                  Ofertas Mercado Livre
+                <Link href="/categoria/ferramentas" className="text-slate-300 hover:text-white transition-colors">
+                  Ferramentas
                 </Link>
               </li>
               <li>
-                <Link href="/como-funciona" className="text-emerald-100 hover:text-white transition-colors">
-                  Como Funciona o Agregador
+                <Link href="/categoria/casa-e-cozinha" className="text-slate-300 hover:text-white transition-colors">
+                  Casa & Cozinha
                 </Link>
               </li>
             </ul>
@@ -59,28 +51,28 @@ export const Footer: React.FC = () => {
 
           {/* Coluna 3: Links Legais & Institucional */}
           <div>
-            <h4 className="font-bold text-sm text-[var(--color-brand-accent-400)] uppercase tracking-wider mb-3">
-              Transparência & Legal
+            <h4 className="font-bold text-xs text-slate-400 uppercase tracking-wider mb-3">
+              Informações
             </h4>
-            <ul className="space-y-2 text-sm">
+            <ul className="space-y-2 text-xs">
               <li>
-                <Link href="/divulgacao-de-afiliados" className="text-emerald-100 hover:text-white transition-colors">
+                <Link href="/divulgacao-de-afiliados" className="text-slate-300 hover:text-white transition-colors">
                   Divulgação de Afiliados
                 </Link>
               </li>
               <li>
-                <Link href="/politica-de-privacidade" className="text-emerald-100 hover:text-white transition-colors">
-                  Política de Privacidade (LGPD)
+                <Link href="/politica-de-privacidade" className="text-slate-300 hover:text-white transition-colors">
+                  Política de Privacidade
                 </Link>
               </li>
               <li>
-                <Link href="/termos-de-uso" className="text-emerald-100 hover:text-white transition-colors">
+                <Link href="/termos-de-uso" className="text-slate-300 hover:text-white transition-colors">
                   Termos de Uso
                 </Link>
               </li>
               <li>
-                <Link href="/contato" className="text-emerald-100 hover:text-white transition-colors">
-                  Fale Conosco
+                <Link href="/contato" className="text-slate-300 hover:text-white transition-colors">
+                  Contato
                 </Link>
               </li>
             </ul>
@@ -88,12 +80,9 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Rodapé Inferior */}
-        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-emerald-200/70 gap-4">
+        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
           <p>
-            © {new Date().getFullYear()} {SITE_CONFIG.legalName || SITE_CONFIG.name}. Todos os direitos reservados. {SITE_CONFIG.region}.
-          </p>
-          <p className="font-medium text-emerald-200">
-            &quot;{SITE_CONFIG.tagline}&quot;
+            © {new Date().getFullYear()} CHAMEIAPP. Agregador de Ofertas.
           </p>
         </div>
       </div>

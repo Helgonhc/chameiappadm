@@ -3,6 +3,11 @@ import { test, describe } from 'node:test';
 import { calculateDiscount, isOfferAvailable } from '../lib/utils/offer-helpers';
 import { TrackingService } from '../lib/services/tracking.service';
 import { Offer } from '../lib/types/database';
+import { AmazonProvider } from '../lib/services/connectors/amazon/amazon-provider';
+import { MercadoLivreProvider } from '../lib/services/connectors/mercado-livre/mercado-livre-provider';
+import { OfferAnalyzer } from '../lib/services/radar/offer-analyzer';
+import { CandidateService } from '../lib/services/radar/candidate.service';
+import { PriceHistoryService } from '../lib/services/radar/price-history.service';
 
 describe('Suíte de Testes Automatizados — CHAMEIAPP', () => {
 
@@ -144,6 +149,154 @@ describe('Suíte de Testes Automatizados — CHAMEIAPP', () => {
 
       assert.strictEqual(userProfile.role === 'admin', false);
       assert.strictEqual(adminProfile.role === 'admin', true);
+    });
+  });
+
+  // G. AFFILIATE PROVIDERS (ZERO MOCK & STATUS REAL)
+  describe('G. Affiliate Providers (Zero Mock & Provider Status)', () => {
+    test('AmazonProvider sem credenciais deve retornar NOT_CONFIGURED e array vazio', async () => {
+      const amazon = new AmazonProvider();
+      const health = await amazon.healthCheck();
+      assert.strictEqual(health.status, 'NOT_CONFIGURED');
+
+      const results = await amazon.searchProducts('furadeira');
+      assert.deepStrictEqual(results, []);
+    });
+
+    test('MercadoLivreProvider deve retornar NOT_CONFIGURED', async () => {
+      const ml = new MercadoLivreProvider();
+      const health = await ml.healthCheck();
+      assert.strictEqual(health.status, 'NOT_CONFIGURED');
+    });
+  });
+
+  // H. OFFER ANALYZER (SCORED MOTOR 0-100)
+  describe('H. Offer Analyzer (Determinístico)', () => {
+    test('deve calcular pontuação alta para oferta com desconto de 50%, cupom e frete grátis', () => {
+      const analyzer = new OfferAnalyzer();
+      const score = analyzer.analyze({
+        provider: 'amazon',
+        external_id: 'B0C39C9Z1Z',
+        title: 'Parafusadeira Bosch GSR 1000 SMART',
+        image_url: 'https://m.media-amazon.com/images/I/71.jpg',
+        product_url: 'https://www.amazon.com.br/dp/B0C39C9Z1Z',
+        current_price: 250,
+        previous_price: 500,
+        currency: 'BRL',
+        coupon: 'FERRAMENTA10',
+        free_shipping: true,
+        availability: true,
+        category: 'Ferramentas',
+        seller: 'Amazon.com.br',
+        last_checked_at: new Date().toISOString(),
+      });
+
+      // 40 (desconto) + 15 (cupom) + 15 (recência) + 15 (qualidade) + 15 (estoque/frete) = 100
+      assert.strictEqual(score.total, 100);
+      assert.strictEqual(score.discount_score, 40);
+      assert.strictEqual(score.coupon_score, 15);
+      assert.strictEqual(score.freshness_score, 15);
+      assert.strictEqual(score.availability_score, 15);
+    });
+
+    test('deve pontuar menor oferta sem desconto ou cupom', () => {
+      const analyzer = new OfferAnalyzer();
+      const score = analyzer.analyze({
+        provider: 'amazon',
+        external_id: 'B0C39C9Z1Z',
+        title: 'Produto Comum',
+        image_url: 'https://m.media-amazon.com/images/I/71.jpg',
+        product_url: 'https://www.amazon.com.br/dp/B0C39C9Z1Z',
+        current_price: 100,
+        previous_price: 100,
+        currency: 'BRL',
+        last_checked_at: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(), // 48h atrás
+      });
+
+      assert.strictEqual(score.discount_score, 0);
+      assert.strictEqual(score.coupon_score, 0);
+      assert.strictEqual(score.freshness_score, 5);
+      assert.strictEqual(score.total < 50, true);
+    });
+  });
+
+  // I. CANDIDATE SERVICE (DEDUPLICAÇÃO & FLUXO)
+  describe('I. Candidate Service & Deduplicação', () => {
+    test('deve normalizar URLs corretamente descartando parâmetros de tracking', () => {
+      const service = new CandidateService();
+      const rawUrl = 'https://www.amazon.com.br/dp/B0C39C9Z1Z?tag=chameiapp-20&ref=sr_1_1';
+      const normalized = service.normalizeUrl(rawUrl);
+      assert.strictEqual(normalized, 'https://www.amazon.com.br/dp/b0c39c9z1z');
+    });
+
+    test('deve identificar duplicidade por (provider, external_id)', async () => {
+      const service = new CandidateService();
+      const product = {
+        provider: 'amazon',
+        external_id: 'B0C39C9Z1Z',
+        title: 'Produto Teste Dedup',
+        image_url: 'https://m.media-amazon.com/images/I/1.jpg',
+        product_url: 'https://www.amazon.com.br/dp/B0C39C9Z1Z',
+        current_price: 199.90,
+        currency: 'BRL',
+        last_checked_at: new Date().toISOString(),
+      };
+
+      const res1 = await service.processDiscoveredProduct(product);
+      assert.strictEqual(res1.isDuplicate, false);
+      assert.strictEqual(res1.candidate?.status, 'candidate');
+
+      const res2 = await service.processDiscoveredProduct(product);
+      assert.strictEqual(res2.isDuplicate, true);
+    });
+  });
+
+  // J. PRICE HISTORY SERVICE (DADOS REAIS & STATS)
+  describe('J. Price History Service (Zero Fake Backfill)', () => {
+    test('deve retornar null se não houver registros para o produto', async () => {
+      const service = new PriceHistoryService();
+      const stats = await service.getPriceStats('amazon', 'NAO_EXISTE');
+      assert.strictEqual(stats, null);
+    });
+
+    test('deve calcular estatísticas reais com base em observações reais registradas', async () => {
+      const service = new PriceHistoryService();
+      const provider = 'amazon';
+      const extId = 'B0REALPRICE1';
+
+      await service.addPriceObservation({
+        provider,
+        external_product_id: extId,
+        price: 500,
+        currency: 'BRL',
+        observed_at: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
+      });
+
+      await service.addPriceObservation({
+        provider,
+        external_product_id: extId,
+        price: 400,
+        currency: 'BRL',
+        observed_at: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
+      });
+
+      await service.addPriceObservation({
+        provider,
+        external_product_id: extId,
+        price: 300,
+        currency: 'BRL',
+        observed_at: new Date().toISOString(),
+      });
+
+      const stats = await service.getPriceStats(provider, extId);
+      assert.notStrictEqual(stats, null);
+      assert.strictEqual(stats?.min_price, 300);
+      assert.strictEqual(stats?.max_price, 500);
+      assert.strictEqual(stats?.avg_price, 400);
+      assert.strictEqual(stats?.median_price, 400);
+      assert.strictEqual(stats?.latest_price, 300);
+      assert.strictEqual(stats?.price_drop_percent, 40); // (500 - 300) / 500 = 40%
+      assert.strictEqual(stats?.has_sufficient_data, true);
     });
   });
 

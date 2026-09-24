@@ -17,36 +17,95 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex flex-col bg-neutral-100 text-neutral-900">
-      {/* Navbar do Admin */}
-      <header className="bg-[var(--color-neutral-900)] text-white px-6 py-4 flex items-center justify-between border-b border-neutral-800">
-        <div className="flex items-center gap-3">
-          <ChameiMarker size="sm" label="ADMIN" className="bg-[var(--color-brand-accent-500)]" />
-          <Link href="/admin/dashboard" className="font-bold text-lg hover:text-[var(--color-brand-accent-400)]">
-            {SITE_CONFIG.name} Admin
-          </Link>
+    <div className="min-h-screen flex flex-col bg-slate-100 text-slate-900 font-sans">
+      {/* Header do Painel Admin V2 */}
+      <header className="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 gap-4">
+            
+            <div className="flex items-center gap-3">
+              <ChameiMarker size="sm" label="ADMIN V2" className="bg-[var(--color-signal-primary)] text-white font-bold" />
+              <Link href="/admin/dashboard" className="font-extrabold text-lg text-white hover:text-[var(--color-signal-primary)] transition-colors">
+                CHAMEI<span className="text-[var(--color-signal-primary)]">APP</span> <span className="text-xs text-slate-400 font-normal">| Gestão & Radar</span>
+              </Link>
+            </div>
+
+            {/* Menu Principal Admin */}
+            <nav className="hidden md:flex items-center gap-1 text-xs font-bold">
+              <Link
+                href="/admin/dashboard"
+                className="px-3 py-2 rounded text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+              >
+                Visão Geral
+              </Link>
+
+              <Link
+                href="/admin/radar"
+                className="px-3 py-2 rounded text-slate-300 hover:text-white hover:bg-slate-800 transition-colors flex items-center gap-1"
+              >
+                <span>📡 Radar Chamei</span>
+              </Link>
+
+              <Link
+                href="/admin/radar/candidatas"
+                className="px-3 py-2 rounded text-slate-300 hover:text-white hover:bg-slate-800 transition-colors flex items-center gap-1"
+              >
+                <span>📋 Fila Candidatas</span>
+              </Link>
+
+              <Link
+                href="/admin/ofertas"
+                className="px-3 py-2 rounded text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+              >
+                Ofertas Publicadas
+              </Link>
+
+              <Link
+                href="/admin/integracoes"
+                className="px-3 py-2 rounded text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+              >
+                Integrações
+              </Link>
+            </nav>
+
+            <div className="flex items-center gap-3">
+              <Link
+                href="/admin/ofertas/nova"
+                className="px-3 py-1.5 rounded text-xs font-bold bg-[var(--color-signal-primary)] text-white hover:bg-[var(--color-signal-hover)] transition-colors shadow-xs"
+              >
+                + Link Especial Manual
+              </Link>
+              <Link
+                href="/"
+                target="_blank"
+                className="hidden sm:inline-block text-xs text-slate-400 hover:text-white transition-colors"
+              >
+                Ver Site ↗
+              </Link>
+            </div>
+
+          </div>
         </div>
 
-        <nav className="flex items-center gap-4 text-xs font-semibold">
-          <Link href="/admin/dashboard" className="text-neutral-300 hover:text-white">
-            Dashboard
-          </Link>
-          <Link href="/admin/ofertas/nova" className="px-3 py-1.5 rounded bg-[var(--color-brand-primary-700)] text-white hover:bg-[var(--color-brand-primary-600)]">
-            + Nova Oferta Real
-          </Link>
-          <Link href="/" target="_blank" className="text-neutral-400 hover:text-white">
-            Ver Site Público ↗
-          </Link>
-        </nav>
+        {/* Sub-bar de navegação mobile admin */}
+        <div className="md:hidden bg-slate-800 px-4 py-2 flex items-center gap-2 overflow-x-auto text-xs font-bold text-slate-300 border-t border-slate-700">
+          <Link href="/admin/dashboard" className="shrink-0 hover:text-white">Visão Geral</Link>
+          <span>•</span>
+          <Link href="/admin/radar" className="shrink-0 hover:text-white">📡 Radar</Link>
+          <span>•</span>
+          <Link href="/admin/radar/candidatas" className="shrink-0 hover:text-white">📋 Candidatas</Link>
+          <span>•</span>
+          <Link href="/admin/integracoes" className="shrink-0 hover:text-white">Integrações</Link>
+        </div>
       </header>
 
       {/* Conteúdo Principal do Admin */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6">
         {children}
       </main>
 
-      <footer className="bg-neutral-900 text-neutral-400 text-xs py-4 px-6 text-center border-t border-neutral-800">
-        Painel Restrito — {SITE_CONFIG.legalName || SITE_CONFIG.name}
+      <footer className="bg-slate-900 text-slate-400 text-xs py-4 px-6 text-center border-t border-slate-800">
+        Painel Restrito CHAMEIAPP V2 — Operação Real & Zero Dados Fictícios
       </footer>
     </div>
   );

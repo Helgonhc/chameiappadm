@@ -27,7 +27,7 @@ export const ChameiMarker: React.FC<ChameiMarkerProps> = ({
 
   return (
     <span
-      className={`inline-flex items-center font-bold tracking-wider uppercase rounded-xs bg-[var(--color-brand-primary-700)] text-white shadow-subtle ${sizeClasses[size]} ${className}`}
+      className={`inline-flex items-center font-black tracking-wider uppercase rounded-xs bg-[var(--color-signal-primary)] text-white shadow-xs ${sizeClasses[size]} ${className}`}
     >
       <svg
         width={iconSize}
@@ -39,14 +39,14 @@ export const ChameiMarker: React.FC<ChameiMarkerProps> = ({
       >
         <path
           d="M3 17L9 7L13 13L17 7L21 17H3Z"
-          fill="var(--color-brand-accent-400)"
+          fill="#F59E0B"
           stroke="currentColor"
           strokeWidth="1.5"
           strokeLinejoin="round"
         />
         <path
           d="M12 12V21M12 21L9 18M12 21L15 18"
-          stroke="var(--color-white)"
+          stroke="#FFFFFF"
           strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"

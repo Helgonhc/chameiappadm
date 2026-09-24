@@ -22,43 +22,42 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
   const merchantSlug = resolvedParams.loja || '';
   const sortBy = resolvedParams.sort || 'recent';
 
-  const [offers, categories, merchants] = await Promise.all([
+  const [offers, merchants] = await Promise.all([
     OfferService.getPublishedOffers({
       searchQuery,
       categorySlug,
       merchantSlug,
       sortBy,
     }),
-    MerchantService.getCategories(),
     MerchantService.getMerchants(),
   ]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 py-2">
       {/* Cabeçalho da Página de Ofertas */}
-      <div className="bg-white p-6 rounded-xl border border-[var(--color-neutral-200)] shadow-subtle space-y-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--color-neutral-200)] pb-4">
+      <div className="bg-white p-6 rounded-md border border-slate-200 shadow-xs space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
           <div>
-            <h1 className="text-2xl font-black text-[var(--color-neutral-900)]">
+            <h1 className="text-2xl font-black text-slate-900">
               {searchQuery
                 ? `Resultados para "${searchQuery}"`
                 : 'Catálogo Geral de Ofertas'}
             </h1>
-            <p className="text-xs text-[var(--color-neutral-500)] mt-1">
+            <p className="text-xs text-slate-500 mt-1">
               {offers.length} {offers.length === 1 ? 'oferta encontrada' : 'ofertas encontradas'} com preço verificado
             </p>
           </div>
 
           {/* Filtro de Ordenação */}
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-[var(--color-neutral-700)]">Ordenar por:</span>
-            <div className="flex items-center gap-1 bg-neutral-100 p-1 rounded-lg text-xs font-semibold">
+            <span className="text-xs font-bold text-slate-700">Ordenar por:</span>
+            <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-md text-xs font-bold">
               <Link
                 href={`/ofertas?${new URLSearchParams({ ...resolvedParams, sort: 'recent' })}`}
                 className={`px-2.5 py-1 rounded transition-colors ${
                   sortBy === 'recent'
-                    ? 'bg-white text-[var(--color-brand-primary-700)] shadow-xs font-bold'
-                    : 'text-[var(--color-neutral-700)] hover:text-black'
+                    ? 'bg-slate-900 text-white shadow-xs'
+                    : 'text-slate-700 hover:text-slate-900'
                 }`}
               >
                 Mais Recentes
@@ -67,8 +66,8 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
                 href={`/ofertas?${new URLSearchParams({ ...resolvedParams, sort: 'price_asc' })}`}
                 className={`px-2.5 py-1 rounded transition-colors ${
                   sortBy === 'price_asc'
-                    ? 'bg-white text-[var(--color-brand-primary-700)] shadow-xs font-bold'
-                    : 'text-[var(--color-neutral-700)] hover:text-black'
+                    ? 'bg-slate-900 text-white shadow-xs'
+                    : 'text-slate-700 hover:text-slate-900'
                 }`}
               >
                 Menor Preço
@@ -77,8 +76,8 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
                 href={`/ofertas?${new URLSearchParams({ ...resolvedParams, sort: 'price_desc' })}`}
                 className={`px-2.5 py-1 rounded transition-colors ${
                   sortBy === 'price_desc'
-                    ? 'bg-white text-[var(--color-brand-primary-700)] shadow-xs font-bold'
-                    : 'text-[var(--color-neutral-700)] hover:text-black'
+                    ? 'bg-slate-900 text-white shadow-xs'
+                    : 'text-slate-700 hover:text-slate-900'
                 }`}
               >
                 Maior Preço
@@ -89,13 +88,13 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
 
         {/* Filtros Ativos e Limpeza */}
         <div className="flex flex-wrap items-center gap-2 text-xs">
-          <span className="font-bold text-[var(--color-neutral-700)]">Filtrar por loja:</span>
+          <span className="font-bold text-slate-700">Filtrar por loja:</span>
           <Link
             href="/ofertas"
-            className={`px-2.5 py-1 rounded-md font-semibold transition-colors ${
+            className={`px-2.5 py-1 rounded-md font-bold transition-colors ${
               !merchantSlug
-                ? 'bg-[var(--color-brand-primary-700)] text-white'
-                : 'bg-neutral-100 text-[var(--color-neutral-700)] hover:bg-neutral-200'
+                ? 'bg-slate-900 text-white'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
             }`}
           >
             Todas as Lojas
@@ -104,10 +103,10 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
             <Link
               key={m.id}
               href={`/ofertas?${new URLSearchParams({ ...resolvedParams, loja: m.slug })}`}
-              className={`px-2.5 py-1 rounded-md font-semibold transition-colors ${
+              className={`px-2.5 py-1 rounded-md font-bold transition-colors ${
                 merchantSlug === m.slug
-                  ? 'bg-[var(--color-brand-primary-700)] text-white'
-                  : 'bg-neutral-100 text-[var(--color-neutral-700)] hover:bg-neutral-200'
+                  ? 'bg-slate-900 text-white'
+                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
               }`}
             >
               {m.name}
@@ -117,7 +116,7 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
           {(searchQuery || categorySlug || merchantSlug) && (
             <Link
               href="/ofertas"
-              className="ml-auto text-xs font-bold text-red-600 hover:underline flex items-center gap-1"
+              className="ml-auto text-xs font-bold text-rose-600 hover:underline flex items-center gap-1"
             >
               ✕ Limpar filtros
             </Link>

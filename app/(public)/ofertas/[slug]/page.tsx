@@ -4,9 +4,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { OfferService } from '../../../../lib/services/offer.service';
-import { ChameiMarker } from '../../../../components/ui/ChameiMarker';
-import { PriceTag } from '../../../../components/ui/PriceTag';
-import { CopyCouponButton } from '../../../../components/offers/CopyCouponButton';
+import { calculateDiscount } from '../../../../lib/utils/offer-helpers';
 import { OfferCardCompact } from '../../../../components/offers/OfferCardCompact';
 import { SITE_CONFIG } from '../../../../lib/config/site.config';
 
@@ -22,21 +20,21 @@ export async function generateMetadata({ params }: OfferDetailPageProps): Promis
 
   if (!offer) {
     return {
-      title: 'Oferta não encontrada',
+      title: 'Oferta não encontrada | ChameiApp',
     };
   }
 
-  const canonicalUrl = `${SITE_CONFIG.domain}/ofertas/${offer.slug}`;
+  const canonicalUrl = `${SITE_CONFIG.domain}/o/${offer.slug}`;
 
   return {
-    title: `${offer.title} | ${SITE_CONFIG.name}`,
-    description: offer.description || `Confira a oferta de ${offer.title} no ${SITE_CONFIG.name}.`,
+    title: `${offer.title} | ChameiApp`,
+    description: offer.description || `Confira a oferta de ${offer.title} no ChameiApp.`,
     alternates: {
       canonical: canonicalUrl,
     },
     openGraph: {
       title: `${offer.title} — R$ ${offer.current_price.toFixed(2)}`,
-      description: offer.description || `Preço verificado no ${SITE_CONFIG.name}.`,
+      description: offer.description || `Preço verificado no ChameiApp.`,
       url: canonicalUrl,
       images: [
         {
@@ -58,12 +56,12 @@ export default async function OfferDetailPage({ params }: OfferDetailPageProps) 
     notFound();
   }
 
+  const discountPercent = calculateDiscount(offer.current_price, offer.previous_price);
   const allOffers = await OfferService.getPublishedOffers();
   const relatedOffers = allOffers
     .filter((o) => o.id !== offer.id && (o.category_id === offer.category_id || o.merchant_id === offer.merchant_id))
     .slice(0, 4);
 
-  // JSON-LD Dados Estruturados Estritos (Apenas dados reais existentes)
   const jsonLd = {
     '@context': 'https://schema.org/',
     '@type': 'Product',
@@ -85,9 +83,9 @@ export default async function OfferDetailPage({ params }: OfferDetailPageProps) 
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div className="space-y-8">
+      <div className="space-y-8 py-2">
         {/* Breadcrumb */}
-        <nav className="text-xs text-[var(--color-neutral-500)] flex items-center gap-2">
+        <nav className="text-xs text-slate-500 flex items-center gap-2">
           <Link href="/" className="hover:underline">Home</Link>
           <span>/</span>
           <Link href="/ofertas" className="hover:underline">Ofertas</Link>
@@ -100,17 +98,17 @@ export default async function OfferDetailPage({ params }: OfferDetailPageProps) 
               <span>/</span>
             </>
           )}
-          <span className="font-semibold text-[var(--color-neutral-900)] truncate max-w-xs md:max-w-md">
+          <span className="font-semibold text-slate-900 truncate max-w-xs md:max-w-md">
             {offer.title}
           </span>
         </nav>
 
-        {/* Card Principal de Detalhe */}
-        <div className="bg-white rounded-xl border border-[var(--color-neutral-200)] shadow-card overflow-hidden p-6 md:p-8">
+        {/* Card Principal de Detalhes da Oferta */}
+        <div className="bg-white rounded-md border border-slate-200 shadow-sm overflow-hidden p-6 md:p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
             
             {/* Lado Esquerdo: Imagem */}
-            <div className="relative w-full h-72 md:h-96 bg-neutral-50 rounded-lg p-6 flex items-center justify-center border border-neutral-100 overflow-hidden">
+            <div className="relative w-full h-72 md:h-96 bg-slate-50 rounded p-6 flex items-center justify-center border border-slate-100 overflow-hidden">
               <Image
                 src={offer.image_url}
                 alt={offer.title}
@@ -119,61 +117,68 @@ export default async function OfferDetailPage({ params }: OfferDetailPageProps) 
                 className="object-contain hover:scale-105 transition-transform duration-300"
                 priority
               />
-              <div className="absolute top-3 left-3 z-10">
-                <ChameiMarker size="md" label="OFERTA VERIFICADA" />
+              <div className="absolute top-3 left-3 z-10 flex items-center gap-2">
+                {offer.merchant && (
+                  <span className="badge-merchant-amazon font-bold shadow-xs">
+                    {offer.merchant.name}
+                  </span>
+                )}
+                {discountPercent > 0 && (
+                  <span className="badge-discount shadow-xs font-bold">
+                    ↓ {discountPercent}% OFF
+                  </span>
+                )}
               </div>
             </div>
 
-            {/* Lado Direito: Informações e CTA */}
+            {/* Lado Direito: Informações e Ação */}
             <div className="flex flex-col justify-between space-y-6">
               <div className="space-y-4">
                 <div className="flex items-center gap-2 flex-wrap">
-                  {offer.merchant && (
-                    <span className="text-xs font-bold text-[var(--color-neutral-700)] bg-neutral-100 px-3 py-1 rounded">
-                      Loja: {offer.merchant.name}
-                    </span>
-                  )}
                   {offer.category && (
-                    <span className="text-xs font-medium text-[var(--color-brand-primary-700)] bg-emerald-50 px-3 py-1 rounded">
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                       Categoria: {offer.category.name}
                     </span>
                   )}
                   {offer.free_shipping && (
-                    <span className="text-xs font-bold text-emerald-700 bg-emerald-100 px-3 py-1 rounded">
+                    <span className="badge-shipping">
                       ✓ Frete Grátis
                     </span>
                   )}
                 </div>
 
-                <h1 className="text-xl md:text-3xl font-black text-[var(--color-neutral-900)] leading-snug">
+                <h1 className="text-xl md:text-3xl font-black text-slate-900 leading-snug">
                   {offer.title}
                 </h1>
 
                 {offer.description && (
-                  <p className="text-sm text-[var(--color-neutral-700)] leading-relaxed bg-neutral-50 p-4 rounded-lg border border-neutral-100">
+                  <p className="text-sm text-slate-600 leading-relaxed bg-slate-50 p-4 rounded border border-slate-100">
                     {offer.description}
                   </p>
                 )}
               </div>
 
-              <div className="space-y-6 pt-4 border-t border-[var(--color-neutral-200)]">
+              <div className="space-y-6 pt-4 border-t border-slate-200">
                 <div>
-                  <span className="text-xs text-[var(--color-neutral-500)] font-medium block mb-1">
-                    Preço verificado no portal:
+                  <span className="text-xs text-slate-400 font-bold uppercase tracking-wider block mb-1">
+                    Preço no ChameiApp:
                   </span>
-                  <PriceTag
-                    currentPrice={offer.current_price}
-                    previousPrice={offer.previous_price}
-                    size="xl"
-                  />
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-3xl md:text-4xl font-mono font-black text-slate-900">
+                      R$ {offer.current_price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    </span>
+                    {offer.previous_price && offer.previous_price > offer.current_price && (
+                      <span className="price-previous text-lg">
+                        R$ {offer.previous_price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {offer.coupon_code && (
-                  <div className="bg-purple-50 border border-purple-200 p-4 rounded-lg space-y-2">
-                    <span className="text-xs font-bold text-purple-900 block">
-                      🎟️ Cupom de desconto ativo:
-                    </span>
-                    <CopyCouponButton code={offer.coupon_code} />
+                  <div className="badge-coupon py-3 px-4 text-sm w-full justify-between">
+                    <span>Cupom ativo na loja:</span>
+                    <strong className="font-mono text-base">{offer.coupon_code}</strong>
                   </div>
                 )}
 
@@ -183,9 +188,9 @@ export default async function OfferDetailPage({ params }: OfferDetailPageProps) 
                     href={`/go/${offer.id}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn-chamei-accent w-full text-center text-base font-extrabold justify-center py-4 rounded-lg shadow-md"
+                    className="btn-offer-cta w-full text-center text-base font-extrabold justify-center py-3.5 rounded shadow-md"
                   >
-                    <span>Ir para a loja ({offer.merchant?.name || 'Parceiro'})</span>
+                    <span>IR PARA A LOJA ({offer.merchant?.name || 'PARCEIRO'})</span>
                     <svg
                       width="20"
                       height="20"
@@ -201,8 +206,8 @@ export default async function OfferDetailPage({ params }: OfferDetailPageProps) 
                       <line x1="10" y1="14" x2="21" y2="3" />
                     </svg>
                   </a>
-                  <p className="text-[11px] text-[var(--color-neutral-500)] text-center">
-                    Você será redirecionado para o site oficial da loja com segurança.
+                  <p className="text-[11px] text-slate-400 text-center">
+                    Link de direcionamento seguro com tracking oficial Amazon Associados.
                   </p>
                 </div>
               </div>
@@ -213,8 +218,8 @@ export default async function OfferDetailPage({ params }: OfferDetailPageProps) 
         {/* Ofertas Relacionadas */}
         {relatedOffers.length > 0 && (
           <div className="space-y-4">
-            <h3 className="text-lg font-bold text-[var(--color-neutral-900)]">
-              Outras ofertas selecionadas para você
+            <h3 className="text-base font-bold text-slate-900 tracking-tight">
+              Outras ofertas em destaque
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {relatedOffers.map((rel) => (

@@ -26,16 +26,16 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   });
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white p-6 rounded-xl border border-[var(--color-neutral-200)] shadow-subtle space-y-2">
-        <span className="text-xs font-bold text-[var(--color-brand-primary-700)] uppercase tracking-wider">
-          Categoria
+    <div className="space-y-6 py-2">
+      <div className="bg-white p-6 rounded-md border border-slate-200 shadow-xs space-y-2">
+        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">
+          Categoria de Produtos
         </span>
-        <h1 className="text-2xl md:text-3xl font-black text-[var(--color-neutral-900)]">
+        <h1 className="text-2xl md:text-3xl font-black text-slate-900">
           {category.name}
         </h1>
         {category.description && (
-          <p className="text-sm text-[var(--color-neutral-700)] max-w-2xl">
+          <p className="text-sm text-slate-600 max-w-2xl leading-relaxed">
             {category.description}
           </p>
         )}

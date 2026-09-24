@@ -15,8 +15,8 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   actionHref = '/ofertas',
 }) => {
   return (
-    <div className="flex flex-col items-center justify-center p-8 md:p-12 text-center bg-white border border-[var(--color-neutral-200)] rounded-xl shadow-subtle my-6 max-w-xl mx-auto">
-      <div className="w-14 h-14 rounded-full bg-[var(--color-brand-primary-100)] text-[var(--color-brand-primary-700)] flex items-center justify-center mb-4">
+    <div className="flex flex-col items-center justify-center p-8 md:p-12 text-center bg-white border border-slate-200 rounded-md shadow-xs my-6 max-w-xl mx-auto">
+      <div className="w-14 h-14 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center mb-4">
         <svg
           width="28"
           height="28"
@@ -33,13 +33,13 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         </svg>
       </div>
 
-      <h3 className="text-lg font-bold text-[var(--color-neutral-900)] mb-2">{title}</h3>
-      <p className="text-sm text-[var(--color-neutral-700)] mb-6 leading-relaxed max-w-md">
+      <h3 className="text-lg font-extrabold text-slate-900 mb-2">{title}</h3>
+      <p className="text-sm text-slate-600 mb-6 leading-relaxed max-w-md">
         {description}
       </p>
 
       {actionHref && (
-        <Link href={actionHref} className="btn-chamei-primary">
+        <Link href={actionHref} className="btn-offer-cta max-w-xs">
           {actionText}
         </Link>
       )}
