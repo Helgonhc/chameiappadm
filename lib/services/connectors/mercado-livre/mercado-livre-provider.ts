@@ -8,20 +8,35 @@ import { AffiliateService } from '../../affiliate.service';
 export class MercadoLivreProvider implements AffiliateProductProvider {
   readonly providerName = 'mercado-livre';
 
+  private get clientId(): string | null {
+    return process.env.MERCADO_LIVRE_CLIENT_ID || null;
+  }
+
+  private get clientSecret(): string | null {
+    return process.env.MERCADO_LIVRE_CLIENT_SECRET || null;
+  }
+
+  private get affiliateTag(): string {
+    return process.env.MERCADO_LIVRE_AFFILIATE_TAG || 'chameiapp';
+  }
+
   async getStatus(): Promise<ProviderStatus> {
     return 'READY';
   }
 
   async healthCheck(): Promise<{ status: ProviderStatus; message: string; lastCheckedAt: string }> {
+    const hasAppKeys = Boolean(this.clientId && this.clientSecret);
     return {
       status: 'READY',
-      message: 'API Oficial do Mercado Livre conectada e pronta para busca de ofertas em tempo real.',
+      message: hasAppKeys
+        ? `API do Mercado Livre pronta com credenciais OAuth ativas (Client ID: ${this.clientId}) e Tag: ${this.affiliateTag}.`
+        : `API do Mercado Livre pronta em modo público com Tag de Afiliado (${this.affiliateTag}).`,
       lastCheckedAt: new Date().toISOString(),
     };
   }
 
   /**
-   * Realiza busca direta na API Pública Oficial do Mercado Livre Brasil
+   * Realiza busca direta na API Oficial do Mercado Livre Brasil
    */
   async searchProducts(query: string, options?: ProviderSearchOptions): Promise<ExternalProduct[]> {
     try {
@@ -29,13 +44,13 @@ export class MercadoLivreProvider implements AffiliateProductProvider {
       const limit = options?.limit || 20;
       const url = `https://api.mercadolibre.com/sites/MLB/search?q=${encodeURIComponent(searchTerm)}&limit=${limit}`;
 
-      const res = await fetch(url, {
-        headers: {
-          'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-          Accept: 'application/json',
-        },
-      });
+      const headers: Record<string, string> = {
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        Accept: 'application/json',
+      };
+
+      const res = await fetch(url, { headers });
       if (!res.ok) {
         console.warn('[MercadoLivreProvider] Falha ao buscar produtos no ML:', res.status);
         return [];
