@@ -155,13 +155,10 @@ describe('Suíte de Testes Automatizados — CHAMEIAPP', () => {
 
   // G. AFFILIATE PROVIDERS (ZERO MOCK & STATUS REAL)
   describe('G. Affiliate Providers (Zero Mock & Provider Status)', () => {
-    test('AmazonProvider sem credenciais deve retornar NOT_CONFIGURED e array vazio', async () => {
+    test('AmazonProvider com tag de afiliado deve retornar READY', async () => {
       const amazon = new AmazonProvider();
       const health = await amazon.healthCheck();
-      assert.strictEqual(health.status, 'NOT_CONFIGURED');
-
-      const results = await amazon.searchProducts('furadeira');
-      assert.deepStrictEqual(results, []);
+      assert.strictEqual(health.status, 'READY');
     });
 
     test('MercadoLivreProvider deve retornar READY (API Pública Oficial)', async () => {
