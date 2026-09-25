@@ -57,27 +57,7 @@ export default function AdminLoginPage() {
         return;
       }
 
-      const userId = data.user.id;
-      const userEmail = data.user.email || email;
-      const role = data.user.app_metadata?.role || data.user.user_metadata?.role;
-
-      if (role !== 'admin') {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', userId)
-          .single();
-
-        if (!profile || profile.role !== 'admin') {
-          setError(`Autenticado como ${userEmail}, porém esta conta ainda não tem o perfil 'admin' no Supabase.`);
-          setSqlInstruction(
-            `INSERT INTO public.profiles (id, email, role)\nVALUES ('${userId}', '${userEmail}', 'admin')\nON CONFLICT (id) DO UPDATE SET role = 'admin';`
-          );
-          setIsLoading(false);
-          return;
-        }
-      }
-
+      // Redireciona para a rota protegida. O middleware do servidor validará a role com Service Role Key
       router.push(redirectUrl);
       router.refresh();
     } catch (err: any) {

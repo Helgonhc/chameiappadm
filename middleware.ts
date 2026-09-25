@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
+import { createClient } from '@supabase/supabase-js';
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
@@ -9,6 +10,7 @@ export async function middleware(request: NextRequest) {
   if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
     // Se Supabase não estiver configurado em desenvolvimento local, permite navegar no mockup admin
     if (!supabaseUrl || !supabaseAnonKey) {
@@ -56,12 +58,14 @@ export async function middleware(request: NextRequest) {
     const userRole = user.app_metadata?.role || user.user_metadata?.role;
 
     if (userRole !== 'admin') {
-      // Checar na tabela profiles
-      const { data: profile } = await supabase
+      // Usar a Service Role Key (se disponível) para consultar a tabela profiles sem restrições de RLS
+      const dbClient = createClient(supabaseUrl, serviceRoleKey || supabaseAnonKey);
+
+      const { data: profile } = await dbClient
         .from('profiles')
         .select('role')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       if (!profile || profile.role !== 'admin') {
         // Usuário autenticado, mas SEM autorização de admin -> 403 / Redirecionar
@@ -80,3 +84,4 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: ['/admin/:path*'],
 };
+
