@@ -3,6 +3,7 @@ export interface Category {
   name: string;
   slug: string;
   description?: string | null;
+  icon?: string | null;
   active: boolean;
   created_at: string;
 }
@@ -33,24 +34,13 @@ export interface Offer {
   destination_url: string;
   affiliate_url?: string | null;
   featured: boolean;
-  free_shipping?: boolean | null;
+  free_shipping: boolean;
   status: OfferStatus;
-  starts_at?: string | null;
-  expires_at?: string | null;
   published_at?: string | null;
+  expires_at?: string | null;
+  starts_at?: string | null;
   created_at: string;
   updated_at: string;
-  // Joins
   category?: Category;
   merchant?: Merchant;
-}
-
-export interface ClickEvent {
-  id: string;
-  offer_id: string;
-  created_at: string;
-  referrer?: string | null;
-  utm_source?: string | null;
-  utm_medium?: string | null;
-  utm_campaign?: string | null;
 }

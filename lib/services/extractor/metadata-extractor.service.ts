@@ -1,5 +1,6 @@
 import { AffiliateService } from '../affiliate.service';
 import { NvidiaAiService, GeneratedOfferCopy } from '../ai/nvidia-ai.service';
+import { CategoryDetectorService } from '../ai/category-detector.service';
 
 export interface ExtractedProductData {
   title: string;
@@ -9,7 +10,9 @@ export interface ExtractedProductData {
   destinationUrl: string;
   affiliateUrl: string;
   merchantName: string;
+  categoryId?: string;
   categoryName?: string;
+  categorySlug?: string;
   description: string;
   aiCopy?: GeneratedOfferCopy;
 }
@@ -159,7 +162,7 @@ export const MetadataExtractorService = {
   },
 
   /**
-   * Extração Específica para Amazon Brasil com ASIN e Imagem Oficial da Amazon (https://images-na.ssl-images-amazon.com/images/P/{ASIN}.01.LZZZZZZZ.jpg)
+   * Extração Específica para Amazon Brasil com ASIN e Imagem Oficial da Amazon
    */
   async extractFromAmazonAsin(url: string): Promise<ExtractedProductData | null> {
     try {
@@ -228,9 +231,12 @@ export const MetadataExtractorService = {
   },
 
   /**
-   * Formata os dados extraídos e invoca o agente de IA NVIDIA (LLaMA 3.3 70B) para gerar a copy final
+   * Formata os dados extraídos, detecta a categoria automática entre as 24 oficiais e invoca a IA da NVIDIA
    */
   async formatAndGenerateCopy(extracted: ExtractedProductData): Promise<{ success: boolean; data: ExtractedProductData }> {
+    // 1. Detecção Inteligente da Categoria Oficial entre as 24 categorias
+    const detectedCategory = CategoryDetectorService.detectCategory(extracted.title, extracted.description);
+
     let aiCopy: GeneratedOfferCopy | undefined;
 
     try {
@@ -239,6 +245,7 @@ export const MetadataExtractorService = {
         currentPrice: extracted.currentPrice,
         previousPrice: extracted.previousPrice,
         merchantName: extracted.merchantName,
+        categoryName: detectedCategory.name,
         rawDescription: extracted.description,
       });
     } catch (err) {
@@ -249,6 +256,9 @@ export const MetadataExtractorService = {
       ...extracted,
       title: aiCopy?.optimizedTitle || extracted.title,
       description: aiCopy?.description || extracted.description,
+      categoryId: detectedCategory.id,
+      categoryName: detectedCategory.name,
+      categorySlug: detectedCategory.slug,
       aiCopy,
     };
 
@@ -261,21 +271,38 @@ export const MetadataExtractorService = {
   /**
    * Extração limpa baseada no Slug da URL quando a loja possui bloqueio estrito
    */
-  extractFromUrlSlug(url: string, merchantName: string): { success: boolean; data: ExtractedProductData } {
+  async extractFromUrlSlug(url: string, merchantName: string): Promise<{ success: boolean; data: ExtractedProductData }> {
     const title = this.titleFromUrlSlug(url);
     const affiliateUrl = AffiliateService.formatAffiliateUrl(url);
+    const detectedCategory = CategoryDetectorService.detectCategory(title);
+
+    let aiCopy: GeneratedOfferCopy | undefined;
+    try {
+      aiCopy = await NvidiaAiService.generateOfferCopy({
+        title,
+        currentPrice: 0,
+        merchantName,
+        categoryName: detectedCategory.name,
+      });
+    } catch {
+      // Ignorar erro de IA no fallback
+    }
 
     return {
       success: true,
       data: {
-        title,
+        title: aiCopy?.optimizedTitle || title,
         currentPrice: 0,
         previousPrice: null,
         imageUrl: '',
         destinationUrl: url,
         affiliateUrl,
         merchantName,
-        description: `Confira a oferta de ${title} na loja ${merchantName}.`,
+        categoryId: detectedCategory.id,
+        categoryName: detectedCategory.name,
+        categorySlug: detectedCategory.slug,
+        description: aiCopy?.description || `Confira a oferta de ${title} na loja ${merchantName}.`,
+        aiCopy,
       },
     };
   },

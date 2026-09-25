@@ -105,6 +105,7 @@ describe('Suíte de Testes Automatizados — CHAMEIAPP', () => {
       image_url: 'https://www.amazon.com.br/img.jpg',
       destination_url: 'https://www.amazon.com.br/dp/123',
       featured: false,
+      free_shipping: true,
       status: 'published',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),

@@ -16,6 +16,7 @@ export default function NovaOfertaPage() {
   const [importUrl, setImportUrl] = useState('');
   const [isExtracting, setIsExtracting] = useState(false);
   const [extractSuccess, setExtractSuccess] = useState(false);
+  const [detectedCategoryName, setDetectedCategoryName] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<OfferInput>({
     title: '',
@@ -63,7 +64,7 @@ export default function NovaOfertaPage() {
   }, []);
 
   /**
-   * Extração 100% Automática por Link (Puxa Título, Imagem, Preço, Tag de Afiliado e Gera Copy com IA)
+   * Extração 100% Automática por Link (Puxa Título, Imagem, Preço, Categoria Inteligente, Tag de Afiliado e Gera Copy com IA)
    */
   const handleAutoExtractFromUrl = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -75,6 +76,7 @@ export default function NovaOfertaPage() {
     setIsExtracting(true);
     setErrors({});
     setExtractSuccess(false);
+    setDetectedCategoryName(null);
 
     try {
       const response = await fetch('/api/admin/extract-url', {
@@ -88,7 +90,7 @@ export default function NovaOfertaPage() {
       if (json.success && json.extracted) {
         const ext = json.extracted;
 
-        // Tentar mapear a loja detectada aos merchants do banco
+        // Mapear loja
         let matchedMerchantId = formData.merchant_id;
         if (ext.merchantName) {
           const foundM = merchants.find((m) =>
@@ -96,6 +98,20 @@ export default function NovaOfertaPage() {
             ext.merchantName.toLowerCase().includes(m.name.toLowerCase())
           );
           if (foundM) matchedMerchantId = foundM.id;
+        }
+
+        // Mapear Categoria Inteligente (entre as 24 oficiais)
+        let matchedCategoryId = formData.category_id;
+        if (ext.categorySlug || ext.categoryName || ext.categoryId) {
+          const foundC = categories.find((c) =>
+            (ext.categoryId && c.id === ext.categoryId) ||
+            (ext.categorySlug && c.slug === ext.categorySlug) ||
+            (ext.categoryName && c.name.toLowerCase() === ext.categoryName.toLowerCase())
+          );
+          if (foundC) {
+            matchedCategoryId = foundC.id;
+            setDetectedCategoryName(foundC.name);
+          }
         }
 
         setFormData((prev) => ({
@@ -108,6 +124,7 @@ export default function NovaOfertaPage() {
           affiliate_url: ext.affiliateUrl || prev.affiliate_url,
           description: ext.description || prev.description,
           merchant_id: matchedMerchantId,
+          category_id: matchedCategoryId,
         }));
 
         if (ext.aiCopy) {
@@ -262,12 +279,12 @@ export default function NovaOfertaPage() {
             <div>
               <h2 className="text-lg font-black uppercase tracking-wider">Montador Automático de Promoção por Link</h2>
               <p className="text-xs text-purple-200">
-                Cole a URL do produto e a IA extrai título, preço, imagem, marca a tag de afiliado e gera a copy do WhatsApp!
+                Cole a URL do produto e a IA extrai título, preço, imagem, detecta a categoria correta e cria a mensagem para WhatsApp!
               </p>
             </div>
           </div>
           <span className="hidden sm:inline-block bg-emerald-500/20 text-emerald-300 font-mono text-[10px] px-2.5 py-1 rounded border border-emerald-500/40 font-bold">
-            100% Automático
+            24 Categorias Ativas
           </span>
         </div>
 
@@ -284,14 +301,23 @@ export default function NovaOfertaPage() {
             disabled={isExtracting}
             className="px-6 py-3 bg-[var(--color-signal-primary)] hover:bg-[var(--color-signal-hover)] text-white font-extrabold text-xs rounded transition-all shadow-md shrink-0 disabled:opacity-50 active:scale-95"
           >
-            {isExtracting ? '⚡ Puxando Dados & IA...' : '⚡ Puxar Dados & Montar Promoção'}
+            {isExtracting ? '⚡ Puxando Dados & Categoria...' : '⚡ Puxar Dados & Montar Promoção'}
           </button>
         </form>
 
         {extractSuccess && (
-          <div className="p-3 bg-emerald-950/80 border border-emerald-500/50 text-emerald-200 text-xs font-bold rounded flex items-center justify-between">
-            <span>✓ Promoção montada com sucesso! Título, imagem, preços, tag e copy preenchidos abaixo.</span>
-            <span className="text-[10px] text-emerald-400">Verifique e clique em Salvar abaixo</span>
+          <div className="p-3.5 bg-emerald-950/90 border border-emerald-500/60 text-emerald-200 text-xs font-bold rounded space-y-1">
+            <div className="flex items-center justify-between">
+              <span>✓ Promoção montada com sucesso!</span>
+              {detectedCategoryName && (
+                <span className="bg-emerald-800 text-white font-extrabold px-2 py-0.5 rounded text-[10px]">
+                  Categoria Detectada: {detectedCategoryName}
+                </span>
+              )}
+            </div>
+            <p className="text-[11px] font-normal text-emerald-300">
+              Título, preço, imagem, categoria e mensagem para redes sociais preenchidos. Confira e clique em Salvar abaixo.
+            </p>
           </div>
         )}
       </div>
@@ -307,7 +333,7 @@ export default function NovaOfertaPage() {
             </p>
           </div>
           <span className="bg-purple-100 text-purple-800 font-bold text-[10px] px-2.5 py-1 rounded font-mono">
-            LLaMA 3.3 70B (NVIDIA API)
+            NVIDIA AI NIM (LLaMA 3.1 70B)
           </span>
         </div>
 
@@ -407,11 +433,18 @@ export default function NovaOfertaPage() {
             </div>
 
             <div>
-              <label className="block mb-1">Categoria *</label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block">Categoria (Auto-Detectada) *</label>
+                {detectedCategoryName && (
+                  <span className="text-[10px] text-emerald-700 font-extrabold bg-emerald-100 px-1.5 py-0.2 rounded">
+                    ✓ IA Detectou: {detectedCategoryName}
+                  </span>
+                )}
+              </div>
               <select
                 value={formData.category_id}
                 onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
-                className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5 bg-white text-slate-900"
+                className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5 bg-white text-slate-900 font-bold"
               >
                 {categories.length > 0 ? (
                   categories.map((c) => (
