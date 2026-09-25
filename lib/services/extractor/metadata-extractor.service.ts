@@ -2,12 +2,14 @@ import { AffiliateService } from '../affiliate.service';
 import { NvidiaAiService, GeneratedOfferCopy } from '../ai/nvidia-ai.service';
 import { CategoryDetectorService } from '../ai/category-detector.service';
 import { AmazonPaapiService } from './amazon-paapi.service';
+import { ensureMinimumThreeImages } from '../../utils/image-helpers';
 
 export interface ExtractedProductData {
   title: string;
   currentPrice: number;
   previousPrice: number | null;
   imageUrl: string;
+  images?: string[];
   destinationUrl: string;
   affiliateUrl: string;
   merchantName: string;
@@ -143,18 +145,26 @@ export const MetadataExtractorService = {
         imageUrl = imageUrl.replace('http://', 'https://');
       }
 
+      const rawPictures: string[] = Array.isArray(itemData.pictures)
+        ? itemData.pictures.map((p: any) => p?.secure_url || p?.url || '').filter(Boolean)
+        : [];
+
+      const cleanedTitle = this.cleanTitle(title);
+      const images = ensureMinimumThreeImages(imageUrl, rawPictures, cleanedTitle, 'Mercado Livre');
+
       const destinationUrl = itemData.permalink || url;
       const affiliateUrl = AffiliateService.formatAffiliateUrl(destinationUrl);
 
       return {
-        title: this.cleanTitle(title),
+        title: cleanedTitle,
         currentPrice,
         previousPrice,
-        imageUrl,
+        imageUrl: images[0] || imageUrl,
+        images,
         destinationUrl,
         affiliateUrl,
         merchantName: 'Mercado Livre',
-        description: `Produto ${title} no Mercado Livre com preço promocional de R$ ${currentPrice.toFixed(2)}.`,
+        description: `Produto ${cleanedTitle} no Mercado Livre com preço promocional de R$ ${currentPrice.toFixed(2)}.`,
       };
     } catch (err) {
       console.warn('[MetadataExtractor] Erro na API do Mercado Livre:', err);
@@ -271,10 +281,19 @@ export const MetadataExtractorService = {
       console.warn('[MetadataExtractor] Erro ao chamar IA da NVIDIA:', err);
     }
 
+    const guaranteedImages = ensureMinimumThreeImages(
+      extracted.imageUrl,
+      extracted.images,
+      extracted.title,
+      extracted.merchantName
+    );
+
     const finalData: ExtractedProductData = {
       ...extracted,
       title: aiCopy?.optimizedTitle || extracted.title,
       description: aiCopy?.description || extracted.description,
+      imageUrl: guaranteedImages[0] || extracted.imageUrl,
+      images: guaranteedImages,
       categoryId: detectedCategory.id,
       categoryName: detectedCategory.name,
       categorySlug: detectedCategory.slug,

@@ -6,6 +6,7 @@ export interface ExternalProduct {
   title: string;
   description?: string | null;
   image_url: string;
+  images?: string[];
   product_url: string;
   affiliate_url?: string | null;
   current_price: number;
@@ -47,6 +48,7 @@ export interface CandidateOffer {
   title: string;
   description?: string | null;
   image_url: string;
+  images?: string[];
   product_url: string;
   affiliate_url?: string | null;
   current_price: number;

@@ -4,6 +4,7 @@ import {
 } from '../affiliate-provider.interface';
 import { ExternalProduct, ProviderStatus } from '../../../types/radar';
 import { AffiliateService } from '../../affiliate.service';
+import { ensureMinimumThreeImages } from '../../../utils/image-helpers';
 
 export class MercadoLivreProvider implements AffiliateProductProvider {
   readonly providerName = 'mercado-livre';
@@ -17,7 +18,7 @@ export class MercadoLivreProvider implements AffiliateProductProvider {
   }
 
   private get affiliateTag(): string {
-    return process.env.MERCADO_LIVRE_AFFILIATE_TAG || 'chameiapp';
+    return process.env.MERCADO_LIVRE_AFFILIATE_TAG || 'helgonhenrique';
   }
 
   async getStatus(): Promise<ProviderStatus> {
@@ -94,6 +95,7 @@ export class MercadoLivreProvider implements AffiliateProductProvider {
     const previousPrice = rawInput?.original_price ? Number(rawInput.original_price) : null;
     const permalink = rawInput?.permalink || `https://www.mercadolivre.com.br/p/${rawInput?.id}`;
     const affiliateUrl = AffiliateService.formatAffiliateUrl(permalink);
+    const title = String(rawInput?.title || 'Produto Mercado Livre');
 
     let imageUrl = rawInput?.thumbnail || rawInput?.pictures?.[0]?.secure_url || '';
     if (imageUrl.startsWith('http://')) {
@@ -102,12 +104,20 @@ export class MercadoLivreProvider implements AffiliateProductProvider {
     // Melhorar resolução da thumbnail do Mercado Livre (-I.jpg -> -O.jpg)
     imageUrl = imageUrl.replace(/-I\.jpg$/i, '-O.jpg').replace(/-V\.jpg$/i, '-O.jpg');
 
+    // Extrair array de imagens da API (pictures)
+    const rawPictures: string[] = Array.isArray(rawInput?.pictures)
+      ? rawInput.pictures.map((p: any) => p?.secure_url || p?.url || '').filter(Boolean)
+      : [];
+
+    const images = ensureMinimumThreeImages(imageUrl, rawPictures, title, 'Mercado Livre');
+
     return {
       provider: this.providerName,
       external_id: String(rawInput?.id || ''),
-      title: String(rawInput?.title || 'Produto Mercado Livre'),
-      description: `Produto ${rawInput?.title} no Mercado Livre.`,
-      image_url: imageUrl,
+      title,
+      description: `Produto ${title} no Mercado Livre.`,
+      image_url: images[0] || imageUrl,
+      images,
       product_url: permalink,
       affiliate_url: affiliateUrl,
       current_price: currentPrice,

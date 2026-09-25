@@ -31,6 +31,7 @@ export interface Offer {
   previous_price?: number | null;
   coupon_code?: string | null;
   image_url: string;
+  images?: string[];
   destination_url: string;
   affiliate_url?: string | null;
   featured: boolean;

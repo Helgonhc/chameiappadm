@@ -301,4 +301,32 @@ describe('Suíte de Testes Automatizados — CHAMEIAPP', () => {
     });
   });
 
+  // K. GALERIA DE PELO MENOS 3 IMAGENS & NEUROMARKETING IA
+  describe('K. Galeria de 3+ Imagens & Copy de Neuromarketing', () => {
+    test('ensureMinimumThreeImages deve sempre retornar um array com no mínimo 3 imagens', async () => {
+      const { ensureMinimumThreeImages } = await import('../lib/utils/image-helpers');
+      
+      const singleImage = 'https://http2.mlstatic.com/D_NQ_NP_12345-O.jpg';
+      const images = ensureMinimumThreeImages(singleImage, [], 'Smart TV 55 4K', 'Mercado Livre');
+
+      assert.strictEqual(Array.isArray(images), true);
+      assert.strictEqual(images.length >= 3, true);
+      assert.strictEqual(images[0], singleImage);
+    });
+
+    test('ensureMinimumThreeImages deve preservar imagens extras da API quando fornecidas', async () => {
+      const { ensureMinimumThreeImages } = await import('../lib/utils/image-helpers');
+      
+      const mainImg = 'https://http2.mlstatic.com/D_NQ_NP_1.jpg';
+      const extra1 = 'https://http2.mlstatic.com/D_NQ_NP_2.jpg';
+      const extra2 = 'https://http2.mlstatic.com/D_NQ_NP_3.jpg';
+      
+      const images = ensureMinimumThreeImages(mainImg, [extra1, extra2], 'Notebook Gamer', 'Mercado Livre');
+      assert.strictEqual(images.length >= 3, true);
+      assert.strictEqual(images.includes(mainImg), true);
+      assert.strictEqual(images.includes(extra1), true);
+      assert.strictEqual(images.includes(extra2), true);
+    });
+  });
+
 });

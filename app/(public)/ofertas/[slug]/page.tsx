@@ -6,6 +6,7 @@ import type { Metadata } from 'next';
 import { OfferService } from '../../../../lib/services/offer.service';
 import { calculateDiscount } from '../../../../lib/utils/offer-helpers';
 import { OfferCardCompact } from '../../../../components/offers/OfferCardCompact';
+import { OfferImageGallery } from '../../../../components/offers/OfferImageGallery';
 import { SITE_CONFIG } from '../../../../lib/config/site.config';
 
 interface OfferDetailPageProps {
@@ -104,32 +105,17 @@ export default async function OfferDetailPage({ params }: OfferDetailPageProps) 
         </nav>
 
         {/* Card Principal de Detalhes da Oferta */}
-        <div className="bg-white rounded-md border border-slate-200 shadow-sm overflow-hidden p-6 md:p-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+        <div className="bg-slate-900/90 rounded-2xl border border-white/10 shadow-2xl overflow-hidden p-6 md:p-8 backdrop-blur-xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
             
-            {/* Lado Esquerdo: Imagem */}
-            <div className="relative w-full h-72 md:h-96 bg-slate-50 rounded p-6 flex items-center justify-center border border-slate-100 overflow-hidden">
-              <Image
-                src={offer.image_url}
-                alt={offer.title}
-                fill
-                sizes="(max-width: 768px) 100vw, 500px"
-                className="object-contain hover:scale-105 transition-transform duration-300"
-                priority
-              />
-              <div className="absolute top-3 left-3 z-10 flex items-center gap-2">
-                {offer.merchant && (
-                  <span className="badge-merchant-amazon font-bold shadow-xs">
-                    {offer.merchant.name}
-                  </span>
-                )}
-                {discountPercent > 0 && (
-                  <span className="badge-discount shadow-xs font-bold">
-                    ↓ {discountPercent}% OFF
-                  </span>
-                )}
-              </div>
-            </div>
+            {/* Lado Esquerdo: Galeria Interativa com Mínimo 3 Imagens Garantidas */}
+            <OfferImageGallery
+              mainImageUrl={offer.image_url}
+              images={offer.images}
+              title={offer.title}
+              merchantName={offer.merchant?.name}
+              discountPercent={discountPercent}
+            />
 
             {/* Lado Direito: Informações e Ação */}
             <div className="flex flex-col justify-between space-y-6">
