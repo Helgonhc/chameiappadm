@@ -8,6 +8,7 @@ import { ensureMinimumThreeImages } from '../../../utils/image-helpers';
 
 export class MercadoLivreProvider implements AffiliateProductProvider {
   readonly providerName = 'mercado-livre';
+  private cachedToken: { token: string; expiresAt: number } | null = null;
 
   private get clientId(): string | null {
     return process.env.MERCADO_LIVRE_CLIENT_ID || null;
@@ -37,32 +38,95 @@ export class MercadoLivreProvider implements AffiliateProductProvider {
   }
 
   /**
-   * Realiza busca direta na API Oficial do Mercado Livre Brasil
+   * Autenticação OAuth Client Credentials oficial do Mercado Livre
+   */
+  async getAccessToken(): Promise<string | null> {
+    if (this.cachedToken && Date.now() < this.cachedToken.expiresAt) {
+      return this.cachedToken.token;
+    }
+
+    if (!this.clientId || !this.clientSecret) return null;
+
+    try {
+      const res = await fetch('https://api.mercadolibre.com/oauth/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Accept: 'application/json',
+        },
+        body: new URLSearchParams({
+          grant_type: 'client_credentials',
+          client_id: this.clientId,
+          client_secret: this.clientSecret,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.access_token) {
+          const expiresIn = (data.expires_in || 21600) * 1000;
+          this.cachedToken = {
+            token: data.access_token,
+            expiresAt: Date.now() + expiresIn - 60000,
+          };
+          return data.access_token;
+        }
+      }
+    } catch (err) {
+      console.warn('[MercadoLivreProvider] Erro ao autenticar OAuth no ML:', err);
+    }
+    return null;
+  }
+
+  /**
+   * Realiza busca direta na API Oficial do Mercado Livre Brasil com resiliência
    */
   async searchProducts(query: string, options?: ProviderSearchOptions): Promise<ExternalProduct[]> {
     try {
-      const searchTerm = query || 'oferta do dia';
+      const searchTerm = query || 'oferta';
       const limit = options?.limit || 20;
-      const url = `https://api.mercadolibre.com/sites/MLB/search?q=${encodeURIComponent(searchTerm)}&limit=${limit}`;
+      const accessToken = await this.getAccessToken();
 
       const headers: Record<string, string> = {
         'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
         Accept: 'application/json',
       };
 
-      const res = await fetch(url, { headers });
-      if (!res.ok) {
-        console.warn('[MercadoLivreProvider] Falha ao buscar produtos no ML:', res.status);
-        return [];
+      if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
       }
 
-      const data = await res.json();
-      const results = data.results || [];
+      // 1. Tentar busca por termo direto
+      const primaryUrl = `https://api.mercadolibre.com/sites/MLB/search?q=${encodeURIComponent(searchTerm)}&limit=${limit}`;
+      let res = await fetch(primaryUrl, { headers });
 
-      return results.map((item: any) => this.normalizeProduct(item));
+      // 2. Se falhar com token, tentar requisição pública limpa
+      if (!res.ok && accessToken) {
+        delete headers['Authorization'];
+        res = await fetch(primaryUrl, { headers });
+      }
+
+      if (res.ok) {
+        const data = await res.json();
+        const results = data.results || [];
+        if (results.length > 0) {
+          return results.map((item: any) => this.normalizeProduct(item));
+        }
+      }
+
+      // 3. Fallback: Busca genérica de ofertas do dia se o termo específico não retornar resultados
+      const fallbackUrl = `https://api.mercadolibre.com/sites/MLB/search?q=promocao&limit=${limit}`;
+      const fallbackRes = await fetch(fallbackUrl, { headers });
+      if (fallbackRes.ok) {
+        const fallbackData = await fallbackRes.json();
+        const fallbackResults = fallbackData.results || [];
+        return fallbackResults.map((item: any) => this.normalizeProduct(item));
+      }
+
+      return [];
     } catch (err) {
-      console.error('[MercadoLivreProvider] Erro ao buscar produtos:', err);
+      console.error('[MercadoLivreProvider] Erro ao buscar produtos no Mercado Livre:', err);
       return [];
     }
   }
@@ -73,7 +137,7 @@ export class MercadoLivreProvider implements AffiliateProductProvider {
       const res = await fetch(url, {
         headers: {
           'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
           Accept: 'application/json',
         },
       });

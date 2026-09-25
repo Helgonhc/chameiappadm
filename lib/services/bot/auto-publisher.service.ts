@@ -19,17 +19,20 @@ export const AutoPublisherService = {
    */
   TRENDING_KEYWORDS: [
     'air fryer',
-    'ps5 console',
-    'smartphone galaxy',
-    'iphone 15',
-    'notebook dell',
+    'smartphone',
+    'notebook gamer',
     'smart tv 4k',
-    'echo dot alexa',
-    'parafusadeira',
     'fone bluetooth',
+    'parafusadeira',
+    'ps5',
     'cadeira gamer',
-    'fralda pampers',
+    'smartwatch',
+    'aspirador de po',
+    'whey protein',
     'perfume importado',
+    'fralda',
+    'monitor gamer',
+    'alexa echo',
   ],
 
   /**
@@ -72,20 +75,30 @@ export const AutoPublisherService = {
       // A. Varredura no Mercado Livre (API Oficial ao Vivo)
       if (shouldScanML) {
         try {
-          const mlItems = await mlProvider.searchProducts(keyword, { limit: 4 });
+          const mlItems = await mlProvider.searchProducts(keyword, { limit: 6 });
           scannedCount += mlItems.length;
 
+          if (mlItems.length === 0) {
+            logs.push(`[Bot ML] Nenhuma oferta retornada pela API do ML para "${keyword}".`);
+          } else {
+            logs.push(`[Bot ML] API do Mercado Livre retornou ${mlItems.length} produtos para "${keyword}".`);
+          }
+
           for (const item of mlItems) {
-            if (!item.current_price || item.current_price <= 0 || !item.product_url) continue;
+            if (!item.current_price || item.current_price <= 0 || !item.product_url) {
+              logs.push(`[Bot ML] ⚠️ Produto "${item.title?.substring(0, 30)}" ignorado (preço zerado ou inválido).`);
+              continue;
+            }
 
             if (existingUrls.has(item.product_url.toLowerCase()) || existingTitles.has(item.title.toLowerCase())) {
+              logs.push(`[Bot ML] ℹ️ Produto "${item.title.substring(0, 35)}..." já está publicado no site (duplicata evitada).`);
               continue;
             }
 
             const hasDiscount = Boolean(item.previous_price && item.previous_price > item.current_price);
             qualifiedCount++;
 
-            logs.push(`[Bot Mercado Livre] Processando com IA: "${item.title.substring(0, 35)}..." (R$ ${item.current_price})`);
+            logs.push(`[Bot Mercado Livre] ⚡ Extraindo metadados e gerando copy com IA para: "${item.title.substring(0, 35)}..." (R$ ${item.current_price.toFixed(2)})`);
 
             const extracted = await MetadataExtractorService.extractFromUrl(item.product_url);
 
@@ -97,6 +110,7 @@ export const AutoPublisherService = {
                 current_price: data.currentPrice || item.current_price,
                 previous_price: data.previousPrice || item.previous_price,
                 image_url: data.imageUrl || item.image_url,
+                images: data.images || item.images,
                 destination_url: data.destinationUrl || item.product_url,
                 affiliate_url: data.affiliateUrl || item.affiliate_url || item.product_url,
                 merchant_id: 'm2222222-2222-2222-2222-222222222222', // Mercado Livre
@@ -111,32 +125,47 @@ export const AutoPublisherService = {
                 publishedCount++;
                 publishedOffers.push(created.data);
                 existingUrls.add(data.destinationUrl.toLowerCase());
-                logs.push(`[Bot ML] ✅ PUBLICADO MERCADO LIVRE: "${created.data.title}" [Categoria: ${data.categoryName}]`);
+                existingTitles.add(data.title.toLowerCase());
+                logs.push(`[Bot ML] ✅ PUBLICADO COM SUCESSO: "${created.data.title}" [Categoria: ${data.categoryName}]`);
+              } else {
+                logs.push(`[Bot ML] ❌ Falha ao salvar oferta no banco de dados: ${created.error || 'Erro desconhecido'}`);
               }
+            } else {
+              logs.push(`[Bot ML] ⚠️ Falha na extração de dados para a oferta de "${item.title.substring(0, 30)}".`);
             }
           }
         } catch (err: any) {
-          logs.push(`[Bot ML] Erro ao varrer ML para "${keyword}": ${err.message || String(err)}`);
+          logs.push(`[Bot ML] ❌ Erro ao varrer ML para "${keyword}": ${err.message || String(err)}`);
         }
       }
 
       // B. Varredura na Amazon Brasil
       if (shouldScanAmazon) {
         try {
-          const amazonItems = await amazonProvider.searchProducts(keyword, { limit: 3 });
+          const amazonItems = await amazonProvider.searchProducts(keyword, { limit: 4 });
           scannedCount += amazonItems.length;
 
+          if (amazonItems.length === 0) {
+            logs.push(`[Bot Amazon] Nenhuma oferta retornada pela API da Amazon para "${keyword}".`);
+          } else {
+            logs.push(`[Bot Amazon] API da Amazon retornou ${amazonItems.length} produtos para "${keyword}".`);
+          }
+
           for (const item of amazonItems) {
-            if (!item.current_price || item.current_price <= 0 || !item.product_url) continue;
+            if (!item.current_price || item.current_price <= 0 || !item.product_url) {
+              logs.push(`[Bot Amazon] ⚠️ Produto "${item.title?.substring(0, 30)}" ignorado (preço zerado ou inválido).`);
+              continue;
+            }
 
             if (existingUrls.has(item.product_url.toLowerCase()) || existingTitles.has(item.title.toLowerCase())) {
+              logs.push(`[Bot Amazon] ℹ️ Produto "${item.title.substring(0, 35)}..." já está publicado no site (duplicata evitada).`);
               continue;
             }
 
             const hasDiscount = Boolean(item.previous_price && item.previous_price > item.current_price);
             qualifiedCount++;
 
-            logs.push(`[Bot Amazon] Processando com IA: "${item.title.substring(0, 35)}..." (R$ ${item.current_price})`);
+            logs.push(`[Bot Amazon] ⚡ Extraindo metadados e gerando copy com IA para: "${item.title.substring(0, 35)}..." (R$ ${item.current_price.toFixed(2)})`);
 
             const extracted = await MetadataExtractorService.extractFromUrl(item.product_url);
 
@@ -148,6 +177,7 @@ export const AutoPublisherService = {
                 current_price: data.currentPrice || item.current_price,
                 previous_price: data.previousPrice || item.previous_price,
                 image_url: data.imageUrl || item.image_url,
+                images: data.images || item.images,
                 destination_url: data.destinationUrl || item.product_url,
                 affiliate_url: data.affiliateUrl || item.affiliate_url || item.product_url,
                 merchant_id: 'm1111111-1111-1111-1111-111111111111', // Amazon Brasil
@@ -162,12 +192,17 @@ export const AutoPublisherService = {
                 publishedCount++;
                 publishedOffers.push(created.data);
                 existingUrls.add(data.destinationUrl.toLowerCase());
-                logs.push(`[Bot Amazon] ✅ PUBLICADO AMAZON BRASIL: "${created.data.title}" [Categoria: ${data.categoryName}]`);
+                existingTitles.add(data.title.toLowerCase());
+                logs.push(`[Bot Amazon] ✅ PUBLICADO COM SUCESSO: "${created.data.title}" [Categoria: ${data.categoryName}]`);
+              } else {
+                logs.push(`[Bot Amazon] ❌ Falha ao salvar oferta no banco de dados: ${created.error || 'Erro desconhecido'}`);
               }
+            } else {
+              logs.push(`[Bot Amazon] ⚠️ Falha na extração de dados para a oferta de "${item.title.substring(0, 30)}".`);
             }
           }
         } catch (err: any) {
-          logs.push(`[Bot Amazon] Erro ao varrer Amazon para "${keyword}": ${err.message || String(err)}`);
+          logs.push(`[Bot Amazon] ❌ Erro ao varrer Amazon para "${keyword}": ${err.message || String(err)}`);
         }
       }
     }
