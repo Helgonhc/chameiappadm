@@ -164,10 +164,10 @@ describe('Suíte de Testes Automatizados — CHAMEIAPP', () => {
       assert.deepStrictEqual(results, []);
     });
 
-    test('MercadoLivreProvider deve retornar NOT_CONFIGURED', async () => {
+    test('MercadoLivreProvider deve retornar READY (API Pública Oficial)', async () => {
       const ml = new MercadoLivreProvider();
       const health = await ml.healthCheck();
-      assert.strictEqual(health.status, 'NOT_CONFIGURED');
+      assert.strictEqual(health.status, 'READY');
     });
   });
 

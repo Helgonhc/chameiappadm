@@ -44,9 +44,10 @@ export const NvidiaAiService = {
 
     const candidateModels = [
       this.getModel(),
+      'meta/llama-3.2-3b-instruct',
+      'meta/llama3-70b-instruct',
+      'deepseek-ai/deepseek-r1',
       'nvidia/llama-3.1-nemotron-70b-instruct',
-      'meta/llama-3.1-8b-instruct',
-      'mistralai/mistral-7b-instruct-v0.3',
     ];
 
     // Remover duplicados
