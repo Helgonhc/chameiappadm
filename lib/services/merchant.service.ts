@@ -12,7 +12,6 @@ export const MerchantService = {
       const { data, error } = await supabase
         .from('categories')
         .select('*')
-        .eq('active', true)
         .order('name');
 
       if (error || !data || data.length === 0) {
@@ -34,7 +33,6 @@ export const MerchantService = {
       const { data, error } = await supabase
         .from('merchants')
         .select('*')
-        .eq('active', true)
         .order('name');
 
       if (error || !data || data.length === 0) {

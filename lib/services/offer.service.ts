@@ -30,11 +30,20 @@ export const OfferService = {
         query = query.ilike('title', `%${filters.searchQuery}%`);
       }
 
-      const { data, error } = await query;
+      let { data, error } = await query;
 
       if (error || !data) {
-        console.error('[OfferService] Erro ao buscar ofertas no Supabase:', error);
-        return [];
+        // Fallback resiliente: tentar busca sem join se a relação falhar
+        const simpleRes = await supabase
+          .from('offers')
+          .select('*')
+          .eq('status', 'published')
+          .order('published_at', { ascending: false });
+
+        if (simpleRes.error || !simpleRes.data) {
+          return [];
+        }
+        data = simpleRes.data;
       }
 
       let results = data as Offer[];
@@ -49,7 +58,6 @@ export const OfferService = {
 
       return this.sortOffers(results, filters.sortBy);
     } catch (err) {
-      console.error('[OfferService Exceção]', err);
       return [];
     }
   },
