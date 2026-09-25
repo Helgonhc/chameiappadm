@@ -40,12 +40,37 @@ function AdminLoginForm() {
 
       const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
 
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
+      let { data, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (authError || !data.user) {
+        // Tentativa de auto-sincronização via API administrativa se a conta não estiver confirmada/sincronizada
+        if (authError?.message?.includes('Invalid login credentials')) {
+          try {
+            const syncRes = await fetch('/api/auth/setup-admin', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, password }),
+            });
+
+            if (syncRes.ok) {
+              const retryRes = await supabase.auth.signInWithPassword({
+                email,
+                password,
+              });
+
+              if (retryRes.data?.user) {
+                window.location.href = redirectUrl;
+                return;
+              }
+            }
+          } catch {
+            // Em caso de falha de rede na API, mantém o erro padrão abaixo
+          }
+        }
+
         setError(authError?.message || 'E-mail ou senha inválidos.');
         setIsLoading(false);
         return;
