@@ -46,37 +46,35 @@ function AdminLoginForm() {
       });
 
       if (authError || !data.user) {
-        // Tentativa de auto-sincronização via API administrativa se a conta não estiver confirmada/sincronizada
-        if (authError?.message?.includes('Invalid login credentials')) {
-          try {
-            const syncRes = await fetch('/api/auth/setup-admin', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email, password }),
+        // Auto-sincronizar via API administrativa sempre que a autenticação inicial falhar
+        try {
+          const syncRes = await fetch('/api/auth/setup-admin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+          });
+
+          const syncData = await syncRes.json();
+
+          if (syncRes.ok && syncData.success) {
+            const retryRes = await supabase.auth.signInWithPassword({
+              email,
+              password,
             });
 
-            const syncData = await syncRes.json();
-
-            if (syncRes.ok && syncData.success) {
-              const retryRes = await supabase.auth.signInWithPassword({
-                email,
-                password,
-              });
-
-              if (retryRes.data?.user) {
-                window.location.href = redirectUrl;
-                return;
-              }
-            } else if (syncData?.error) {
-              setError(`Falha ao sincronizar conta com o Supabase: ${syncData.error}`);
-              setIsLoading(false);
+            if (retryRes.data?.user) {
+              window.location.href = redirectUrl;
               return;
             }
-          } catch (syncErr: any) {
-            setError(`Erro ao tentar sincronizar no servidor: ${syncErr?.message || 'Erro de conexão'}`);
+          } else if (syncData?.error) {
+            setError(`Falha na sincronização do Supabase: ${syncData.error}`);
             setIsLoading(false);
             return;
           }
+        } catch (syncErr: any) {
+          setError(`Erro de conexão ao servidor: ${syncErr?.message || 'Falha na requisição'}`);
+          setIsLoading(false);
+          return;
         }
 
         setError(authError?.message || 'E-mail ou senha inválidos.');
