@@ -13,6 +13,10 @@ export default function NovaOfertaPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [merchants, setMerchants] = useState<Merchant[]>([]);
 
+  const [importUrl, setImportUrl] = useState('');
+  const [isExtracting, setIsExtracting] = useState(false);
+  const [extractSuccess, setExtractSuccess] = useState(false);
+
   const [formData, setFormData] = useState<OfferInput>({
     title: '',
     slug: '',
@@ -57,6 +61,70 @@ export default function NovaOfertaPage() {
     }
     loadData();
   }, []);
+
+  /**
+   * Extração 100% Automática por Link (Puxa Título, Imagem, Preço, Tag de Afiliado e Gera Copy com IA)
+   */
+  const handleAutoExtractFromUrl = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!importUrl.trim()) {
+      setErrors({ importUrl: 'Por favor, informe a URL do produto.' });
+      return;
+    }
+
+    setIsExtracting(true);
+    setErrors({});
+    setExtractSuccess(false);
+
+    try {
+      const response = await fetch('/api/admin/extract-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: importUrl.trim() }),
+      });
+
+      const json = await response.json();
+
+      if (json.success && json.extracted) {
+        const ext = json.extracted;
+
+        // Tentar mapear a loja detectada aos merchants do banco
+        let matchedMerchantId = formData.merchant_id;
+        if (ext.merchantName) {
+          const foundM = merchants.find((m) =>
+            m.name.toLowerCase().includes(ext.merchantName.toLowerCase()) ||
+            ext.merchantName.toLowerCase().includes(m.name.toLowerCase())
+          );
+          if (foundM) matchedMerchantId = foundM.id;
+        }
+
+        setFormData((prev) => ({
+          ...prev,
+          title: ext.title || prev.title,
+          current_price: ext.currentPrice || prev.current_price,
+          previous_price: ext.previousPrice || prev.previous_price,
+          image_url: ext.imageUrl || prev.image_url,
+          destination_url: ext.destinationUrl || prev.destination_url,
+          affiliate_url: ext.affiliateUrl || prev.affiliate_url,
+          description: ext.description || prev.description,
+          merchant_id: matchedMerchantId,
+        }));
+
+        if (ext.aiCopy) {
+          setAiSocialMessage(ext.aiCopy.socialMessage);
+          setAiVerdict(ext.aiCopy.verdict);
+        }
+
+        setExtractSuccess(true);
+      } else {
+        setErrors({ general: json.error || 'Não foi possível extrair os dados da página.' });
+      }
+    } catch {
+      setErrors({ general: 'Erro de comunicação com o servidor ao extrair o link.' });
+    } finally {
+      setIsExtracting(false);
+    }
+  };
 
   const handleDestinationUrlChange = (url: string) => {
     let autoAffiliate = formData.affiliate_url;
@@ -184,15 +252,58 @@ export default function NovaOfertaPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto py-6">
+    <div className="max-w-3xl mx-auto py-6 space-y-6">
+      
+      {/* Bloco Destaque: Auto Importador de Oferta Inteligente */}
+      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-purple-950 text-white p-6 rounded-xl shadow-lg border border-purple-500/30 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="text-3xl">🚀</span>
+            <div>
+              <h2 className="text-lg font-black uppercase tracking-wider">Montador Automático de Promoção por Link</h2>
+              <p className="text-xs text-purple-200">
+                Cole a URL do produto e a IA extrai título, preço, imagem, marca a tag de afiliado e gera a copy do WhatsApp!
+              </p>
+            </div>
+          </div>
+          <span className="hidden sm:inline-block bg-emerald-500/20 text-emerald-300 font-mono text-[10px] px-2.5 py-1 rounded border border-emerald-500/40 font-bold">
+            100% Automático
+          </span>
+        </div>
+
+        <form onSubmit={handleAutoExtractFromUrl} className="flex flex-col sm:flex-row gap-2">
+          <input
+            type="url"
+            value={importUrl}
+            onChange={(e) => setImportUrl(e.target.value)}
+            placeholder="Cole o link da Amazon Brasil, Mercado Livre, Magalu, Shopee..."
+            className="flex-1 bg-slate-950/90 border border-purple-400/40 rounded px-4 py-3 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-400"
+          />
+          <button
+            type="submit"
+            disabled={isExtracting}
+            className="px-6 py-3 bg-[var(--color-signal-primary)] hover:bg-[var(--color-signal-hover)] text-white font-extrabold text-xs rounded transition-all shadow-md shrink-0 disabled:opacity-50 active:scale-95"
+          >
+            {isExtracting ? '⚡ Puxando Dados & IA...' : '⚡ Puxar Dados & Montar Promoção'}
+          </button>
+        </form>
+
+        {extractSuccess && (
+          <div className="p-3 bg-emerald-950/80 border border-emerald-500/50 text-emerald-200 text-xs font-bold rounded flex items-center justify-between">
+            <span>✓ Promoção montada com sucesso! Título, imagem, preços, tag e copy preenchidos abaixo.</span>
+            <span className="text-[10px] text-emerald-400">Verifique e clique em Salvar abaixo</span>
+          </div>
+        )}
+      </div>
+
       <div className="bg-white p-8 rounded-xl border border-neutral-200 shadow-card space-y-6">
         <div className="border-b border-neutral-200 pb-4 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-black text-neutral-900">
-              Cadastrar Nova Oferta Real
+            <h1 className="text-xl font-black text-neutral-900">
+              Formulário da Oferta
             </h1>
-            <p className="text-xs text-neutral-500 mt-1">
-              Preencha as informações da promoção e utilize a IA da NVIDIA para gerar textos de alta conversão.
+            <p className="text-xs text-neutral-500 mt-0.5">
+              Conferência dos dados extraídos antes da publicação final.
             </p>
           </div>
           <span className="bg-purple-100 text-purple-800 font-bold text-[10px] px-2.5 py-1 rounded font-mono">
@@ -222,7 +333,7 @@ export default function NovaOfertaPage() {
               disabled={isGeneratingAi}
               className="px-4 py-2 bg-purple-500 hover:bg-purple-400 text-white font-extrabold text-xs rounded shadow transition-all active:scale-95 disabled:opacity-50 shrink-0"
             >
-              {isGeneratingAi ? '🧠 Processando IA NVIDIA...' : '✨ Gerar Copy com IA'}
+              {isGeneratingAi ? '🧠 Processando IA NVIDIA...' : '✨ Re-Gerar Copy com IA'}
             </button>
           </div>
 
@@ -262,7 +373,7 @@ export default function NovaOfertaPage() {
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               placeholder="Ex: Smart TV 50 4K UHD LED Samsung"
-              className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5 focus:ring-2 focus:ring-[var(--color-brand-primary-700)] focus:outline-none"
+              className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5 focus:ring-2 focus:ring-[var(--color-brand-primary-700)] focus:outline-none text-slate-900"
               required
             />
             {errors.title && <p className="text-red-600 font-normal mt-1">{errors.title}</p>}
@@ -344,21 +455,30 @@ export default function NovaOfertaPage() {
             </div>
           </div>
 
-          {/* URLs */}
-          <div className="space-y-4">
-            <div>
-              <label className="block mb-1">URL da Imagem Oficial do Produto *</label>
+          {/* Imagem do Produto com Preview */}
+          <div className="space-y-2">
+            <label className="block mb-1">URL da Imagem Oficial do Produto *</label>
+            <div className="flex gap-3">
               <input
                 type="url"
                 value={formData.image_url}
                 onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
                 placeholder="https://m.media-amazon.com/images/..."
-                className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5 text-slate-900"
+                className="flex-1 font-normal text-sm border border-neutral-300 rounded p-2.5 text-slate-900"
                 required
               />
-              {errors.image_url && <p className="text-red-600 font-normal mt-1">{errors.image_url}</p>}
+              {formData.image_url && (
+                <div className="w-12 h-12 border border-slate-200 rounded p-1 bg-white shrink-0 flex items-center justify-center overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={formData.image_url} alt="Preview" className="w-full h-full object-contain" />
+                </div>
+              )}
             </div>
+            {errors.image_url && <p className="text-red-600 font-normal mt-1">{errors.image_url}</p>}
+          </div>
 
+          {/* URLs */}
+          <div className="space-y-4">
             <div>
               <label className="block mb-1">URL Direta de Destino do Produto (destination_url) *</label>
               <input
@@ -374,7 +494,7 @@ export default function NovaOfertaPage() {
 
             <div>
               <label className="block mb-1">
-                URL de Afiliado (affiliate_url) — Injetado Tag chameiapp-20 automaticamente
+                URL de Afiliado (affiliate_url) — Injetada Tag de Afiliado Automática
               </label>
               <input
                 type="url"
@@ -392,20 +512,20 @@ export default function NovaOfertaPage() {
                 value={formData.coupon_code || ''}
                 onChange={(e) => setFormData({ ...formData, coupon_code: e.target.value })}
                 placeholder="Ex: CHAMEI10"
-                className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5"
+                className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5 text-slate-900"
               />
             </div>
           </div>
 
           {/* Descrição */}
           <div>
-            <label className="block mb-1">Descrição do Produto (Opcional)</label>
+            <label className="block mb-1">Descrição / Vantagens do Produto</label>
             <textarea
               rows={4}
               value={formData.description || ''}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Resumo das especificações ou texto gerado pela IA..."
-              className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5"
+              placeholder="Descrição otimizada pela IA..."
+              className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5 text-slate-900"
             />
           </div>
 
