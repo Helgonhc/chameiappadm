@@ -1,7 +1,7 @@
 /**
  * NvidiaAiService - Serviço de Inteligência Artificial do CHAMEIAPP V2
  * Conectado à API oficial da NVIDIA NIM (endpoints OpenAI-Compatible)
- * Modelo padrão: meta/llama-3.3-70b-instruct ou mistralai/mistral-large-2411
+ * Modelo padrão: meta/llama-3.1-70b-instruct ou nvidia/llama-3.1-nemotron-70b-instruct
  */
 
 export interface ProductCopyInput {
@@ -30,7 +30,7 @@ export const NvidiaAiService = {
   },
 
   getModel(): string {
-    return process.env.NVIDIA_MODEL || 'meta/llama-3.3-70b-instruct';
+    return process.env.NVIDIA_MODEL || 'meta/llama-3.1-70b-instruct';
   },
 
   /**
