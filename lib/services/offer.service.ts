@@ -1,4 +1,4 @@
-import { supabase, isSupabaseConfigured } from '../db/supabase';
+import { supabase, supabaseAdmin, isSupabaseConfigured } from '../db/supabase';
 import { Offer } from '../types/database';
 import { AffiliateService } from './affiliate.service';
 
@@ -211,7 +211,8 @@ export const OfferService = {
    * Cria uma nova oferta com injeção automática de Tag de Afiliado
    */
   async createOffer(input: Partial<Offer>): Promise<{ success: boolean; data?: Offer; error?: string }> {
-    if (!isSupabaseConfigured || !supabase) {
+    const dbClient = supabaseAdmin || supabase;
+    if (!isSupabaseConfigured || !dbClient) {
       return { success: false, error: 'Supabase não está configurado neste ambiente.' };
     }
 
@@ -239,7 +240,7 @@ export const OfferService = {
         published_at: new Date().toISOString(),
       };
 
-      const { data, error } = await supabase
+      const { data, error } = await dbClient
         .from('offers')
         .insert(payload)
         .select()
@@ -259,7 +260,8 @@ export const OfferService = {
    * Atualiza os campos de uma oferta existente
    */
   async updateOffer(id: string, input: Partial<Offer>): Promise<{ success: boolean; data?: Offer; error?: string }> {
-    if (!isSupabaseConfigured || !supabase) {
+    const dbClient = supabaseAdmin || supabase;
+    if (!isSupabaseConfigured || !dbClient) {
       return { success: false, error: 'Supabase não está configurado.' };
     }
 
@@ -278,7 +280,7 @@ export const OfferService = {
         updatePayload.previous_price = input.previous_price ? Number(input.previous_price) : null;
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await dbClient
         .from('offers')
         .update(updatePayload)
         .eq('id', id)
@@ -313,12 +315,13 @@ export const OfferService = {
    * Exclui permanentemente uma oferta do Supabase
    */
   async deleteOffer(id: string): Promise<{ success: boolean; error?: string }> {
-    if (!isSupabaseConfigured || !supabase) {
+    const dbClient = supabaseAdmin || supabase;
+    if (!isSupabaseConfigured || !dbClient) {
       return { success: false, error: 'Supabase não está configurado.' };
     }
 
     try {
-      const { error } = await supabase.from('offers').delete().eq('id', id);
+      const { error } = await dbClient.from('offers').delete().eq('id', id);
       if (error) {
         return { success: false, error: error.message };
       }
