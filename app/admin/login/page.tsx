@@ -66,6 +66,12 @@ export default function AdminLoginPage() {
     }
   };
 
+  const handleDevLogin = () => {
+    document.cookie = "chamei_dev_admin=true; path=/; max-age=86400";
+    router.push(redirectUrl);
+    router.refresh();
+  };
+
   return (
     <div className="max-w-md mx-auto py-12 px-4">
       <div className="bg-white p-8 rounded-xl border border-slate-200 shadow-md space-y-6">
@@ -139,6 +145,21 @@ export default function AdminLoginPage() {
           </button>
         </form>
 
+        {process.env.NODE_ENV !== 'production' && (
+          <div className="pt-4 border-t border-slate-200 space-y-2 text-center">
+            <span className="text-[11px] text-slate-500 font-semibold block">
+              Desenvolvimento Local Detectado
+            </span>
+            <button
+              type="button"
+              onClick={handleDevLogin}
+              className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 px-4 rounded transition-colors text-xs flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span>⚡ Entrar Direto no Painel (Modo Dev Local)</span>
+            </button>
+          </div>
+        )}
+
         <div className="text-center pt-2">
           <a
             href="/"
@@ -151,5 +172,6 @@ export default function AdminLoginPage() {
     </div>
   );
 }
+
 
 
