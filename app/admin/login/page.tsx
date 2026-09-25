@@ -51,9 +51,8 @@ export default function AdminLoginPage() {
         return;
       }
 
-      // Redireciona para a rota protegida. O middleware do servidor validará a role com Service Role Key
-      router.push(redirectUrl);
-      router.refresh();
+      // Redireciona via window.location.href para forçar o navegador a enviar todos os cookies no header HTTP para o middleware da Vercel
+      window.location.href = redirectUrl;
     } catch (err: any) {
       setError(err?.message || 'Ocorreu um erro ao realizar o login.');
       setIsLoading(false);
@@ -73,9 +72,15 @@ export default function AdminLoginPage() {
           </p>
         </div>
 
+        {paramError === 'sem-configuracao' && !error && (
+          <div className="bg-red-50 text-red-700 p-3 rounded text-xs font-semibold border border-red-200">
+            Atenção: As variáveis de ambiente do Supabase não estão cadastradas na Vercel. Adicione NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY nas configurações da Vercel.
+          </div>
+        )}
+
         {paramError === 'acesso-negado-sem-permissao' && !error && (
           <div className="bg-amber-50 text-amber-800 p-3 rounded text-xs font-semibold border border-amber-200">
-            Sua conta precisa de permissão de Administrador para acessar esta área.
+            Sua conta precisa de permissão de Administrador na tabela profiles para acessar esta área.
           </div>
         )}
 
