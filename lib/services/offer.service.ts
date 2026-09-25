@@ -1,17 +1,22 @@
 import { supabase, isSupabaseConfigured } from '../db/supabase';
 import { Offer } from '../types/database';
+import { AffiliateService } from './affiliate.service';
 
 export interface OfferFilters {
   categorySlug?: string;
   merchantSlug?: string;
   searchQuery?: string;
+  status?: 'published' | 'draft' | 'archived' | 'expired' | 'all';
+  featuredOnly?: boolean;
   sortBy?: 'recent' | 'price_asc' | 'price_desc';
 }
 
 export const OfferService = {
+  /**
+   * Busca apenas ofertas publicadas e ativas para a home e catálogo do portal
+   */
   async getPublishedOffers(filters: OfferFilters = {}): Promise<Offer[]> {
     if (!isSupabaseConfigured || !supabase) {
-      // Regra estrita: Não utilizar catálogo embutido como fallback silencioso.
       return [];
     }
 
@@ -49,22 +54,88 @@ export const OfferService = {
       let results = data as Offer[];
 
       if (filters.categorySlug) {
-        results = results.filter(o => o.category?.slug === filters.categorySlug);
+        results = results.filter((o) => o.category?.slug === filters.categorySlug);
       }
 
       if (filters.merchantSlug) {
-        results = results.filter(o => o.merchant?.slug === filters.merchantSlug);
+        results = results.filter((o) => o.merchant?.slug === filters.merchantSlug);
       }
 
       return this.sortOffers(results, filters.sortBy);
-    } catch (err) {
+    } catch {
+      return [];
+    }
+  },
+
+  /**
+   * Busca TODAS as ofertas para o Painel Administrativo (sem restrição de status)
+   */
+  async getAllOffersForAdmin(filters: OfferFilters = {}): Promise<Offer[]> {
+    if (!isSupabaseConfigured || !supabase) {
+      return [];
+    }
+
+    try {
+      let query = supabase
+        .from('offers')
+        .select(`
+          *,
+          category:categories(*),
+          merchant:merchants(*)
+        `)
+        .order('published_at', { ascending: false });
+
+      if (filters.status && filters.status !== 'all') {
+        query = query.eq('status', filters.status);
+      }
+
+      if (filters.featuredOnly) {
+        query = query.eq('featured', true);
+      }
+
+      if (filters.searchQuery) {
+        query = query.ilike('title', `%${filters.searchQuery}%`);
+      }
+
+      let { data, error } = await query;
+
+      if (error || !data) {
+        // Fallback resiliente sem join
+        let simpleQuery = supabase
+          .from('offers')
+          .select('*')
+          .order('published_at', { ascending: false });
+
+        if (filters.status && filters.status !== 'all') {
+          simpleQuery = simpleQuery.eq('status', filters.status);
+        }
+
+        const simpleRes = await simpleQuery;
+        if (simpleRes.error || !simpleRes.data) {
+          return [];
+        }
+        data = simpleRes.data;
+      }
+
+      let results = data as Offer[];
+
+      if (filters.categorySlug) {
+        results = results.filter((o) => o.category?.slug === filters.categorySlug);
+      }
+
+      if (filters.merchantSlug) {
+        results = results.filter((o) => o.merchant?.slug === filters.merchantSlug);
+      }
+
+      return this.sortOffers(results, filters.sortBy);
+    } catch {
       return [];
     }
   },
 
   async getFeaturedOffer(): Promise<Offer | null> {
     const offers = await this.getPublishedOffers();
-    const featured = offers.find(o => o.featured);
+    const featured = offers.find((o) => o.featured);
     return featured || null;
   },
 
@@ -131,6 +202,9 @@ export const OfferService = {
     return offers;
   },
 
+  /**
+   * Cria uma nova oferta com injeção automática de Tag de Afiliado
+   */
   async createOffer(input: Partial<Offer>): Promise<{ success: boolean; data?: Offer; error?: string }> {
     if (!isSupabaseConfigured || !supabase) {
       return { success: false, error: 'Supabase não está configurado neste ambiente.' };
@@ -138,16 +212,8 @@ export const OfferService = {
 
     try {
       let affiliateUrl = input.affiliate_url;
-      const associateTag = process.env.AMAZON_ASSOCIATE_TAG || 'chameiapp-20';
-
-      if (input.destination_url && input.destination_url.includes('amazon.com.br') && !affiliateUrl) {
-        try {
-          const parsed = new URL(input.destination_url);
-          parsed.searchParams.set('tag', associateTag);
-          affiliateUrl = parsed.toString();
-        } catch {
-          affiliateUrl = input.destination_url;
-        }
+      if (!affiliateUrl && input.destination_url) {
+        affiliateUrl = AffiliateService.formatAffiliateUrl(input.destination_url);
       }
 
       const payload = {
@@ -181,6 +247,79 @@ export const OfferService = {
       return { success: true, data: data as Offer };
     } catch (err: any) {
       return { success: false, error: err?.message || 'Erro ao salvar oferta.' };
+    }
+  },
+
+  /**
+   * Atualiza os campos de uma oferta existente
+   */
+  async updateOffer(id: string, input: Partial<Offer>): Promise<{ success: boolean; data?: Offer; error?: string }> {
+    if (!isSupabaseConfigured || !supabase) {
+      return { success: false, error: 'Supabase não está configurado.' };
+    }
+
+    try {
+      const updatePayload: Record<string, any> = { ...input };
+
+      // Se atualizou a destination_url ou affiliate_url, reaplica o formatador de afiliados
+      if (input.destination_url && !input.affiliate_url) {
+        updatePayload.affiliate_url = AffiliateService.formatAffiliateUrl(input.destination_url);
+      }
+
+      if (input.current_price !== undefined) {
+        updatePayload.current_price = Number(input.current_price);
+      }
+      if (input.previous_price !== undefined) {
+        updatePayload.previous_price = input.previous_price ? Number(input.previous_price) : null;
+      }
+
+      const { data, error } = await supabase
+        .from('offers')
+        .update(updatePayload)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      return { success: true, data: data as Offer };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Erro ao atualizar oferta.' };
+    }
+  },
+
+  /**
+   * Alterna o status da oferta (published, draft, archived)
+   */
+  async toggleOfferStatus(id: string, newStatus: 'published' | 'draft' | 'archived'): Promise<{ success: boolean; error?: string }> {
+    return this.updateOffer(id, { status: newStatus });
+  },
+
+  /**
+   * Alterna a oferta como destaque principal (Hero Banner)
+   */
+  async toggleOfferFeatured(id: string, featured: boolean): Promise<{ success: boolean; error?: string }> {
+    return this.updateOffer(id, { featured });
+  },
+
+  /**
+   * Exclui permanentemente uma oferta do Supabase
+   */
+  async deleteOffer(id: string): Promise<{ success: boolean; error?: string }> {
+    if (!isSupabaseConfigured || !supabase) {
+      return { success: false, error: 'Supabase não está configurado.' };
+    }
+
+    try {
+      const { error } = await supabase.from('offers').delete().eq('id', id);
+      if (error) {
+        return { success: false, error: error.message };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Erro ao excluir oferta.' };
     }
   },
 };

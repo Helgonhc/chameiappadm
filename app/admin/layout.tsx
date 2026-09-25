@@ -32,7 +32,7 @@ export default function AdminLayout({
             </div>
 
             {/* Menu Principal Admin */}
-            <nav className="hidden md:flex items-center gap-1 text-xs font-bold">
+            <nav className="hidden lg:flex items-center gap-1 text-xs font-bold">
               <Link
                 href="/admin/dashboard"
                 className="px-3 py-2 rounded text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
@@ -44,21 +44,21 @@ export default function AdminLayout({
                 href="/admin/radar"
                 className="px-3 py-2 rounded text-slate-300 hover:text-white hover:bg-slate-800 transition-colors flex items-center gap-1"
               >
-                <span>📡 Radar Chamei</span>
+                <span>📡 Radar</span>
               </Link>
 
               <Link
                 href="/admin/radar/candidatas"
                 className="px-3 py-2 rounded text-slate-300 hover:text-white hover:bg-slate-800 transition-colors flex items-center gap-1"
               >
-                <span>📋 Fila Candidatas</span>
+                <span>📋 Candidatas</span>
               </Link>
 
               <Link
                 href="/admin/ofertas"
-                className="px-3 py-2 rounded text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+                className="px-3 py-2 rounded text-slate-300 hover:text-white hover:bg-slate-800 transition-colors flex items-center gap-1"
               >
-                Ofertas Publicadas
+                <span>🛍️ Ofertas & Links</span>
               </Link>
 
               <Link
@@ -74,7 +74,7 @@ export default function AdminLayout({
                 href="/admin/ofertas/nova"
                 className="px-3 py-1.5 rounded text-xs font-bold bg-[var(--color-signal-primary)] text-white hover:bg-[var(--color-signal-hover)] transition-colors shadow-xs"
               >
-                + Link Especial Manual
+                + Nova Oferta
               </Link>
               <Link
                 href="/"
@@ -91,13 +91,15 @@ export default function AdminLayout({
         </div>
 
         {/* Sub-bar de navegação mobile admin */}
-        <div className="md:hidden bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-bold text-slate-300 border-t border-slate-700">
-          <div className="flex items-center gap-2 overflow-x-auto">
+        <div className="lg:hidden bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-bold text-slate-300 border-t border-slate-700 overflow-x-auto">
+          <div className="flex items-center gap-2 shrink-0">
             <Link href="/admin/dashboard" className="shrink-0 hover:text-white">Visão Geral</Link>
             <span>•</span>
             <Link href="/admin/radar" className="shrink-0 hover:text-white">📡 Radar</Link>
             <span>•</span>
             <Link href="/admin/radar/candidatas" className="shrink-0 hover:text-white">📋 Candidatas</Link>
+            <span>•</span>
+            <Link href="/admin/ofertas" className="shrink-0 hover:text-white">🛍️ Ofertas</Link>
           </div>
           <AdminLogoutButton />
         </div>
