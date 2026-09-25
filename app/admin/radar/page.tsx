@@ -7,6 +7,7 @@ import { AmazonProvider } from '../../../lib/services/connectors/amazon/amazon-p
 import { MercadoLivreProvider } from '../../../lib/services/connectors/mercado-livre/mercado-livre-provider';
 import { ExternalProduct, ProviderStatus } from '../../../lib/types/radar';
 import { CandidateService } from '../../../lib/services/radar/candidate.service';
+import { formatCurrencyBRL } from '../../../lib/utils/offer-helpers';
 
 export default function RadarPage() {
   const [provider, setProvider] = useState<'amazon' | 'mercado-livre'>('mercado-livre');
@@ -354,11 +355,11 @@ export default function RadarPage() {
                     <h4 className="font-bold text-xs text-slate-900 line-clamp-2">{product.title}</h4>
                     <div className="flex items-baseline gap-2 mt-1">
                       <span className="text-sm font-mono font-black text-[#FF5500]">
-                        R$ {product.current_price.toFixed(2)}
+                        {formatCurrencyBRL(product.current_price)}
                       </span>
                       {product.previous_price && product.previous_price > product.current_price && (
                         <span className="text-xs text-slate-400 line-through">
-                          R$ {product.previous_price.toFixed(2)}
+                          {formatCurrencyBRL(product.previous_price)}
                         </span>
                       )}
                     </div>

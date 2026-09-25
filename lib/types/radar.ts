@@ -38,6 +38,9 @@ export interface OfferScore {
   freshness_score: number;
   data_quality_score: number;
   availability_score: number;
+  commission_score: number;
+  commission_rate: number; // ex: 0.12 (12%)
+  estimated_commission: number; // ex: 45.00 (R$)
   reasons: string[];
 }
 
@@ -62,6 +65,8 @@ export interface CandidateOffer {
   merchant_slug?: string | null;
   raw_metadata?: Record<string, unknown> | null;
   score: number;
+  commission_rate?: number;
+  estimated_commission?: number;
   score_breakdown?: OfferScore | null;
   status: CandidateStatus;
   created_at: string;

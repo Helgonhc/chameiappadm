@@ -17,7 +17,7 @@ export const CategoryDetectorService = {
       return this.findCategoryBySlug('itens-gamer');
     }
 
-    if (this.matchKeywords(text, ['iphone', 'galaxy', 'smartphone', 'celular', 'xiaomi', 'redmi', 'poco', 'capinha', 'pelicula', 'carregador turbo', 'carregador sem fio'])) {
+    if (this.matchKeywords(text, ['iphone', 'galaxy', 'smartphone', 'celular', 'xiaomi', 'redmi', 'poco', 'capinha', 'pelicula', 'carregador turbo', 'carregador sem fio', 'power bank', 'powerbank', 'bateria externa'])) {
       return this.findCategoryBySlug('celulares-e-acessorios');
     }
 
@@ -25,7 +25,15 @@ export const CategoryDetectorService = {
       return this.findCategoryBySlug('computadores-e-acessorios');
     }
 
-    if (this.matchKeywords(text, ['smart tv', 'tv 4k', 'televisao', 'fone de ouvido', 'bluetooth', 'airpods', 'soundbar', 'caixa de som', 'jbl', 'home theater'])) {
+    if (this.matchKeywords(text, ['pneu', 'oleo de motor', 'capacete', 'som automotivo', 'carro', 'moto', 'automotivo', 'multimidia', 'multimídia', '1 din', '2 din', 'mp5', 'central multimidia', 'dvd automotivo'])) {
+      return this.findCategoryBySlug('automotivo');
+    }
+
+    if (this.matchKeywords(text, ['camera', 'câmera', 'icsee', 'ip66', 'segurança', 'seguranca', 'vigilancia', 'vigilância', 'cftv', 'dvr', 'nobreak', 'fechadura digital', 'sensor de presenca', 'casa inteligente', 'hub zigbee', 'lampada inteligente', 'tomada smart'])) {
+      return this.findCategoryBySlug('casa-inteligente');
+    }
+
+    if (this.matchKeywords(text, ['smart tv', 'tv 4k', 'televisao', 'fone de ouvido', 'bluetooth', 'airpods', 'soundbar', 'caixa de som', 'jbl', 'home theater', 'projetor', 'mini projetor', 'smartband', 'smartwatch', 'relogio inteligente', 'relógio inteligente'])) {
       return this.findCategoryBySlug('eletronicos-e-tvs');
     }
 
@@ -33,12 +41,8 @@ export const CategoryDetectorService = {
       return this.findCategoryBySlug('cozinha');
     }
 
-    if (this.matchKeywords(text, ['parafusadeira', 'furadeira', 'alicate', 'serra', 'jogo de chaves', 'ferramenta', 'trena', 'solta', 'maleta de ferramentas'])) {
+    if (this.matchKeywords(text, ['parafusadeira', 'furadeira', 'alicate', 'serra', 'motosserra', 'esmerilhadeira', 'tupia', 'compressor', 'maquita', 'soprador', 'jogo de chaves', 'ferramenta', 'trena', 'solta', 'maleta de ferramentas'])) {
       return this.findCategoryBySlug('ferramentas-e-construcao');
-    }
-
-    if (this.matchKeywords(text, ['lampada inteligente', 'tomada smart', 'fechadura digital', 'sensor de presenca', 'casa inteligente', 'hub zigbee'])) {
-      return this.findCategoryBySlug('casa-inteligente');
     }
 
     if (this.matchKeywords(text, ['perfume', 'maquiagem', 'batom', 'shampoo', 'condicionador', 'hidratante', 'protetor solar', 'sabonete', 'cuidado facial'])) {
@@ -53,16 +57,12 @@ export const CategoryDetectorService = {
       return this.findCategoryBySlug('itens-para-bebe');
     }
 
-    if (this.matchKeywords(text, ['tenis', 'sapato', 'camisa', 'camiseta', 'calca', 'jaqueta', 'vestido', 'bolsa', 'relogio de pulso', 'moda'])) {
+    if (this.matchKeywords(text, ['tenis', 'tênis', 'sapato', 'camisa', 'camiseta', 'calca', 'calça', 'jaqueta', 'vestido', 'bolsa', 'relogio de pulso', 'moda', 'short', 'polo'])) {
       return this.findCategoryBySlug('moda');
     }
 
     if (this.matchKeywords(text, ['bicicleta', 'bike', 'suplemento', 'whey', 'creatina', 'academia', 'haltere', 'patins', 'bola', 'futebol', 'acampamento'])) {
       return this.findCategoryBySlug('esportes-e-aventura');
-    }
-
-    if (this.matchKeywords(text, ['pneu', 'oleo de motor', 'capacete', 'som automotivo', 'carro', 'moto', 'automotivo'])) {
-      return this.findCategoryBySlug('automotivo');
     }
 
     if (this.matchKeywords(text, ['livro', 'hq', 'manga', 'ebook', 'romance', 'biografia', 'box de livros'])) {
@@ -105,8 +105,8 @@ export const CategoryDetectorService = {
       return this.findCategoryBySlug('casa');
     }
 
-    // Default se nenhuma palavra bater
-    return SEED_CATEGORIES[0]; // Alimentos e Bebidas ou primeira da lista
+    // Default se nenhuma palavra bater: Eletrônicos e TVs
+    return this.findCategoryBySlug('eletronicos-e-tvs');
   },
 
   matchKeywords(text: string, keywords: string[]): boolean {
@@ -115,6 +115,6 @@ export const CategoryDetectorService = {
 
   findCategoryBySlug(slug: string): Category {
     const found = SEED_CATEGORIES.find((c) => c.slug === slug);
-    return found || SEED_CATEGORIES[0];
+    return found || SEED_CATEGORIES[13]; // cat-14-eletronicos-e-tvs
   },
 };

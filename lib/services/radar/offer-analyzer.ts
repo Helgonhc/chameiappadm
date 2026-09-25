@@ -77,6 +77,31 @@ export class OfferAnalyzer {
       reasons.push('Frete grátis informado');
     }
 
+    // 6. Commission & Profitability Score (Estimativa real por marketplace)
+    let commission_rate = 0.10; // 10% padrão de mercado
+    if (product.provider === 'amazon') {
+      commission_rate = 0.09; // ~9% média Amazon Brasil
+    } else if (product.provider === 'mercado-livre') {
+      commission_rate = 0.11; // ~11% média Mercado Livre
+    }
+
+    const estimated_commission = Number((product.current_price * commission_rate).toFixed(2));
+    let commission_score = 10;
+
+    if (estimated_commission >= 50) {
+      commission_score = 20;
+      reasons.push(`Alta comissão estimada de R$ ${estimated_commission.toFixed(2)} por venda (${(commission_rate * 100).toFixed(0)}%)`);
+    } else if (estimated_commission >= 20) {
+      commission_score = 15;
+      reasons.push(`Boa comissão estimada de R$ ${estimated_commission.toFixed(2)} por venda (${(commission_rate * 100).toFixed(0)}%)`);
+    } else if (estimated_commission >= 10) {
+      commission_score = 10;
+      reasons.push(`Comissão estimada de R$ ${estimated_commission.toFixed(2)} (${(commission_rate * 100).toFixed(0)}%)`);
+    } else {
+      commission_score = 5;
+      reasons.push(`Comissão estimada de R$ ${estimated_commission.toFixed(2)} (${(commission_rate * 100).toFixed(0)}%)`);
+    }
+
     const total = Math.min(
       100,
       discount_score + coupon_score + freshness_score + data_quality_score + availability_score
@@ -89,6 +114,9 @@ export class OfferAnalyzer {
       freshness_score,
       data_quality_score,
       availability_score,
+      commission_score,
+      commission_rate,
+      estimated_commission,
       reasons,
     };
   }

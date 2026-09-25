@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { OfferService } from '../../../../lib/services/offer.service';
-import { calculateDiscount } from '../../../../lib/utils/offer-helpers';
+import { calculateDiscount, formatCurrencyBRL } from '../../../../lib/utils/offer-helpers';
 import { OfferCardCompact } from '../../../../components/offers/OfferCardCompact';
 import { OfferImageGallery } from '../../../../components/offers/OfferImageGallery';
 import { SITE_CONFIG } from '../../../../lib/config/site.config';
@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: OfferDetailPageProps): Promis
       canonical: canonicalUrl,
     },
     openGraph: {
-      title: `${offer.title} — R$ ${offer.current_price.toFixed(2)}`,
+      title: `${offer.title} — ${formatCurrencyBRL(offer.current_price)}`,
       description: offer.description || `Preço verificado no ChameiApp.`,
       url: canonicalUrl,
       images: [

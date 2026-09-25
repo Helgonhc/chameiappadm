@@ -67,6 +67,11 @@ export const OfferService = {
     }
   },
 
+  async getOffersByCategoryId(categoryId: string): Promise<Offer[]> {
+    const all = await this.getPublishedOffers();
+    return all.filter((o) => o.category_id === categoryId);
+  },
+
   /**
    * Busca TODAS as ofertas para o Painel Administrativo (sem restrição de status)
    */

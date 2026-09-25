@@ -8,6 +8,18 @@ export function calculateDiscount(currentPrice: number, previousPrice?: number |
   return Math.round(discount);
 }
 
+export function formatCurrencyBRL(amount: number | null | undefined): string {
+  if (amount === null || amount === undefined || isNaN(amount)) {
+    return 'R$ 0,00';
+  }
+  return amount.toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
 export function isOfferAvailable(offer: Offer, referenceDate: Date = new Date()): boolean {
   if (!offer || offer.status !== 'published') {
     return false;

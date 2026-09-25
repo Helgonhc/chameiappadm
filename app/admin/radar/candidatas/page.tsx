@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { CandidateOffer, CandidateStatus } from '../../../../lib/types/radar';
+import { formatCurrencyBRL } from '../../../../lib/utils/offer-helpers';
 
 export default function CandidatasPage() {
   const [candidates, setCandidates] = useState<CandidateOffer[]>([]);
@@ -93,9 +94,9 @@ export default function CandidatasPage() {
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">{cand.provider} • ID: {cand.external_id}</span>
                     <h3 className="font-bold text-sm text-slate-900 line-clamp-2">{cand.title}</h3>
                     <div className="flex items-baseline gap-2 mt-1">
-                      <span className="font-mono font-bold text-base text-slate-900">R$ {cand.current_price.toFixed(2)}</span>
+                      <span className="font-mono font-bold text-base text-slate-900">{formatCurrencyBRL(cand.current_price)}</span>
                       {cand.previous_price && (
-                        <span className="text-xs text-slate-400 line-through">R$ {cand.previous_price.toFixed(2)}</span>
+                        <span className="text-xs text-slate-400 line-through">{formatCurrencyBRL(cand.previous_price)}</span>
                       )}
                     </div>
                   </div>
