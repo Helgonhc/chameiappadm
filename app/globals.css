@@ -12,55 +12,59 @@
 }
 
 /* ============================================================
-   CHAMEIAPP V2 — COMPONENTES & UTILITÁRIOS VISUAIS EDITORIAIS
+   CHAMEIAPP V2 — VISUAL SYSTEM & ULTRA MODERN ANIMATIONS
    ============================================================ */
 
 /* Tipografia de Preços Tabular */
 .font-price {
   font-family: var(--font-mono);
-  font-weight: 700;
+  font-weight: 800;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.03em;
 }
 
 .price-current {
-  color: var(--color-editorial-main);
+  color: var(--color-signal-primary);
   font-family: var(--font-mono);
-  font-weight: 800;
-  font-size: 1.35rem;
+  font-weight: 900;
+  font-size: 1.45rem;
   line-height: 1.1;
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
 }
 
 .price-previous {
   color: var(--color-neutral-500);
   text-decoration: line-through;
   font-size: 0.875rem;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 
-/* Badges e Sinalizadores */
+/* Badges e Sinalizadores de Desconto Oportunidade */
 .badge-discount {
-  background-color: var(--color-signal-primary);
-  color: var(--color-white);
-  font-weight: 700;
+  background: linear-gradient(135deg, #FF6B00 0%, #FF3D00 100%);
+  color: #FFFFFF;
+  font-weight: 800;
   font-size: 0.75rem;
-  padding: 2px 8px;
-  border-radius: var(--radius-xs);
+  padding: 3px 10px;
+  border-radius: 9999px;
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
   font-variant-numeric: tabular-nums;
+  box-shadow: 0 4px 12px rgba(255, 85, 0, 0.35);
+  letter-spacing: -0.01em;
 }
 
 .badge-coupon {
-  background-color: #F3E8FF;
-  color: #6B21A8;
-  border: 1px dashed #C084FC;
-  font-weight: 700;
+  background: #FAF5FF;
+  color: #7C3AED;
+  border: 1.5px dashed #A855F7;
+  font-weight: 800;
   font-size: 0.75rem;
-  padding: 2px 8px;
-  border-radius: var(--radius-xs);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -68,107 +72,159 @@
 
 .badge-shipping {
   background-color: #ECFDF5;
-  color: #065F46;
-  font-weight: 600;
+  color: #047857;
+  border: 1px solid #A7F3D0;
+  font-weight: 700;
   font-size: 0.7rem;
-  padding: 2px 6px;
-  border-radius: var(--radius-xs);
+  padding: 2px 8px;
+  border-radius: 9999px;
 }
 
 .badge-merchant-amazon {
   background-color: #FFF7ED;
-  color: #9A3412;
+  color: #C2410C;
   border: 1px solid #FFEDD5;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 0.7rem;
-  padding: 2px 6px;
-  border-radius: var(--radius-xs);
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.badge-merchant-ml {
+  background-color: #FEFCE8;
+  color: #854D0E;
+  border: 1px solid #FEF08A;
+  font-weight: 800;
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+/* CARDS DE CATEGORIA — ESTILO EXACT CAPTURAR.JPG */
+.category-card-orange {
+  background: linear-gradient(135deg, #FF6B00 0%, #FF3D00 100%);
+  color: #FFFFFF;
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 12px rgba(255, 85, 0, 0.25);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.category-card-orange:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(255, 85, 0, 0.45);
+  background: linear-gradient(135deg, #FF7A1A 0%, #FF4D1A 100%);
+}
+
+.category-card-orange:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.category-icon-box {
+  background: #FFFFFF;
+  color: #FF5500;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  border: 2px solid rgba(255, 255, 255, 0.8);
 }
 
 /* CARDS DE OFERTA V2 */
 .offer-card-standard {
-  background-color: var(--color-surface-card);
-  border: 1px solid var(--color-editorial-border);
-  border-radius: var(--radius-md);
+  background-color: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-subtle);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
   height: 100%;
   overflow: hidden;
+  position: relative;
 }
 
 .offer-card-standard:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-hover);
-  border-color: var(--color-signal-primary);
-}
-
-.offer-card-compact {
-  background-color: var(--color-surface-card);
-  border: 1px solid var(--color-editorial-border);
-  border-radius: var(--radius-sm);
-  padding: 12px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  transition: border-color 0.15s ease;
-}
-
-.offer-card-compact:hover {
-  border-color: var(--color-editorial-main);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px -4px rgba(255, 85, 0, 0.15), 0 4px 12px -2px rgba(11, 15, 25, 0.05);
+  border-color: #FF5500;
 }
 
 .offer-card-feature {
-  background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
-  border: 2px solid var(--color-editorial-main);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
+  background: linear-gradient(180deg, #FFFFFF 0%, #FFFDFB 100%);
+  border: 2px solid #FF5500;
+  border-radius: var(--radius-xl);
+  box-shadow: 0 12px 36px -6px rgba(255, 85, 0, 0.22);
   padding: 24px;
+  position: relative;
+  overflow: hidden;
 }
 
-.offer-card-flash {
-  background-color: var(--color-surface-card);
-  border: 1px solid var(--color-signal-primary);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-subtle);
-}
-
-/* BOTÕES EDITORIAIS */
+/* BOTÕES PRINCIPAIS DA PLATAFORMA */
 .btn-offer-cta {
-  background-color: var(--color-signal-primary);
-  color: var(--color-white);
-  font-weight: 700;
+  background: linear-gradient(135deg, #FF6B00 0%, #FF3D00 100%);
+  color: #FFFFFF;
+  font-weight: 800;
   font-size: 0.875rem;
-  padding: 10px 16px;
-  border-radius: var(--radius-sm);
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
   width: 100%;
-  transition: background-color 0.15s ease;
+  transition: all 0.2s ease;
   text-decoration: none;
+  box-shadow: 0 4px 14px rgba(255, 85, 0, 0.3);
+  letter-spacing: 0.02em;
 }
 
 .btn-offer-cta:hover {
-  background-color: var(--color-signal-hover);
+  background: linear-gradient(135deg, #FF7A1A 0%, #FF4D1A 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(255, 85, 0, 0.45);
 }
 
-/* BUSCA PROTAGONISTA */
+.btn-offer-cta:active {
+  transform: translateY(0);
+}
+
+/* BUSCA HERO */
 .search-input-hero {
   width: 100%;
-  background-color: var(--color-white);
-  border: 2px solid var(--color-editorial-main);
+  background-color: #FFFFFF;
+  border: 2px solid #E2E8F0;
   border-radius: var(--radius-md);
-  padding: 12px 16px 12px 44px;
+  padding: 14px 18px 14px 48px;
   font-size: 1rem;
-  color: var(--color-editorial-text);
+  color: #0B0F19;
   outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(11, 15, 25, 0.04);
 }
 
 .search-input-hero:focus {
-  border-color: var(--color-signal-primary);
-  box-shadow: 0 0 0 3px rgba(240, 68, 56, 0.15);
+  border-color: #FF5500;
+  box-shadow: 0 0 0 4px rgba(255, 85, 0, 0.18), 0 4px 16px rgba(255, 85, 0, 0.1);
+}
+
+/* Efeito de brilho sutil para contadores ao vivo */
+@keyframes pulse-orange {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.05); }
+}
+
+.animate-pulse-orange {
+  animation: pulse-orange 2s infinite ease-in-out;
 }

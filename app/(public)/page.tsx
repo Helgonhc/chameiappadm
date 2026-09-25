@@ -1,15 +1,19 @@
 import React from 'react';
 import Link from 'next/link';
 import { OfferService } from '../../lib/services/offer.service';
+import { MerchantService } from '../../lib/services/merchant.service';
 import { OfferCardFeatured } from '../../components/offers/OfferCardFeatured';
 import { OfferGrid } from '../../components/offers/OfferGrid';
+import { HeroBanner } from '../../components/home/HeroBanner';
+import { CategoryGrid } from '../../components/home/CategoryGrid';
 
 export const revalidate = 60; // SSR Cache Revalidation em 60s
 
 export default async function HomePage() {
-  const [featuredOffer, allOffers] = await Promise.all([
+  const [featuredOffer, allOffers, categories] = await Promise.all([
     OfferService.getFeaturedOffer(),
     OfferService.getPublishedOffers(),
+    MerchantService.getCategories(),
   ]);
 
   const standardOffers = featuredOffer
@@ -17,62 +21,46 @@ export default async function HomePage() {
     : allOffers;
 
   return (
-    <div className="space-y-6 py-2">
+    <div className="space-y-8 py-4">
 
-      {/* Bar de Atalhos por Categoria */}
-      <section className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none border-b border-slate-200">
-        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider shrink-0 mr-1">Filtrar:</span>
-        <Link
-          href="/ofertas"
-          className="px-3 py-1.5 rounded bg-slate-900 text-white text-xs font-bold shrink-0 hover:bg-slate-800 transition-colors"
-        >
-          🔥 Todas as Ofertas ({allOffers.length})
-        </Link>
-        <Link
-          href="/categoria/tecnologia"
-          className="px-3 py-1.5 rounded bg-white border border-slate-200 text-slate-800 text-xs font-bold shrink-0 hover:border-slate-400 transition-colors"
-        >
-          💻 Tecnologia
-        </Link>
-        <Link
-          href="/categoria/ferramentas"
-          className="px-3 py-1.5 rounded bg-white border border-slate-200 text-slate-800 text-xs font-bold shrink-0 hover:border-slate-400 transition-colors"
-        >
-          🛠️ Ferramentas
-        </Link>
-        <Link
-          href="/categoria/casa-e-cozinha"
-          className="px-3 py-1.5 rounded bg-white border border-slate-200 text-slate-800 text-xs font-bold shrink-0 hover:border-slate-400 transition-colors"
-        >
-          🏠 Casa & Cozinha
-        </Link>
-      </section>
+      {/* Hero Banner Vibrante com Busca em Tempo Real */}
+      <HeroBanner />
 
-      {/* Oferta Destaque Principal (Se cadastrada) */}
+      {/* Grid de 24 Categorias — Réplica Estilizada de Capturar.JPG */}
+      <CategoryGrid categories={categories} />
+
+      {/* Oferta Destaque Principal do Dia */}
       {featuredOffer && (
-        <section>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[var(--color-signal-primary)]"></span>
-              Destaque de Hoje
+        <section className="my-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-[#FF5500] animate-ping" />
+              Super Destaque do Dia
             </h2>
+            <span className="text-xs font-bold text-[#FF5500] bg-orange-100 px-2.5 py-1 rounded-full">
+              Maior Desconto
+            </span>
           </div>
           <OfferCardFeatured offer={featuredOffer} />
         </section>
       )}
 
       {/* Vitrine Direta de Ofertas */}
-      <section>
-        <div className="flex items-center justify-between mb-4 border-b border-slate-200 pb-3">
+      <section className="my-8">
+        <div className="flex items-center justify-between mb-6 border-b border-slate-200 pb-4">
           <div>
-            <h2 className="text-xl font-black text-slate-900 tracking-tight">
-              Ofertas em Destaque
+            <h2 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+              <span>🔥</span>
+              Ofertas em Alta no Brasil
             </h2>
+            <p className="text-xs md:text-sm text-slate-500 font-medium">
+              Links testados e atualizados com frete grátis e cupons ativos
+            </p>
           </div>
           {allOffers.length > 0 && (
             <Link
               href="/ofertas"
-              className="text-xs font-bold text-[var(--color-signal-primary)] hover:underline flex items-center gap-1"
+              className="text-xs sm:text-sm font-extrabold text-[#FF5500] hover:text-[#E04B00] hover:underline flex items-center gap-1 bg-orange-50 px-3 py-1.5 rounded-lg border border-orange-200 transition-colors"
             >
               Ver todas ({allOffers.length}) →
             </Link>
@@ -82,7 +70,7 @@ export default async function HomePage() {
         <OfferGrid
           offers={standardOffers}
           emptyTitle="Nenhuma oferta publicada no momento"
-          emptyDescription="As ofertas aparecerão aqui assim que forem publicadas."
+          emptyDescription="As ofertas cadastradas no painel admin aparecerão aqui em tempo real."
         />
       </section>
 

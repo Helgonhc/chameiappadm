@@ -10,51 +10,59 @@ interface OfferCardStandardProps {
 
 export const OfferCardStandard: React.FC<OfferCardStandardProps> = ({ offer }) => {
   const discountPercent = calculateDiscount(offer.current_price, offer.previous_price);
+  const isMercadoLivre = offer.merchant?.slug?.includes('mercado') || offer.affiliate_url?.includes('mercadolivre');
+  const isAmazon = offer.merchant?.slug?.includes('amazon') || offer.affiliate_url?.includes('amazon');
 
   return (
     <div className="offer-card-standard relative group">
-      {/* Top Badges */}
+      {/* Top Badges overlay */}
       <div className="absolute top-2.5 left-2.5 right-2.5 z-10 flex items-center justify-between gap-1 pointer-events-none">
         {discountPercent > 0 ? (
-          <span className="badge-discount font-bold shadow-xs">
-            ↓ {discountPercent}% OFF
+          <span className="badge-discount font-extrabold shadow-md">
+            🔥 {discountPercent}% OFF
           </span>
         ) : <span />}
 
-        {offer.merchant && (
-          <span className="badge-merchant-amazon font-bold shadow-xs">
+        {offer.merchant ? (
+          <span className={isMercadoLivre ? 'badge-merchant-ml font-bold shadow-xs' : 'badge-merchant-amazon font-bold shadow-xs'}>
             {offer.merchant.name}
           </span>
+        ) : (
+          isAmazon ? (
+            <span className="badge-merchant-amazon font-bold shadow-xs">Amazon</span>
+          ) : isMercadoLivre ? (
+            <span className="badge-merchant-ml font-bold shadow-xs">Mercado Livre</span>
+          ) : null
         )}
       </div>
 
-      {/* Container da Imagem */}
-      <div className="relative w-full h-44 bg-slate-50 p-4 flex items-center justify-center overflow-hidden border-b border-slate-100">
+      {/* Container da Imagem HD */}
+      <div className="relative w-full h-48 bg-white p-4 flex items-center justify-center overflow-hidden border-b border-slate-100 group-hover:bg-orange-50/20 transition-colors">
         <Image
           src={offer.image_url}
           alt={offer.title}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-          className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
+          className="object-contain p-2 group-hover:scale-110 transition-transform duration-300 ease-out"
         />
         {offer.free_shipping && (
           <span className="absolute bottom-2 left-2.5 badge-shipping shadow-xs">
-            Frete Grátis
+            ✓ Frete Grátis
           </span>
         )}
       </div>
 
       {/* Detalhes do Produto */}
-      <div className="p-4 flex flex-col flex-1 justify-between">
+      <div className="p-4 flex flex-col flex-1 justify-between bg-white">
         <div>
           {offer.category && (
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
+            <span className="text-[10px] font-black text-[#FF5500] uppercase tracking-wider block mb-1">
               {offer.category.name}
             </span>
           )}
 
           <Link href={`/o/${offer.slug}`} className="block">
-            <h3 className="font-bold text-sm text-slate-900 group-hover:text-[var(--color-signal-primary)] transition-colors line-clamp-2 min-h-[2.5rem] mb-2 leading-snug">
+            <h3 className="font-bold text-sm text-slate-900 group-hover:text-[#FF5500] transition-colors line-clamp-2 min-h-[2.5rem] mb-2 leading-snug">
               {offer.title}
             </h3>
           </Link>
@@ -86,7 +94,7 @@ export const OfferCardStandard: React.FC<OfferCardStandardProps> = ({ offer }) =
             rel="noopener noreferrer"
             className="btn-offer-cta"
           >
-            <span>VER OFERTA</span>
+            <span>PEGAR OFERTA</span>
             <svg
               width="14"
               height="14"

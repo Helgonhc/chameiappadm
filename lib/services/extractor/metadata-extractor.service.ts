@@ -1,6 +1,7 @@
 import { AffiliateService } from '../affiliate.service';
 import { NvidiaAiService, GeneratedOfferCopy } from '../ai/nvidia-ai.service';
 import { CategoryDetectorService } from '../ai/category-detector.service';
+import { AmazonPaapiService } from './amazon-paapi.service';
 
 export interface ExtractedProductData {
   title: string;
@@ -162,7 +163,7 @@ export const MetadataExtractorService = {
   },
 
   /**
-   * Extração Específica para Amazon Brasil com ASIN e Imagem Oficial da Amazon
+   * Extração Específica para Amazon Brasil com ASIN, PA-API 5.0 Oficial ou Fallback com Imagem HD
    */
   async extractFromAmazonAsin(url: string): Promise<ExtractedProductData | null> {
     try {
@@ -173,7 +174,25 @@ export const MetadataExtractorService = {
 
       const asin = asinMatch ? asinMatch[1] : null;
 
-      // Imagem oficial da Amazon por ASIN
+      // 1. Tentar PA-API 5.0 Oficial da Amazon se credenciais estiverem no .env.local
+      if (asin && AmazonPaapiService.isConfigured()) {
+        const paapiItem = await AmazonPaapiService.getItemByAsin(asin);
+        if (paapiItem) {
+          const affiliateUrl = AffiliateService.formatAffiliateUrl(paapiItem.detailPageUrl || url);
+          return {
+            title: this.cleanTitle(paapiItem.title),
+            currentPrice: paapiItem.currentPrice,
+            previousPrice: paapiItem.previousPrice,
+            imageUrl: paapiItem.imageUrl,
+            destinationUrl: paapiItem.detailPageUrl || url,
+            affiliateUrl,
+            merchantName: 'Amazon Brasil',
+            description: `Produto ${paapiItem.title} na Amazon Brasil.`,
+          };
+        }
+      }
+
+      // 2. Imagem oficial da Amazon por ASIN HD (Resolução Nativa)
       const officialAmazonImage = asin
         ? `https://images-na.ssl-images-amazon.com/images/P/${asin}.01.LZZZZZZZ.jpg`
         : '';

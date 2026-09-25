@@ -34,7 +34,7 @@ export const NvidiaAiService = {
   },
 
   /**
-   * Executa chamada segura ao endpoint de Chat Completions da NVIDIA API
+   * Executa chamada segura ao endpoint de Chat Completions da NVIDIA API com fallback automático de modelos
    */
   async callNvidiaApi(systemPrompt: string, userPrompt: string): Promise<string> {
     const apiKey = this.getApiKey();
@@ -42,40 +42,54 @@ export const NvidiaAiService = {
       throw new Error('NVIDIA_API_KEY não está configurada no servidor.');
     }
 
-    const model = this.getModel();
+    const candidateModels = [
+      this.getModel(),
+      'nvidia/llama-3.1-nemotron-70b-instruct',
+      'meta/llama-3.1-8b-instruct',
+      'mistralai/mistral-7b-instruct-v0.3',
+    ];
+
+    // Remover duplicados
+    const modelsToTry = Array.from(new Set(candidateModels));
     const endpoint = 'https://integrate.api.nvidia.com/v1/chat/completions';
 
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: model,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt },
-        ],
-        temperature: 0.5,
-        max_tokens: 1024,
-      }),
-    });
+    let lastError = '';
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('[NVIDIA API Error]', response.status, errorText);
-      throw new Error(`Erro na API da NVIDIA (${response.status}): ${errorText}`);
+    for (const model of modelsToTry) {
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            model: model,
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt },
+            ],
+            temperature: 0.5,
+            max_tokens: 1024,
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const content = data?.choices?.[0]?.message?.content;
+          if (content) {
+            return content.trim();
+          }
+        } else {
+          lastError = await response.text();
+          console.warn(`[NVIDIA API Warning] Modelo ${model} falhou (${response.status}): ${lastError}. Tentando próximo...`);
+        }
+      } catch (err: any) {
+        lastError = err.message || String(err);
+      }
     }
 
-    const data = await response.json();
-    const content = data?.choices?.[0]?.message?.content;
-
-    if (!content) {
-      throw new Error('Nenhuma resposta retornada pela NVIDIA API.');
-    }
-
-    return content.trim();
+    throw new Error(`Erro na API da NVIDIA após tentar modelos alternativos: ${lastError}`);
   },
 
   /**
