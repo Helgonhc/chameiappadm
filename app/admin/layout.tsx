@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { SITE_CONFIG } from '../../lib/config/site.config';
 import { ChameiMarker } from '../../components/ui/ChameiMarker';
+import { AdminLogoutButton } from '../../components/admin/AdminLogoutButton';
 
 export const metadata = {
   title: `Painel Admin | ${SITE_CONFIG.name}`,
@@ -82,20 +83,23 @@ export default function AdminLayout({
               >
                 Ver Site ↗
               </Link>
+
+              <AdminLogoutButton />
             </div>
 
           </div>
         </div>
 
         {/* Sub-bar de navegação mobile admin */}
-        <div className="md:hidden bg-slate-800 px-4 py-2 flex items-center gap-2 overflow-x-auto text-xs font-bold text-slate-300 border-t border-slate-700">
-          <Link href="/admin/dashboard" className="shrink-0 hover:text-white">Visão Geral</Link>
-          <span>•</span>
-          <Link href="/admin/radar" className="shrink-0 hover:text-white">📡 Radar</Link>
-          <span>•</span>
-          <Link href="/admin/radar/candidatas" className="shrink-0 hover:text-white">📋 Candidatas</Link>
-          <span>•</span>
-          <Link href="/admin/integracoes" className="shrink-0 hover:text-white">Integrações</Link>
+        <div className="md:hidden bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-bold text-slate-300 border-t border-slate-700">
+          <div className="flex items-center gap-2 overflow-x-auto">
+            <Link href="/admin/dashboard" className="shrink-0 hover:text-white">Visão Geral</Link>
+            <span>•</span>
+            <Link href="/admin/radar" className="shrink-0 hover:text-white">📡 Radar</Link>
+            <span>•</span>
+            <Link href="/admin/radar/candidatas" className="shrink-0 hover:text-white">📋 Candidatas</Link>
+          </div>
+          <AdminLogoutButton />
         </div>
       </header>
 

@@ -8,14 +8,6 @@ export async function middleware(request: NextRequest) {
 
   // Proteger todas as rotas administrativas /admin/* (exceto /admin/login)
   if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
-    // Em desenvolvimento local, se tiver cookie de dev admin ativado, permite navegação direta
-    if (process.env.NODE_ENV !== 'production') {
-      const devCookie = request.cookies.get('chamei_dev_admin');
-      if (devCookie?.value === 'true') {
-        return NextResponse.next();
-      }
-    }
-
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';

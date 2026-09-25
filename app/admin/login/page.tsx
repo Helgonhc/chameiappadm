@@ -10,7 +10,6 @@ export default function AdminLoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [sqlInstruction, setSqlInstruction] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -24,7 +23,6 @@ export default function AdminLoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setSqlInstruction(null);
 
     if (!email || !password) {
       setError('Preencha e-mail e senha.');
@@ -35,10 +33,6 @@ export default function AdminLoginPage() {
 
     try {
       if (!supabaseUrl || !supabaseAnonKey) {
-        if (process.env.NODE_ENV !== 'production') {
-          router.push(redirectUrl);
-          return;
-        }
         setError('Supabase não está configurado neste ambiente.');
         setIsLoading(false);
         return;
@@ -66,57 +60,6 @@ export default function AdminLoginPage() {
     }
   };
 
-  const handleSetupAdmin = async () => {
-    if (!email || !password) {
-      setError('Preencha e-mail e senha para configurar.');
-      return;
-    }
-
-    setIsLoading(true);
-    setError('');
-
-    try {
-      const res = await fetch('/api/auth/setup-admin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || data.error) {
-        setError(data.error || 'Erro ao sincronizar conta admin.');
-        setIsLoading(false);
-        return;
-      }
-
-      // Após a sincronização, efetuar o login automático no Supabase
-      const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
-      const { error: loginErr } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (loginErr) {
-        setError(`Conta configurada no Supabase, porém ao efetuar login: ${loginErr.message}`);
-        setIsLoading(false);
-        return;
-      }
-
-      router.push(redirectUrl);
-      router.refresh();
-    } catch (err: any) {
-      setError(err?.message || 'Erro ao conectar ao servidor.');
-      setIsLoading(false);
-    }
-  };
-
-  const handleDevLogin = () => {
-    document.cookie = "chamei_dev_admin=true; path=/; max-age=86400";
-    router.push(redirectUrl);
-    router.refresh();
-  };
-
   return (
     <div className="max-w-md mx-auto py-12 px-4">
       <div className="bg-white p-8 rounded-xl border border-slate-200 shadow-md space-y-6">
@@ -137,29 +80,8 @@ export default function AdminLoginPage() {
         )}
 
         {error && (
-          <div className="bg-red-50 text-red-700 p-3 rounded text-xs font-semibold border border-red-200 space-y-2">
-            <p>{error}</p>
-            {error.includes('Invalid login credentials') && (
-              <div className="pt-2 border-t border-red-200">
-                <button
-                  type="button"
-                  onClick={handleSetupAdmin}
-                  className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-2 px-3 rounded text-xs transition-colors cursor-pointer"
-                >
-                  ⚡ Sincronizar Senha & Criar/Ativar Admin no Supabase
-                </button>
-              </div>
-            )}
-            {sqlInstruction && (
-              <div className="mt-2 pt-2 border-t border-red-200 text-[11px] text-slate-800 font-mono">
-                <span className="font-bold text-red-900 block font-sans mb-1">
-                  💡 Execute o SQL no SQL Editor do Supabase para liberar:
-                </span>
-                <pre className="bg-slate-900 text-emerald-400 p-2 rounded overflow-x-auto text-[10px]">
-                  {sqlInstruction}
-                </pre>
-              </div>
-            )}
+          <div className="bg-red-50 text-red-700 p-3 rounded text-xs font-semibold border border-red-200">
+            {error}
           </div>
         )}
 
@@ -201,27 +123,6 @@ export default function AdminLoginPage() {
           </button>
         </form>
 
-        <div className="pt-2 flex flex-col gap-2">
-          <button
-            type="button"
-            onClick={handleSetupAdmin}
-            disabled={isLoading}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded transition-colors text-xs flex items-center justify-center gap-2 cursor-pointer"
-          >
-            <span>🛠️ Sincronizar Senha & Ativar Admin no Supabase</span>
-          </button>
-
-          {process.env.NODE_ENV !== 'production' && (
-            <button
-              type="button"
-              onClick={handleDevLogin}
-              className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 px-4 rounded transition-colors text-xs flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <span>⚡ Entrar Direto no Painel (Modo Dev Local)</span>
-            </button>
-          )}
-        </div>
-
         <div className="text-center pt-2">
           <a
             href="/"
@@ -234,6 +135,7 @@ export default function AdminLoginPage() {
     </div>
   );
 }
+
 
 
 
