@@ -1,3 +1,22 @@
+import fs from 'fs';
+import path from 'path';
+
+// Carregar .env.local para o script isolado
+const envPath = path.resolve(__dirname, '../.env.local');
+if (fs.existsSync(envPath)) {
+  const envConfig = fs.readFileSync(envPath, 'utf-8');
+  for (const line of envConfig.split('\n')) {
+    const trimmed = line.trim();
+    if (trimmed && !trimmed.startsWith('#')) {
+      const [key, ...valueParts] = trimmed.split('=');
+      const val = valueParts.join('=').replace(/^"(.*)"$/, '$1');
+      if (key && val) {
+        process.env[key.trim()] = val.trim();
+      }
+    }
+  }
+}
+
 import { AutoPublisherService } from '../lib/services/bot/auto-publisher.service';
 import { OfferService } from '../lib/services/offer.service';
 import { SEED_CATEGORIES } from '../lib/services/seed-data';
