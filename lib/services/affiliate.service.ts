@@ -27,7 +27,7 @@ export const AFFILIATE_RULES: AffiliateRule[] = [
     domains: ['mercadolivre.com.br', 'produto.mercadolivre.com.br', 'mercadolibre.com', 'meli.la'],
     defaultTagParam: 'matt_tool',
     envTagKey: 'MERCADO_LIVRE_AFFILIATE_TAG',
-    defaultTagValue: 'chameiapp',
+    defaultTagValue: 'helgonhenrique',
   },
   {
     merchantSlug: 'magalu',
