@@ -4,17 +4,21 @@ import { AutoPublisherService } from '../../../../../lib/services/bot/auto-publi
 export async function POST(request: Request) {
   try {
     let customKeywords: string[] | undefined;
+    let targetPlatform: 'all' | 'mercado-livre' | 'amazon' = 'all';
 
     try {
       const body = await request.json();
       if (Array.isArray(body.keywords) && body.keywords.length > 0) {
         customKeywords = body.keywords;
       }
+      if (body.platform && ['all', 'mercado-livre', 'amazon'].includes(body.platform)) {
+        targetPlatform = body.platform;
+      }
     } catch {
-      // Usar palavras-chave padrão se corpo estiver vazio
+      // Usar palavras-chave e plataforma padrão se corpo estiver vazio
     }
 
-    const result = await AutoPublisherService.runAutoScan(customKeywords);
+    const result = await AutoPublisherService.runAutoScan(customKeywords, targetPlatform);
 
     return NextResponse.json({
       success: true,

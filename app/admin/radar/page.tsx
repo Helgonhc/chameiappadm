@@ -19,6 +19,7 @@ export default function RadarPage() {
 
   // Estados do Robô de Automação
   const [isBotRunning, setIsBotRunning] = useState(false);
+  const [botPlatform, setBotPlatform] = useState<'all' | 'mercado-livre' | 'amazon'>('all');
   const [botLogs, setBotLogs] = useState<string[]>([]);
   const [botSummary, setBotSummary] = useState<string | null>(null);
 
@@ -73,19 +74,33 @@ export default function RadarPage() {
     }
   };
 
-  // Dispara a Varredura Autônoma do Robô com IA da NVIDIA
+  // Dispara a Varredura Autônoma do Robô com a Plataforma Selecionada
   const handleRunAutoBot = async () => {
     setIsBotRunning(true);
-    setBotLogs(['[Robô] Conectando à API do Robô de Automação...', '[Robô] Varendo palavras-chave em alta...']);
+    const platformName =
+      botPlatform === 'mercado-livre'
+        ? 'Mercado Livre'
+        : botPlatform === 'amazon'
+        ? 'Amazon Brasil'
+        : 'Ambas as Plataformas';
+
+    setBotLogs([
+      `[Robô Autônomo] Iniciando varredura direcionada em: ${platformName}...`,
+      '[Robô] Varrendo termos em alta nas lojas e gerando copies persuasivas com IA da NVIDIA...',
+    ]);
     setBotSummary(null);
 
     try {
-      const response = await fetch('/api/admin/bot/auto-scan', { method: 'POST' });
+      const response = await fetch('/api/admin/bot/auto-scan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ platform: botPlatform }),
+      });
       const data = await response.json();
 
       if (data.success && data.result) {
         setBotLogs(data.result.logs || []);
-        setBotSummary(`✅ SUCESSO! ${data.result.publishedCount} ofertas foram extraídas, categorizadas automaticamente e publicadas no site!`);
+        setBotSummary(`✅ SUCESSO! ${data.result.publishedCount} ofertas foram extraídas, categorizadas e publicadas no site!`);
       } else {
         setBotLogs((prev) => [...prev, `❌ Erro: ${data.error || 'Falha na execução'}`]);
       }
@@ -124,40 +139,88 @@ export default function RadarPage() {
       <div className="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white p-6 md:p-8 rounded-2xl border border-slate-800 shadow-xl space-y-6 relative overflow-hidden">
         <div className="absolute -top-24 -right-24 w-80 h-80 bg-[#FF5500]/20 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-[#FF5500]/30 text-[#FF5500] px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider">
-              <span className="w-2 h-2 rounded-full bg-[#FF5500] animate-ping" />
-              IA DA NVIDIA + DETECTOR DAS 24 CATEGORIAS
+        <div className="flex flex-col space-y-4 relative z-10">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-[#FF5500]/30 text-[#FF5500] px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider">
+                <span className="w-2 h-2 rounded-full bg-[#FF5500] animate-ping" />
+                IA DA NVIDIA + DETECTOR DAS 24 CATEGORIAS
+              </div>
+              <h2 className="text-2xl font-black text-white tracking-tight">
+                🤖 Robô Autônomo de Busca e Publicação Direta
+              </h2>
+              <p className="text-xs md:text-sm text-slate-300 max-w-2xl leading-relaxed">
+                Escolha abaixo qual plataforma o robô autônomo deve rastrear. Ele buscará promoções em alta, aplicará a IA de neuromarketing e **publicará automaticamente no ChameiApp**.
+              </p>
             </div>
-            <h2 className="text-2xl font-black text-white tracking-tight">
-              🤖 Robô Autônomo de Busca e Publicação Direta
-            </h2>
-            <p className="text-xs md:text-sm text-slate-300 max-w-2xl leading-relaxed">
-              Ao clicar no botão abaixo, o robô vai buscar automaticamente promoções reais em alta, identificar desvios de preço, classificar o produto entre as 24 categorias oficiais, gerar copies atraentes via IA e **publicar as ofertas diretamente na vitrine**!
-            </p>
           </div>
 
-          <button
-            onClick={handleRunAutoBot}
-            disabled={isBotRunning}
-            className="shrink-0 bg-gradient-to-r from-[#FF6B00] to-[#FF3D00] text-white font-black text-sm px-6 py-4 rounded-xl hover:brightness-110 active:scale-95 disabled:opacity-50 transition-all shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2"
-          >
-            {isBotRunning ? (
-              <>
-                <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                </svg>
-                <span>VARRENDO E PUBLICANDO...</span>
-              </>
-            ) : (
-              <>
-                <span className="text-lg">🚀</span>
-                <span>INICIAR VARREDURA AUTÔNOMA DA IA</span>
-              </>
-            )}
-          </button>
+          {/* SELETOR DE PLATAFORMA DE VARREDURA */}
+          <div className="bg-slate-900/90 p-4 rounded-xl border border-white/10 space-y-3">
+            <label className="text-xs font-bold text-amber-400 uppercase tracking-wider block">
+              🎯 Selecione a Loja / Plataforma para Varredura:
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <button
+                type="button"
+                onClick={() => setBotPlatform('all')}
+                className={`p-3.5 rounded-xl border font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                  botPlatform === 'all'
+                    ? 'bg-gradient-to-r from-[#FF5500] to-[#FF7700] text-slate-950 border-amber-400 font-black shadow-md scale-102'
+                    : 'bg-slate-950/60 text-slate-300 border-white/10 hover:border-white/30'
+                }`}
+              >
+                <span>⚡ Ambas as Lojas (ML + Amazon)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setBotPlatform('mercado-livre')}
+                className={`p-3.5 rounded-xl border font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                  botPlatform === 'mercado-livre'
+                    ? 'bg-amber-400 text-slate-950 border-amber-300 font-black shadow-md scale-102'
+                    : 'bg-slate-950/60 text-slate-300 border-white/10 hover:border-white/30'
+                }`}
+              >
+                <span>🟡 Apenas Mercado Livre (API)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setBotPlatform('amazon')}
+                className={`p-3.5 rounded-xl border font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                  botPlatform === 'amazon'
+                    ? 'bg-orange-500 text-slate-950 border-orange-400 font-black shadow-md scale-102'
+                    : 'bg-slate-950/60 text-slate-300 border-white/10 hover:border-white/30'
+                }`}
+              >
+                <span>🟠 Apenas Amazon Brasil</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="pt-2 flex justify-end">
+            <button
+              onClick={handleRunAutoBot}
+              disabled={isBotRunning}
+              className="w-full md:w-auto bg-gradient-to-r from-[#FF6B00] to-[#FF3D00] text-white font-black text-sm px-8 py-4 rounded-xl hover:brightness-110 active:scale-95 disabled:opacity-50 transition-all shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2 cursor-pointer"
+            >
+              {isBotRunning ? (
+                <>
+                  <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  <span>VARRENDO {botPlatform === 'mercado-livre' ? 'MERCADO LIVRE' : botPlatform === 'amazon' ? 'AMAZON BRASIL' : 'TODAS AS LOJAS'}...</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-lg">🚀</span>
+                  <span>EXECUTAR VARREDURA EM {botPlatform === 'mercado-livre' ? 'MERCADO LIVRE' : botPlatform === 'amazon' ? 'AMAZON BRASIL' : 'AMBAS AS LOJAS'}</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Console / Terminal de Logs do Robô */}
