@@ -55,7 +55,9 @@ function AdminLoginForm() {
               body: JSON.stringify({ email, password }),
             });
 
-            if (syncRes.ok) {
+            const syncData = await syncRes.json();
+
+            if (syncRes.ok && syncData.success) {
               const retryRes = await supabase.auth.signInWithPassword({
                 email,
                 password,
@@ -65,9 +67,15 @@ function AdminLoginForm() {
                 window.location.href = redirectUrl;
                 return;
               }
+            } else if (syncData?.error) {
+              setError(`Falha ao sincronizar conta com o Supabase: ${syncData.error}`);
+              setIsLoading(false);
+              return;
             }
-          } catch {
-            // Em caso de falha de rede na API, mantém o erro padrão abaixo
+          } catch (syncErr: any) {
+            setError(`Erro ao tentar sincronizar no servidor: ${syncErr?.message || 'Erro de conexão'}`);
+            setIsLoading(false);
+            return;
           }
         }
 
