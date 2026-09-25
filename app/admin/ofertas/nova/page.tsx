@@ -34,6 +34,11 @@ export default function NovaOfertaPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
+  // Estados da IA NVIDIA
+  const [isGeneratingAi, setIsGeneratingAi] = useState(false);
+  const [aiSocialMessage, setAiSocialMessage] = useState<string | null>(null);
+  const [aiVerdict, setAiVerdict] = useState<string | null>(null);
+
   useEffect(() => {
     async function loadData() {
       const [cats, merchs] = await Promise.all([
@@ -71,6 +76,55 @@ export default function NovaOfertaPage() {
       destination_url: url,
       affiliate_url: autoAffiliate,
     }));
+  };
+
+  const handleGenerateAiCopy = async () => {
+    if (!formData.title.trim()) {
+      setErrors({ title: 'Insira um título inicial antes de gerar o texto com a IA.' });
+      return;
+    }
+
+    setIsGeneratingAi(true);
+    setErrors({});
+
+    try {
+      const selectedMerchant = merchants.find((m) => m.id === formData.merchant_id)?.name;
+      const selectedCategory = categories.find((c) => c.id === formData.category_id)?.name;
+
+      const response = await fetch('/api/admin/ai/generate-copy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: formData.title,
+          currentPrice: formData.current_price,
+          previousPrice: formData.previous_price,
+          merchantName: selectedMerchant,
+          categoryName: selectedCategory,
+          couponCode: formData.coupon_code,
+          freeShipping: formData.free_shipping,
+          rawDescription: formData.description,
+        }),
+      });
+
+      const json = await response.json();
+
+      if (json.success && json.copy) {
+        setFormData((prev) => ({
+          ...prev,
+          title: json.copy.optimizedTitle || prev.title,
+          description: json.copy.description || prev.description,
+        }));
+
+        setAiSocialMessage(json.copy.socialMessage);
+        setAiVerdict(json.copy.verdict);
+      } else {
+        setErrors({ general: json.error || 'Erro ao gerar copy com a IA.' });
+      }
+    } catch {
+      setErrors({ general: 'Erro de conexão ao solicitar IA da NVIDIA.' });
+    } finally {
+      setIsGeneratingAi(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -132,13 +186,18 @@ export default function NovaOfertaPage() {
   return (
     <div className="max-w-3xl mx-auto py-6">
       <div className="bg-white p-8 rounded-xl border border-neutral-200 shadow-card space-y-6">
-        <div className="border-b border-neutral-200 pb-4">
-          <h1 className="text-2xl font-black text-neutral-900">
-            Cadastrar Nova Oferta Real
-          </h1>
-          <p className="text-xs text-neutral-500 mt-1">
-            Preencha as informações da promoção obtida na Amazon Brasil ou Mercado Livre.
-          </p>
+        <div className="border-b border-neutral-200 pb-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-black text-neutral-900">
+              Cadastrar Nova Oferta Real
+            </h1>
+            <p className="text-xs text-neutral-500 mt-1">
+              Preencha as informações da promoção e utilize a IA da NVIDIA para gerar textos de alta conversão.
+            </p>
+          </div>
+          <span className="bg-purple-100 text-purple-800 font-bold text-[10px] px-2.5 py-1 rounded font-mono">
+            LLaMA 3.3 70B (NVIDIA API)
+          </span>
         </div>
 
         {successMessage && (
@@ -146,6 +205,52 @@ export default function NovaOfertaPage() {
             ✓ {successMessage}
           </div>
         )}
+
+        {/* Caixa de IA NVIDIA */}
+        <div className="bg-gradient-to-r from-purple-900 to-indigo-900 text-white p-5 rounded-lg space-y-3 shadow-md">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">✨</span>
+              <div>
+                <h3 className="font-extrabold text-sm uppercase tracking-wider">Agente Copywriter NVIDIA NIM</h3>
+                <p className="text-[10px] text-purple-200">Gere títulos persuasivos, descrições ricas e texto para grupos de WhatsApp com 1 clique.</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={handleGenerateAiCopy}
+              disabled={isGeneratingAi}
+              className="px-4 py-2 bg-purple-500 hover:bg-purple-400 text-white font-extrabold text-xs rounded shadow transition-all active:scale-95 disabled:opacity-50 shrink-0"
+            >
+              {isGeneratingAi ? '🧠 Processando IA NVIDIA...' : '✨ Gerar Copy com IA'}
+            </button>
+          </div>
+
+          {aiVerdict && (
+            <div className="p-3 bg-purple-950/80 border border-purple-400/30 rounded text-xs space-y-1">
+              <span className="text-purple-300 font-bold uppercase text-[10px] block">Veredicto da Promoção pela IA:</span>
+              <p className="text-slate-100 font-medium italic">{aiVerdict}</p>
+            </div>
+          )}
+
+          {aiSocialMessage && (
+            <div className="p-3 bg-slate-950 rounded border border-purple-400/20 space-y-2 text-xs">
+              <div className="flex items-center justify-between text-purple-300 font-bold">
+                <span>📱 Texto Gerado para Disparo (WhatsApp / Telegram):</span>
+                <button
+                  type="button"
+                  onClick={() => navigator.clipboard.writeText(aiSocialMessage)}
+                  className="text-[10px] bg-purple-700 hover:bg-purple-600 text-white px-2 py-0.5 rounded font-mono"
+                >
+                  📋 Copiar Texto
+                </button>
+              </div>
+              <pre className="font-sans text-[11px] text-slate-200 bg-slate-900 p-2.5 rounded whitespace-pre-wrap leading-relaxed select-all">
+                {aiSocialMessage}
+              </pre>
+            </div>
+          )}
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-6 text-xs font-bold text-neutral-800">
           
@@ -299,7 +404,7 @@ export default function NovaOfertaPage() {
               rows={4}
               value={formData.description || ''}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Resumo das especificações..."
+              placeholder="Resumo das especificações ou texto gerado pela IA..."
               className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5"
             />
           </div>

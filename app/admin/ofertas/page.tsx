@@ -17,6 +17,8 @@ export default function AdminOfertasPage() {
   // Modal de edição rápida
   const [editingOffer, setEditingOffer] = useState<Offer | null>(null);
   const [savingEdit, setSavingEdit] = useState(false);
+  const [generatingAiModal, setGeneratingAiModal] = useState(false);
+  const [modalAiSocial, setModalAiSocial] = useState<string | null>(null);
 
   // Ferramenta de conversão rápida de link
   const [testUrl, setTestUrl] = useState('');
@@ -99,6 +101,42 @@ export default function AdminOfertasPage() {
     }
   };
 
+  const handleGenerateAiInModal = async () => {
+    if (!editingOffer) return;
+    setGeneratingAiModal(true);
+
+    try {
+      const res = await fetch('/api/admin/ai/generate-copy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: editingOffer.title,
+          currentPrice: editingOffer.current_price,
+          previousPrice: editingOffer.previous_price,
+          merchantName: editingOffer.merchant?.name,
+          categoryName: editingOffer.category?.name,
+          couponCode: editingOffer.coupon_code,
+          freeShipping: editingOffer.free_shipping,
+          rawDescription: editingOffer.description,
+        }),
+      });
+
+      const json = await res.json();
+      if (json.success && json.copy) {
+        setEditingOffer({
+          ...editingOffer,
+          title: json.copy.optimizedTitle || editingOffer.title,
+          description: json.copy.description || editingOffer.description,
+        });
+        setModalAiSocial(json.copy.socialMessage);
+      }
+    } catch {
+      setFeedback({ message: 'Erro ao solicitar IA da NVIDIA.', type: 'error' });
+    } finally {
+      setGeneratingAiModal(false);
+    }
+  };
+
   const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingOffer) return;
@@ -111,6 +149,7 @@ export default function AdminOfertasPage() {
         body: JSON.stringify({
           id: editingOffer.id,
           title: editingOffer.title,
+          description: editingOffer.description,
           current_price: editingOffer.current_price,
           previous_price: editingOffer.previous_price,
           coupon_code: editingOffer.coupon_code,
@@ -126,6 +165,7 @@ export default function AdminOfertasPage() {
       if (json.success) {
         setFeedback({ message: 'Oferta atualizada com sucesso!', type: 'success' });
         setEditingOffer(null);
+        setModalAiSocial(null);
         fetchOffers();
       } else {
         setFeedback({ message: json.error || 'Erro ao salvar alterações.', type: 'error' });
@@ -160,7 +200,7 @@ export default function AdminOfertasPage() {
             <h1 className="text-2xl font-black text-slate-900">GERENCIAMENTO DE OFERTAS & LINKS</h1>
           </div>
           <p className="text-xs text-slate-500">
-            Controle total do catálogo, formatação de links de afiliados, ativação de destaques e redirecionador seguro `/go/`.
+            Controle total do catálogo, otimização com IA da NVIDIA (LLaMA 3.3 70B), links de afiliados e redirecionador `/go/`.
           </p>
         </div>
 
@@ -422,7 +462,10 @@ export default function AdminOfertasPage() {
                       {/* Ações */}
                       <td className="p-3 text-right space-x-1.5">
                         <button
-                          onClick={() => setEditingOffer(offer)}
+                          onClick={() => {
+                            setEditingOffer(offer);
+                            setModalAiSocial(null);
+                          }}
                           className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded text-[11px] transition-colors"
                         >
                           Editar
@@ -450,12 +493,47 @@ export default function AdminOfertasPage() {
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <h3 className="font-black text-lg text-slate-900">Editar Oferta</h3>
               <button
-                onClick={() => setEditingOffer(null)}
+                onClick={() => {
+                  setEditingOffer(null);
+                  setModalAiSocial(null);
+                }}
                 className="text-slate-400 hover:text-slate-600 font-bold text-lg"
               >
                 ✕
               </button>
             </div>
+
+            {/* Gerador IA NVIDIA no Modal */}
+            <div className="bg-gradient-to-r from-purple-900 to-indigo-900 text-white p-3.5 rounded flex items-center justify-between gap-3 text-xs shadow-xs">
+              <div className="flex items-center gap-2">
+                <span className="text-base">✨</span>
+                <span className="font-bold">IA NVIDIA (LLaMA 3.3 70B): Otimizar título e copy</span>
+              </div>
+              <button
+                type="button"
+                onClick={handleGenerateAiInModal}
+                disabled={generatingAiModal}
+                className="px-3 py-1 bg-purple-500 hover:bg-purple-400 text-white font-extrabold text-[11px] rounded transition-colors disabled:opacity-50 shrink-0"
+              >
+                {generatingAiModal ? 'Gerando...' : '✨ Gerar Copy'}
+              </button>
+            </div>
+
+            {modalAiSocial && (
+              <div className="p-3 bg-slate-950 text-slate-100 rounded text-xs space-y-1 font-mono">
+                <div className="flex items-center justify-between text-purple-300 font-bold font-sans">
+                  <span>📱 Post Gerado para WhatsApp:</span>
+                  <button
+                    type="button"
+                    onClick={() => navigator.clipboard.writeText(modalAiSocial)}
+                    className="text-[10px] bg-purple-700 px-2 py-0.5 rounded"
+                  >
+                    📋 Copiar
+                  </button>
+                </div>
+                <pre className="whitespace-pre-wrap text-[10px] font-sans text-slate-200">{modalAiSocial}</pre>
+              </div>
+            )}
 
             <form onSubmit={handleSaveEdit} className="space-y-4 text-xs">
               <div>
@@ -466,6 +544,16 @@ export default function AdminOfertasPage() {
                   onChange={(e) => setEditingOffer({ ...editingOffer, title: e.target.value })}
                   className="w-full border border-slate-300 rounded px-3 py-2 text-slate-900 focus:outline-none focus:border-slate-600"
                   required
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Descrição / Destaques</label>
+                <textarea
+                  rows={3}
+                  value={editingOffer.description || ''}
+                  onChange={(e) => setEditingOffer({ ...editingOffer, description: e.target.value })}
+                  className="w-full border border-slate-300 rounded px-3 py-2 text-slate-900 focus:outline-none focus:border-slate-600 font-normal"
                 />
               </div>
 
@@ -576,7 +664,10 @@ export default function AdminOfertasPage() {
               <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
                 <button
                   type="button"
-                  onClick={() => setEditingOffer(null)}
+                  onClick={() => {
+                    setEditingOffer(null);
+                    setModalAiSocial(null);
+                  }}
                   className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded transition-colors"
                 >
                   Cancelar
