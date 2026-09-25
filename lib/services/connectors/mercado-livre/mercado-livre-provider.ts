@@ -29,7 +29,13 @@ export class MercadoLivreProvider implements AffiliateProductProvider {
       const limit = options?.limit || 20;
       const url = `https://api.mercadolibre.com/sites/MLB/search?q=${encodeURIComponent(searchTerm)}&limit=${limit}`;
 
-      const res = await fetch(url);
+      const res = await fetch(url, {
+        headers: {
+          'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          Accept: 'application/json',
+        },
+      });
       if (!res.ok) {
         console.warn('[MercadoLivreProvider] Falha ao buscar produtos no ML:', res.status);
         return [];
@@ -48,7 +54,13 @@ export class MercadoLivreProvider implements AffiliateProductProvider {
   async getProduct(externalId: string): Promise<ExternalProduct | null> {
     try {
       const url = `https://api.mercadolibre.com/items/${externalId}`;
-      const res = await fetch(url);
+      const res = await fetch(url, {
+        headers: {
+          'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          Accept: 'application/json',
+        },
+      });
       if (!res.ok) return null;
 
       const item = await res.json();
