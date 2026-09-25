@@ -1,19 +1,24 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { offerSchema, OfferInput } from '../../../../lib/validators/offer.schema';
-import { SEED_CATEGORIES, SEED_MERCHANTS } from '../../../../lib/services/seed-data';
+import { OfferService } from '../../../../lib/services/offer.service';
+import { MerchantService } from '../../../../lib/services/merchant.service';
+import { Category, Merchant } from '../../../../lib/types/database';
 
 export default function NovaOfertaPage() {
   const router = useRouter();
+
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [merchants, setMerchants] = useState<Merchant[]>([]);
 
   const [formData, setFormData] = useState<OfferInput>({
     title: '',
     slug: '',
     description: '',
-    category_id: SEED_CATEGORIES[0]?.id || '',
-    merchant_id: SEED_MERCHANTS[0]?.id || '',
+    category_id: '',
+    merchant_id: '',
     current_price: 0,
     previous_price: null,
     coupon_code: '',
@@ -29,7 +34,46 @@ export default function NovaOfertaPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    async function loadData() {
+      const [cats, merchs] = await Promise.all([
+        MerchantService.getCategories(),
+        MerchantService.getMerchants(),
+      ]);
+      setCategories(cats);
+      setMerchants(merchs);
+
+      if (cats.length > 0) {
+        setFormData((prev) => ({ ...prev, category_id: cats[0].id }));
+      }
+      if (merchs.length > 0) {
+        setFormData((prev) => ({ ...prev, merchant_id: merchs[0].id }));
+      }
+    }
+    loadData();
+  }, []);
+
+  const handleDestinationUrlChange = (url: string) => {
+    let autoAffiliate = formData.affiliate_url;
+
+    if (url.includes('amazon.com.br') && (!autoAffiliate || autoAffiliate.includes('amazon.com.br'))) {
+      try {
+        const parsed = new URL(url);
+        parsed.searchParams.set('tag', 'chameiapp-20');
+        autoAffiliate = parsed.toString();
+      } catch {
+        autoAffiliate = url;
+      }
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      destination_url: url,
+      affiliate_url: autoAffiliate,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
     setSuccessMessage('');
@@ -65,13 +109,24 @@ export default function NovaOfertaPage() {
 
     setIsSubmitting(true);
 
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSuccessMessage('Oferta cadastrada com sucesso! Redirecionando...');
+    try {
+      const result = await OfferService.createOffer(dataToValidate);
+
+      if (!result.success) {
+        setErrors({ general: result.error || 'Erro ao salvar oferta.' });
+        setIsSubmitting(false);
+        return;
+      }
+
+      setSuccessMessage('Oferta cadastrada e publicada no portal com sucesso!');
       setTimeout(() => {
         router.push('/admin/dashboard');
-      }, 1200);
-    }, 800);
+        router.refresh();
+      }, 1000);
+    } catch (err: any) {
+      setErrors({ general: err?.message || 'Erro inesperado ao salvar oferta.' });
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -108,6 +163,12 @@ export default function NovaOfertaPage() {
             {errors.title && <p className="text-red-600 font-normal mt-1">{errors.title}</p>}
           </div>
 
+          {errors.general && (
+            <div className="bg-red-50 text-red-700 p-3 rounded-lg text-xs font-semibold border border-red-200">
+              {errors.general}
+            </div>
+          )}
+
           {/* Loja e Categoria */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -115,13 +176,17 @@ export default function NovaOfertaPage() {
               <select
                 value={formData.merchant_id}
                 onChange={(e) => setFormData({ ...formData, merchant_id: e.target.value })}
-                className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5 bg-white"
+                className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5 bg-white text-slate-900"
               >
-                {SEED_MERCHANTS.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.name}
-                  </option>
-                ))}
+                {merchants.length > 0 ? (
+                  merchants.map((m) => (
+                    <option key={m.id} value={m.id}>
+                      {m.name}
+                    </option>
+                  ))
+                ) : (
+                  <option value="">Nenhuma loja cadastrada</option>
+                )}
               </select>
             </div>
 
@@ -130,13 +195,17 @@ export default function NovaOfertaPage() {
               <select
                 value={formData.category_id}
                 onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
-                className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5 bg-white"
+                className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5 bg-white text-slate-900"
               >
-                {SEED_CATEGORIES.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
+                {categories.length > 0 ? (
+                  categories.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))
+                ) : (
+                  <option value="">Nenhuma categoria cadastrada</option>
+                )}
               </select>
             </div>
           </div>
@@ -151,7 +220,7 @@ export default function NovaOfertaPage() {
                 value={formData.current_price || ''}
                 onChange={(e) => setFormData({ ...formData, current_price: parseFloat(e.target.value) || 0 })}
                 placeholder="2199.00"
-                className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5 focus:ring-2 focus:ring-[var(--color-brand-primary-700)]"
+                className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5 text-slate-900 focus:ring-2 focus:ring-[var(--color-brand-primary-700)]"
                 required
               />
               {errors.current_price && <p className="text-red-600 font-normal mt-1">{errors.current_price}</p>}
@@ -165,7 +234,7 @@ export default function NovaOfertaPage() {
                 value={formData.previous_price || ''}
                 onChange={(e) => setFormData({ ...formData, previous_price: parseFloat(e.target.value) || null })}
                 placeholder="2799.00"
-                className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5 focus:ring-2 focus:ring-[var(--color-brand-primary-700)]"
+                className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5 text-slate-900 focus:ring-2 focus:ring-[var(--color-brand-primary-700)]"
               />
             </div>
           </div>
@@ -178,8 +247,8 @@ export default function NovaOfertaPage() {
                 type="url"
                 value={formData.image_url}
                 onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                placeholder="https://..."
-                className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5"
+                placeholder="https://m.media-amazon.com/images/..."
+                className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5 text-slate-900"
                 required
               />
               {errors.image_url && <p className="text-red-600 font-normal mt-1">{errors.image_url}</p>}
@@ -190,22 +259,24 @@ export default function NovaOfertaPage() {
               <input
                 type="url"
                 value={formData.destination_url}
-                onChange={(e) => setFormData({ ...formData, destination_url: e.target.value })}
-                placeholder="https://www.amazon.com.br/dp/..."
-                className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5"
+                onChange={(e) => handleDestinationUrlChange(e.target.value)}
+                placeholder="https://www.amazon.com.br/dp/B08X..."
+                className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5 text-slate-900"
                 required
               />
               {errors.destination_url && <p className="text-red-600 font-normal mt-1">{errors.destination_url}</p>}
             </div>
 
             <div>
-              <label className="block mb-1">URL de Afiliado Aprovada (affiliate_url) (Opcional)</label>
+              <label className="block mb-1">
+                URL de Afiliado (affiliate_url) — Injetado Tag chameiapp-20 automaticamente
+              </label>
               <input
                 type="url"
                 value={formData.affiliate_url || ''}
                 onChange={(e) => setFormData({ ...formData, affiliate_url: e.target.value })}
-                placeholder="https://amzn.to/..."
-                className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5"
+                placeholder="https://www.amazon.com.br/dp/...Tag=chameiapp-20"
+                className="w-full font-normal text-sm border border-neutral-300 rounded p-2.5 text-slate-900 bg-slate-50"
               />
             </div>
 

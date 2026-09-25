@@ -129,5 +129,58 @@ export const OfferService = {
       return [...offers].sort((a, b) => b.current_price - a.current_price);
     }
     return offers;
-  }
+  },
+
+  async createOffer(input: Partial<Offer>): Promise<{ success: boolean; data?: Offer; error?: string }> {
+    if (!isSupabaseConfigured || !supabase) {
+      return { success: false, error: 'Supabase não está configurado neste ambiente.' };
+    }
+
+    try {
+      let affiliateUrl = input.affiliate_url;
+      const associateTag = process.env.AMAZON_ASSOCIATE_TAG || 'chameiapp-20';
+
+      if (input.destination_url && input.destination_url.includes('amazon.com.br') && !affiliateUrl) {
+        try {
+          const parsed = new URL(input.destination_url);
+          parsed.searchParams.set('tag', associateTag);
+          affiliateUrl = parsed.toString();
+        } catch {
+          affiliateUrl = input.destination_url;
+        }
+      }
+
+      const payload = {
+        title: input.title,
+        slug: input.slug,
+        description: input.description || null,
+        image_url: input.image_url,
+        destination_url: input.destination_url,
+        affiliate_url: affiliateUrl || input.destination_url,
+        current_price: Number(input.current_price),
+        previous_price: input.previous_price ? Number(input.previous_price) : null,
+        coupon_code: input.coupon_code || null,
+        free_shipping: Boolean(input.free_shipping),
+        featured: Boolean(input.featured),
+        status: input.status || 'published',
+        category_id: input.category_id || null,
+        merchant_id: input.merchant_id || null,
+        published_at: new Date().toISOString(),
+      };
+
+      const { data, error } = await supabase
+        .from('offers')
+        .insert(payload)
+        .select()
+        .single();
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      return { success: true, data: data as Offer };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Erro ao salvar oferta.' };
+    }
+  },
 };
