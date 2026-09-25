@@ -10,6 +10,7 @@ export default function AdminLoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [sqlInstruction, setSqlInstruction] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -23,6 +24,7 @@ export default function AdminLoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setSqlInstruction(null);
 
     if (!email || !password) {
       setError('Preencha e-mail e senha.');
@@ -33,7 +35,6 @@ export default function AdminLoginPage() {
 
     try {
       if (!supabaseUrl || !supabaseAnonKey) {
-        // Modo fallback em dev se Supabase não estiver configurado
         if (process.env.NODE_ENV !== 'production') {
           router.push(redirectUrl);
           return;
@@ -56,24 +57,27 @@ export default function AdminLoginPage() {
         return;
       }
 
-      // Verificar se é admin no app_metadata, user_metadata ou na tabela profiles
+      const userId = data.user.id;
+      const userEmail = data.user.email || email;
       const role = data.user.app_metadata?.role || data.user.user_metadata?.role;
 
       if (role !== 'admin') {
         const { data: profile } = await supabase
           .from('profiles')
           .select('role')
-          .eq('id', data.user.id)
+          .eq('id', userId)
           .single();
 
         if (!profile || profile.role !== 'admin') {
-          setError('Acesso negado: Este usuário não possui privilégios de Administrador.');
+          setError(`Autenticado como ${userEmail}, porém esta conta ainda não tem o perfil 'admin' no Supabase.`);
+          setSqlInstruction(
+            `INSERT INTO public.profiles (id, email, role)\nVALUES ('${userId}', '${userEmail}', 'admin')\nON CONFLICT (id) DO UPDATE SET role = 'admin';`
+          );
           setIsLoading(false);
           return;
         }
       }
 
-      // Redirecionar para o painel admin
       router.push(redirectUrl);
       router.refresh();
     } catch (err: any) {
@@ -102,8 +106,18 @@ export default function AdminLoginPage() {
         )}
 
         {error && (
-          <div className="bg-red-50 text-red-700 p-3 rounded text-xs font-semibold border border-red-200">
-            {error}
+          <div className="bg-red-50 text-red-700 p-3 rounded text-xs font-semibold border border-red-200 space-y-2">
+            <p>{error}</p>
+            {sqlInstruction && (
+              <div className="mt-2 pt-2 border-t border-red-200 text-[11px] text-slate-800 font-mono">
+                <span className="font-bold text-red-900 block font-sans mb-1">
+                  💡 Execute o SQL no SQL Editor do Supabase para liberar:
+                </span>
+                <pre className="bg-slate-900 text-emerald-400 p-2 rounded overflow-x-auto text-[10px]">
+                  {sqlInstruction}
+                </pre>
+              </div>
+            )}
           </div>
         )}
 
@@ -157,4 +171,5 @@ export default function AdminLoginPage() {
     </div>
   );
 }
+
 
